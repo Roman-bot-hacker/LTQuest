@@ -8,4 +8,32 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MainButton">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <style name="MainButton.background">
+        <item name="android:background">#907AEC</item>
+    </style>
+
+    <style name="ButtonStyle">ButtonStyle</style>
+
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Text_categoty">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+
+    </style>
+
 </resources>

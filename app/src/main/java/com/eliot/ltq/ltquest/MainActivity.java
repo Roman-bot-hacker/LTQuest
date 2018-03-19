@@ -9,10 +9,13 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,7 +28,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
     private LocationManager locationManager;
@@ -62,13 +66,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            myLocationButton = (ImageView) findViewById(R.id.myLocationButton);
-            myLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
-                }
-            });
             mPositionMarker = mMap.addMarker(new MarkerOptions()
                     .flat(true)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.current_position)))
@@ -187,5 +184,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
