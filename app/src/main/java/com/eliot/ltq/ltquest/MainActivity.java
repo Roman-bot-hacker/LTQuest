@@ -16,6 +16,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,12 +67,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            myLocationButton = (ImageView) findViewById(R.id.myLocationButton);
+            myLocationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
+                }
+            });
             mPositionMarker = mMap.addMarker(new MarkerOptions()
                     .flat(true)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.current_position)))
                     .anchor(0.5f, 1f)
                     .position(currentLatLng));
         }
+
         try {
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
                     this, R.raw.silver_style_maps));}
