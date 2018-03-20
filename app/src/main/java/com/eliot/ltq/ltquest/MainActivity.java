@@ -75,10 +75,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
             mPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .flat(true)
+                    .flat(false)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.current_position)))
                     .anchor(0.5f, 1f)
-                    .position(currentLatLng));
+                    .position(currentLatLng)
+                    .draggable(false));
         }
 
         try {
