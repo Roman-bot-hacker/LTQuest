@@ -22,10 +22,20 @@
     <string name="_2km">2km</string>
     <string name="sweet_things">Sweet Things</string>
     <string name="_3km">3km</string>
+    <string name="buy">Buy</string>
+    <string name="point">Point</string>
+    <string name="dollar">Dollar</string>
+    <string name="Current_balance">Current balance</string>
 
     <string name="app_name">LTQuest</string>
     <string name="title_activity_main">Main</string>
     <string name="location_permission_denied">location permission denied</string>
     <string name="permission_required_toast">permission required toast</string>
     <string name="permission_rationale_location">permission rationale location</string>
+
+    //This strings resources are just a part of design and will delete in future
+    <string name="point_">534</string>
+    <string name="dollar_">1</string>
+    <string name="title">Title</string>
+    <string name="numbers">23463</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.eliot.ltq.ltquest;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +31,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static com.eliot.ltq.ltquest.R.*;
+
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,16 +44,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
     private ImageView myLocationButton;
+    private View screen1;
+    private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(layout.activity_main);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
-
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        screen1 = findViewById(id.screen1);
+        screen2 = findViewById(id.screen2);
+        screen1.setVisibility(View.VISIBLE);
+        screen2.setVisibility(View.GONE);
+        screen1ButtonsOnClickListener();
+        screen2ButtonsOnClickListener();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -67,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            myLocationButton = (ImageView) findViewById(R.id.myLocationButton);
+            myLocationButton = (ImageView) findViewById(id.myLocationButton);
             myLocationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
             mPositionMarker = mMap.addMarker(new MarkerOptions()
                     .flat(false)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.current_position)))
+                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
                     .anchor(0.5f, 1f)
                     .position(currentLatLng)
                     .draggable(false));
@@ -84,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         try {
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
-                    this, R.raw.silver_style_maps));}
+                    this, raw.silver_style_maps));}
         catch (Resources.NotFoundException e) {
             e.getMessage();
         }
@@ -202,9 +215,61 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        if (id== R.id.nav_balance){
+            startActivity(new Intent(MainActivity.this, Balance.class));
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void screen1ButtonsOnClickListener() {
+        Button startNew = findViewById(id.start_new);
+        Button continueQuest = findViewById(id.continue_quest);
+        startNew.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                screen1.setVisibility(View.GONE);
+                screen2.setVisibility(View.VISIBLE);
+            }
+        });
+        continueQuest.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
+    public void screen2ButtonsOnClickListener() {
+        View category1 = findViewById(id.button1);
+        View category2 = findViewById(id.button2);
+        View category3 = findViewById(id.button3);
+        View seeAll = findViewById(id.see_all);
+        category1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        category2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        category3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        seeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 }
