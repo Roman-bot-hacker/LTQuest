@@ -48,7 +48,7 @@ public class ActivityChooseLevel extends AppCompatActivity {
     private void prepareQuestData() {
         for (int i = 0; i < 5; i++) {
             Quest quest = new Quest(R.drawable.lviv1,"Name"+i,12+i);
-            Quest easyQuest = new Quest(R.drawable.themed_cafes,"Cafe"+i,i);
+            Quest easyQuest = new Quest(R.drawable.lviv1,"Cafe"+i,i);
             easyQuests.add(easyQuest);
             quests.add(quest);
         }
