@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,8 +31,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import static com.eliot.ltq.ltquest.R.*;
+import static com.eliot.ltq.ltquest.R.drawable;
+import static com.eliot.ltq.ltquest.R.id;
+import static com.eliot.ltq.ltquest.R.layout;
+import static com.eliot.ltq.ltquest.R.raw;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
@@ -51,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         setContentView(layout.activity_main);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
@@ -63,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
+        chooseCategoryDateUpdate();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -268,6 +280,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+            }
+        });
+    }
+
+    private void chooseCategoryDateUpdate() {
+        final TextView categoryOne = (TextView) findViewById(id.button1text);
+        final TextView categoryTwo = (TextView) findViewById(id.button2text);
+        final TextView categoryThree = (TextView) findViewById(id.button3text);
+        DatabaseReference chooseCategoryRef = FirebaseDatabase.getInstance().getReference("category_names");
+        chooseCategoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                categoryOne.setText(dataSnapshot.child("Category1").getValue().toString());
+                categoryTwo.setText(dataSnapshot.child("Category2").getValue().toString());
+                categoryThree.setText(dataSnapshot.child("Category3").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

@@ -95,12 +95,12 @@
                     android:background="@drawable/ic_shop"/>
 
                 <TextView
+                    android:id="@+id/button1text"
                     style="@style/Text_categoty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/between_icon_category"
-                    android:layout_marginTop="@dimen/top_category"
-                    android:text="@string/Category1" />
+                    android:layout_marginTop="@dimen/top_category" />
             </LinearLayout>
 
 
@@ -122,6 +122,7 @@
                     android:background="@drawable/ic_star"/>
 
                 <TextView
+                    android:id="@+id/button2text"
                     style="@style/Text_categoty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -148,6 +149,7 @@
                     android:background="@drawable/ic_norm_home"/>
 
                 <TextView
+                    android:id="@+id/button3text"
                     style="@style/Text_categoty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
