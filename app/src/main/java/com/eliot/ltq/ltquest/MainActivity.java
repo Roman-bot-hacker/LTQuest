@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
-        chooseCategoryDateUpdate();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -285,23 +284,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void chooseCategoryDateUpdate() {
-        final TextView categoryOne = (TextView) findViewById(id.button1text);
-        final TextView categoryTwo = (TextView) findViewById(id.button2text);
-        final TextView categoryThree = (TextView) findViewById(id.button3text);
-        DatabaseReference chooseCategoryRef = FirebaseDatabase.getInstance().getReference("category_names");
-        chooseCategoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                categoryOne.setText(dataSnapshot.child("Category1").getValue().toString());
-                categoryTwo.setText(dataSnapshot.child("Category2").getValue().toString());
-                categoryThree.setText(dataSnapshot.child("Category3").getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 }
