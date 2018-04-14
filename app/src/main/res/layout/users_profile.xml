@@ -91,5 +91,18 @@
             android:layout_toEndOf="@+id/name_user"
             android:src="@drawable/gmail" />
 
+        <TextView
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/facebook"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="13dp"
+            android:text="@string/log_out"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold|italic|normal"
+             />
+
     </RelativeLayout>
 </LinearLayout>
