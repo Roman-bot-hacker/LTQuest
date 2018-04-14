@@ -27,6 +27,10 @@
     <string name="dollar">Dollar</string>
     <string name="Current_balance">Current balance</string>
 
+    <string name="email">user@mail</string>
+    <string name="name_user">User Name</string>
+    <string name="log_out">Log Out</string>
+
     <string name="app_name">LTQuest</string>
     <string name="title_activity_main">Main</string>
     <string name="location_permission_denied">location permission denied</string>

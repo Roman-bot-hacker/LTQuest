@@ -10,19 +10,16 @@
         android:layout_height="match_parent">
 
 
-    <ImageView
-        android:id="@+id/lviv_photo_backGround"
-        android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/lviv_photo_backGround"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constrainTop_toTopOf="parent"
-       />
+        <ImageView
+            android:id="@+id/lviv_photo_background"
+            android:src="@drawable/profile_background"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:scaleType="centerCrop"
+            tools:layout_constraintTop_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            />
 
 
         <ImageView
@@ -47,12 +44,12 @@
             android:src="@drawable/plus" />
 
         <TextView
-            android:id="@+id/userEmail"
+            android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/name_user"
             android:layout_centerHorizontal="true"
-            android:text="email"
+            android:text="@string/email"
             android:textSize="15sp"
             android:textStyle="normal"/>
 
@@ -62,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/user_avatan"
             android:layout_centerHorizontal="true"
-            android:text="user name"
+            android:text="@string/name_user"
             android:textSize="25sp"
             android:textStyle="bold"/>
 
@@ -70,7 +67,7 @@
             android:id="@+id/instagram"
             android:layout_width="62dp"
             android:layout_height="62dp"
-            android:layout_below="@+id/userEmail"
+            android:layout_below="@+id/email"
             android:layout_marginTop="46dp"
             android:layout_toStartOf="@+id/name_user"
             android:src="@drawable/inst" />
@@ -90,6 +87,19 @@
             android:layout_alignTop="@+id/facebook"
             android:layout_toEndOf="@+id/name_user"
             android:src="@drawable/gmail" />
+
+        <TextView
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/facebook"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="@string/log_out"
+            android:textAllCaps="true"
+            android:textSize="15sp"
+            android:textStyle="bold|italic|normal"
+            />
 
     </RelativeLayout>
 </LinearLayout>

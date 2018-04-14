@@ -29,6 +29,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private ProgressBar progressBar;
     private FirebaseAuth firebaseAuth;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
