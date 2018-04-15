@@ -16,6 +16,14 @@
             android:text="User Registration"
             android:id="@+id/userRegistration"
             android:layout_gravity="center_horizontal"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="name"
+            android:id="@+id/editTextName"
+            android:inputType="text"
+            android:layout_margin="15dp"/>
         
         <EditText
             android:layout_margin="15dp"

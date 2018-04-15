@@ -11,14 +11,24 @@ import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     FirebaseAuth firebaseAuth;
+    DatabaseReference databaseReference;
+    FirebaseUser user;
+    UserInformation userInformation = new UserInformation();
 
     TextView textViewUserEmail;
+    TextView textViewName;
     TextView logOut;
 
     @Override
@@ -34,12 +44,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(new Intent(ProfileActivity.this, RegistrationActivity.class));
         }
 
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-
+        user = firebaseAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        userInformationRequest();
         textViewUserEmail = (TextView) findViewById(R.id.email);
         textViewUserEmail.setText(user.getEmail());
+        textViewName = (TextView) findViewById(R.id.name_user);
+        textViewName.setText(userInformation.getName());
         logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(this);
+    }
+
+    public void userInformationRequest(){
+        databaseReference.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userInformation = (UserInformation) dataSnapshot.child("users").child(user.getUid()).getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

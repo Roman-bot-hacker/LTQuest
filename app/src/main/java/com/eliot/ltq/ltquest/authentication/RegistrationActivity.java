@@ -19,15 +19,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button buttonSingUp;
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private EditText editTextName;
     private TextView textViewSingIn;
     private ProgressBar progressBar;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
 
 
 
@@ -38,6 +43,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         FirebaseApp.initializeApp(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         if(firebaseAuth.getCurrentUser() != null){
             finish();
@@ -47,6 +53,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         buttonSingUp = (Button) findViewById(R.id.buttonSingUp);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        editTextName = (EditText) findViewById(R.id.editTextName);
         textViewSingIn = (TextView) findViewById(R.id.textSingIn);
 
         buttonSingUp.setOnClickListener(this);
@@ -58,7 +65,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private void UserRegistration(){
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        String name = editTextName.getText().toString().trim();
 
+        final UserInformation userInformation = new UserInformation(name);
+
+        if(TextUtils.isEmpty(name)){
+            //name is empty
+            Toast.makeText(this, "Please, enter name", Toast.LENGTH_LONG).show();
+        }
         if(TextUtils.isEmpty(email)){
             //email is empty
             Toast.makeText(this, "Please, enter email", Toast.LENGTH_SHORT).show();
@@ -77,6 +91,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            databaseReference.child("users").child(user.getUid()).setValue(userInformation);
                             finish();
                             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                         }
