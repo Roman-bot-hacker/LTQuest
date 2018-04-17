@@ -63,38 +63,39 @@
             android:textSize="25sp"
             android:textStyle="bold"/>
 
-        <ImageView
-            android:id="@+id/instagram"
-            android:layout_width="62dp"
-            android:layout_height="62dp"
-            android:layout_below="@+id/email"
-            android:layout_marginTop="46dp"
-            android:layout_toStartOf="@+id/name_user"
-            android:src="@drawable/inst" />
 
         <ImageView
             android:id="@+id/facebook"
             android:layout_width="62dp"
             android:layout_height="62dp"
-            android:layout_alignTop="@+id/instagram"
+            android:layout_marginBottom="@+id/lviv_photo_background"
+            android:layout_margin="375dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/facebook" />
+
+        <ImageView
+            android:id="@+id/instagram"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_alignTop="@+id/facebook"
+            android:layout_toStartOf="@+id/user_avatan"
+            android:src="@drawable/inst" />
 
         <ImageView
             android:id="@+id/gmail"
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:layout_alignTop="@+id/facebook"
-            android:layout_toEndOf="@+id/name_user"
+            android:layout_toEndOf="@+id/user_avatan"
             android:src="@drawable/gmail" />
 
         <TextView
             android:id="@+id/logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/facebook"
+            android:layout_below="@+id/lviv_photo_background"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="215dp"
             android:text="@string/log_out"
             android:textAllCaps="true"
             android:textSize="15sp"

@@ -59,7 +59,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         databaseReference.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                userInformation = (UserInformation) dataSnapshot.child("users").child(user.getUid()).getValue();
+                userInformation = (UserInformation) dataSnapshot.child(user.getUid()).getValue();
             }
 
             @Override
