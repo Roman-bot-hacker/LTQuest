@@ -29,6 +29,15 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".LogoActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -38,13 +47,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".authentication.RegistrationActivity"
-            android:label="Sing Up"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".authentication.LoginActivity"></activity>
         <activity android:name=".authentication.ProfileActivity"></activity>

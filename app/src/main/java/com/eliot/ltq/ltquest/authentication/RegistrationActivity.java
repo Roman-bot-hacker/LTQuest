@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -50,16 +49,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
         }
 
-        buttonSingUp = (Button) findViewById(R.id.buttonSingUp);
+        buttonSingUp = (Button) findViewById(R.id.buttonLogIn);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         editTextName = (EditText) findViewById(R.id.editTextName);
-        textViewSingIn = (TextView) findViewById(R.id.textSingIn);
+        textViewSingIn = (TextView) findViewById(R.id.textChangeType);
 
         buttonSingUp.setOnClickListener(this);
         textViewSingIn.setOnClickListener(this);
-
-        progressBar = new ProgressBar(this);
     }
 
     private void UserRegistration(){
