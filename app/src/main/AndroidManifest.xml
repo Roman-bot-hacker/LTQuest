@@ -43,6 +43,7 @@
             android:label="Balance"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".MapsSupport" />
 
     </application>
 
