@@ -37,6 +37,10 @@
     <string name="permission_required_toast">permission required toast</string>
     <string name="permission_rationale_location">permission rationale location</string>
 
+    //Auth Activity
+    <string name="to_sing_in">Already Registered? Sing in here!</string>
+    <string name="to_sing_up">Do not have an account? Sing up here!</string>
+
     //This strings resources are just a part of design and will delete in future
     <string name="point_">534</string>
     <string name="dollar_">1</string>

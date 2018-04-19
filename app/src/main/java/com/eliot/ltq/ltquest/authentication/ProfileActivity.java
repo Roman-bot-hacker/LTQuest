@@ -28,9 +28,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     FirebaseUser user;
     UserInformation userInformation = new UserInformation();
 
-    TextView textViewUserEmail;
-    TextView textViewName;
-    TextView logOut;
+    private TextView textViewUserEmail;
+    private TextView textViewName;
+    private TextView logOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -41,8 +41,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         firebaseAuth = FirebaseAuth.getInstance();
 
         if(firebaseAuth.getCurrentUser() == null){
+            AuthActivity.setAuthType(AuthType.REGISTRATION);
             finish();
-            startActivity(new Intent(ProfileActivity.this, RegistrationActivity.class));
+            startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }
 
         user = firebaseAuth.getCurrentUser();
@@ -57,17 +58,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void userInformationRequest(){
-        FirebaseAuthManager.registerUser("email","password", new FirebaseAuthManager.UserLoginListener() {
-            @Override
-            public void onSuccess() {
-                Log.d("Success","YAY");
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
         databaseReference.child("users").child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,8 +75,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         if(view == logOut){
             firebaseAuth.signOut();
+            AuthActivity.setAuthType(AuthType.LOGIN);
             finish();
-            startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
+            startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }
     }
 }

@@ -45,12 +45,10 @@
             android:name=".Balance"
             android:label="Balance"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".authentication.RegistrationActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".authentication.LoginActivity"></activity>
         <activity android:name=".authentication.ProfileActivity"></activity>
+        <activity android:name=".authentication.AuthActivity"
+            android:label="User Login"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
