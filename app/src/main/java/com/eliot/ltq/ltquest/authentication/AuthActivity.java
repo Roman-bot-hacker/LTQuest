@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -79,47 +77,70 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         textViewChangeType.setVisibility(View.VISIBLE);
     }
 
+    public String getEmail(EditText editTextEmail){
+        String email = editTextEmail.getText().toString().trim();
+        return email;
+    }
+
+    public String getPassword(EditText editTextPassword){
+        String password = editTextPassword.getText().toString().trim();
+        return password;
+    }
+
+    public boolean isFieldEmpty(String email, String password){
+        boolean bool = (TextUtils.isEmpty(email)||TextUtils.isEmpty(password));
+        return bool;
+    }
+
+
     @Override
-    public void onClick (View view){
-        if((view==buttonLogIn)&&(authType==AuthType.REGISTRATION)){
-            manager.registerUser(this, editTextEmail, editTextPassword, new FirebaseAuthManager.UserLoginListener() {
-                @Override
-                public void onSuccess() {
-                    //Here must be a method to create a new user in Firebase
-                    finish();
-                    startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+    public void onClick (View view) {
+        switch (view.getId()) {
+            case R.id.buttonLogIn: {
+                if (isFieldEmpty(getEmail(editTextEmail), getPassword(editTextPassword))) {
+                    Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (authType == AuthType.REGISTRATION) {
+                        manager.registerUser(getEmail(editTextEmail), getPassword(editTextPassword), new FirebaseAuthManager.UserLoginListener() {
+                            @Override
+                            public void onSuccess() {
+                                //Here must be a method to create a new user in Firebase
+                                finish();
+                                startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                            }
+
+                            @Override
+                            public String onError(String massage) {
+                                return massage;
+                            }
+                        });
+                    }
+                    if (authType == AuthType.LOGIN) {
+                        manager.loginUser(getEmail(editTextEmail), getPassword(editTextPassword), new FirebaseAuthManager.UserLoginListener() {
+                            @Override
+                            public void onSuccess() {
+                                finish();
+                                startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                            }
+
+                            @Override
+                            public String onError(String massage) {
+                                return massage;
+                            }
+                        });
+                    }
                 }
-
-                @Override
-                public void onError() {
-                    Toast.makeText(AuthActivity.this, "Could not register!", Toast.LENGTH_LONG).show();
+            }
+            case R.id.textChangeType: {
+                if(authType==AuthType.REGISTRATION){
+                    authType = AuthType.LOGIN;
+                    chooseAuth();
                 }
-            });
-        }
-
-        if((view==buttonLogIn)&&(authType==AuthType.LOGIN)){
-            manager.loginUser(this, editTextEmail, editTextPassword, new FirebaseAuthManager.UserLoginListener() {
-                @Override
-                public void onSuccess() {
-                    finish();
-                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                if(authType==AuthType.LOGIN){
+                    authType = AuthType.REGISTRATION;
+                    chooseAuth();
                 }
-
-                @Override
-                public void onError() {
-                    Toast.makeText(AuthActivity.this, "Could not login!", Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-
-        if((view==textViewChangeType)&&(authType==AuthType.REGISTRATION)){
-            authType = AuthType.LOGIN;
-            chooseAuth();
-        }
-
-        if((view==textViewChangeType)&&(authType==AuthType.LOGIN)){
-            authType = AuthType.REGISTRATION;
-            chooseAuth();
+            }
         }
     }
 }

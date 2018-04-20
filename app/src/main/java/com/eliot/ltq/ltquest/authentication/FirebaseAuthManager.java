@@ -1,5 +1,6 @@
 package com.eliot.ltq.ltquest.authentication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -20,37 +21,20 @@ import com.google.firebase.auth.FirebaseAuth;
 public class FirebaseAuthManager {
 
     private FirebaseAuth auth;
+    private Activity activity;
 
-    public FirebaseAuthManager(Context context) {
-        FirebaseApp.initializeApp(context);
+    public FirebaseAuthManager(Activity activity) {
+        FirebaseApp.initializeApp(activity);
         auth = FirebaseAuth.getInstance();
+        this.activity = activity;
     }
 
-    public String getEmail(EditText editTextEmail){
-        String email = editTextEmail.getText().toString().trim();
-        return email;
-    }
-
-    public String getPassword(EditText editTextPassword){
-        String password = editTextPassword.getText().toString().trim();
-        return password;
-    }
-
-    public void isFieldEmpty(AuthActivity activity, String field){
-        if (TextUtils.isEmpty(field)) {
-            Toast.makeText(activity, "Please, enter name", Toast.LENGTH_LONG).show();
-            //Some code to break login or registration method
-        }
-    }
-
-    public void registerUser(final AuthActivity activity, EditText editTextEmail, EditText editTextPassword, final UserLoginListener listener) {
-        isFieldEmpty(activity, getEmail(editTextEmail));
-        isFieldEmpty(activity, getPassword(editTextPassword));
-        auth.createUserWithEmailAndPassword(getEmail(editTextEmail), getPassword(editTextPassword))
+    public void registerUser(String email, String password, final UserLoginListener listener) {
+        auth.createUserWithEmailAndPassword(email, password)
                 .addOnFailureListener(activity, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        listener.onError();
+                        listener.onError(e.getLocalizedMessage());
                     }
                 })
                 .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
@@ -62,19 +46,18 @@ public class FirebaseAuthManager {
 
     }
 
-    public void loginUser(AuthActivity activity, EditText editTextEmail, EditText editTextPassword, final UserLoginListener listener){
-        isFieldEmpty(activity, getEmail(editTextEmail));
-        isFieldEmpty(activity, getPassword(editTextPassword));
-        auth.signInWithEmailAndPassword(getEmail(editTextEmail), getPassword(editTextPassword))
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+    public void loginUser(String email, String password, final UserLoginListener listener){
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnFailureListener(activity, new OnFailureListener() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            listener.onSuccess();
-                        }
-                        else{
-                            listener.onError();
-                        }
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onError(e.getLocalizedMessage());
+                    }
+                })
+                .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        listener.onSuccess();
                     }
                 });
     }
@@ -86,6 +69,6 @@ public class FirebaseAuthManager {
         public interface UserLoginListener {
             void onSuccess();
 
-            void onError();
+            String onError(String massage);
         }
 }
