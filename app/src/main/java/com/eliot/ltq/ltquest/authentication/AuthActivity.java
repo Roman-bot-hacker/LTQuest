@@ -12,24 +12,25 @@ import android.widget.Toast;
 
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static AuthType authType = AuthType.LOGIN;
-    private FirebaseAuthManager manager = new FirebaseAuthManager(this);
+    private FirebaseAuthManager manager;
     private Button buttonLogIn;
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextName;
     private TextView textViewChangeType;
-    private String name;
-    private String email;
-    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
+
+        manager = new FirebaseAuthManager(this);
 
         buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
@@ -47,35 +48,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         switch (authType) {
             case REGISTRATION: {
                 setRegistrationVisibility();
-                email = editTextEmail.getText().toString().trim();
-                password = editTextPassword.getText().toString().trim();
-                name = editTextName.getText().toString().trim();
-                isFieldEmpty(name, email, password);
                 buttonLogIn.setOnClickListener(this);
                 textViewChangeType.setOnClickListener(this);
             } break;
             case LOGIN: {
                 setLoginVisibility();
-                email = editTextEmail.getText().toString().trim();
-                password = editTextPassword.getText().toString().trim();
-                isFieldEmpty(name, email, password);
                 buttonLogIn.setOnClickListener(this);
                 textViewChangeType.setOnClickListener(this);
             } break;
-        }
-    }
-
-    public void isFieldEmpty(String name, String email, String password) {
-        if ((TextUtils.isEmpty(name))&&(authType==AuthType.REGISTRATION)) {
-            Toast.makeText(this, "Please, enter name", Toast.LENGTH_LONG).show();
-        }
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Please, enter email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please, enter password", Toast.LENGTH_SHORT).show();
-            return;
         }
     }
 
@@ -102,7 +82,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick (View view){
         if((view==buttonLogIn)&&(authType==AuthType.REGISTRATION)){
-            manager.registerUser(this, email, password, new FirebaseAuthManager.UserLoginListener() {
+            manager.registerUser(this, editTextEmail, editTextPassword, new FirebaseAuthManager.UserLoginListener() {
                 @Override
                 public void onSuccess() {
                     //Here must be a method to create a new user in Firebase
@@ -118,7 +98,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if((view==buttonLogIn)&&(authType==AuthType.LOGIN)){
-            manager.loginUser(this, email, password, new FirebaseAuthManager.UserLoginListener() {
+            manager.loginUser(this, editTextEmail, editTextPassword, new FirebaseAuthManager.UserLoginListener() {
                 @Override
                 public void onSuccess() {
                     finish();
