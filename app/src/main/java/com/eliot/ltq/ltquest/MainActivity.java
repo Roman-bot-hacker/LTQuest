@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +42,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+
 import static com.eliot.ltq.ltquest.R.drawable;
 import static com.eliot.ltq.ltquest.R.id;
 import static com.eliot.ltq.ltquest.R.layout;
@@ -61,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View screen1;
     private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+    private FirebaseDataManager manager = new FirebaseDataManager();
+    private FirstScreen firstScreen = new FirstScreen();
+    private SecondScreen secondScreen = new SecondScreen();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +83,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
         screen2.setVisibility(View.GONE);
-        screen1ButtonsOnClickListener();
-        screen2ButtonsOnClickListener();
+        firstScreen.startButtonsOnClickListener();
+        secondScreen.setCategoriesText();
+        secondScreen.startButtonsOnClickListener();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -247,54 +254,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    public void screen1ButtonsOnClickListener() {
-        Button startNew = findViewById(id.start_new);
-        Button continueQuest = findViewById(id.continue_quest);
-        startNew.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.VISIBLE);
-            }
-        });
-        continueQuest.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-    }
-
-    public void screen2ButtonsOnClickListener() {
-        View category1 = findViewById(id.button1);
-        View category2 = findViewById(id.button2);
-        View category3 = findViewById(id.button3);
-        View seeAll = findViewById(id.see_all);
-        category1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        category2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        category3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        seeAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-    }
-
 }
