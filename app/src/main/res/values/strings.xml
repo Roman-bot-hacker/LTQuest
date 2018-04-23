@@ -40,6 +40,8 @@
     //Auth Activity
     <string name="to_sing_in">Already Registered? Sing in here!</string>
     <string name="to_sing_up">Do not have an account? Sing up here!</string>
+    <string name="google_sing_in_error">Cannot sing in with your Google account</string>
+
 
     //This strings resources are just a part of design and will delete in future
     <string name="point_">534</string>

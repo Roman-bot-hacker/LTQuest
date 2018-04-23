@@ -55,6 +55,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/map"
+        android:layout_marginTop="40dp">
+
+        <ImageView
+            android:id="@+id/google_sing_in"
+            android:clickable="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/gmail" />
+    </LinearLayout>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -7,11 +7,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +26,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editTextPassword;
     private EditText editTextName;
     private TextView textViewChangeType;
+    private ImageView buttonGoogleSingIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         editTextName = (EditText) findViewById(R.id.editTextName);
         textViewChangeType = (TextView) findViewById(R.id.textChangeType);
+        buttonGoogleSingIn = (ImageView) findViewById(R.id.google_sing_in);
         chooseAuth();
     }
 
@@ -43,38 +49,29 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void chooseAuth(){
+        buttonLogIn.setOnClickListener(this);
+        textViewChangeType.setOnClickListener(this);
+        buttonGoogleSingIn.setOnClickListener(this);
         switch (authType) {
             case REGISTRATION: {
                 setRegistrationVisibility();
-                buttonLogIn.setOnClickListener(this);
-                textViewChangeType.setOnClickListener(this);
             } break;
             case LOGIN: {
                 setLoginVisibility();
-                buttonLogIn.setOnClickListener(this);
-                textViewChangeType.setOnClickListener(this);
             } break;
         }
     }
 
     public void setRegistrationVisibility(){
         buttonLogIn.setText("Registration");
-        buttonLogIn.setVisibility(View.VISIBLE);
-        editTextEmail.setVisibility(View.VISIBLE);
-        editTextPassword.setVisibility(View.VISIBLE);
         editTextName.setVisibility(View.VISIBLE);
         textViewChangeType.setText(R.string.to_sing_in);
-        textViewChangeType.setVisibility(View.VISIBLE);
     }
 
     public void setLoginVisibility(){
         buttonLogIn.setText("Login");
-        buttonLogIn.setVisibility(View.VISIBLE);
-        editTextEmail.setVisibility(View.VISIBLE);
-        editTextPassword.setVisibility(View.VISIBLE);
         editTextName.setVisibility(View.GONE);
         textViewChangeType.setText(R.string.to_sing_up);
-        textViewChangeType.setVisibility(View.VISIBLE);
     }
 
     public String getEmail(EditText editTextEmail){
@@ -141,6 +138,30 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     chooseAuth();
                 }
             }
+            case R.id.google_sing_in: {
+                manager.singInWithGoogle();
+            }
         }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        manager.onActivityResult(requestCode, resultCode, data, new FirebaseAuthManager.UserLoginListener() {
+            @Override
+            public void onSuccess() {
+                if(authType==AuthType.REGISTRATION){
+                    //Method to add new user to Firebase
+                    startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                }
+                if(authType==AuthType.LOGIN) {
+                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                }
+            }
+
+            @Override
+            public String onError(String massage) {
+                return massage;
+            }
+        });
     }
 }

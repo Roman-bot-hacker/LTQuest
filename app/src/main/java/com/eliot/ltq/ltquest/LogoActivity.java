@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.eliot.ltq.ltquest.authentication.AuthActivity;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 public class LogoActivity extends AppCompatActivity {
 
@@ -15,7 +16,7 @@ public class LogoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logo);
-        if(manager.isUserLoggedIn()){
+        if((manager.isUserLoggedIn())||(manager.isGoogleAccountEnabled())){
             finish();
             startActivity(new Intent(this, MainActivity.class));
         }
