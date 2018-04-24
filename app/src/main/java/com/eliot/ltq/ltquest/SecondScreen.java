@@ -11,7 +11,7 @@ public class SecondScreen extends AppCompatActivity {
         final TextView firstButtonText = findViewById(R.id.button1_text);
         final TextView secondButtonText = findViewById(R.id.button2_text);
         final TextView thirdButtonText = findViewById(R.id.button3_text);
-        manager.getCategoriesNamesList(new FirebaseDataManager.DataRetrieveListener(){
+        manager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListener(){
             @Override
             public void onSuccess() {
                 firstButtonText.setText(manager.getQuestCategoryList().get(0).getName());

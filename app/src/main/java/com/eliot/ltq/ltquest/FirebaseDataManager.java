@@ -14,12 +14,13 @@ public class FirebaseDataManager {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private List<QuestCategory> questCategoryList = new ArrayList<>();
     private List<QuestStructure> questStructureList = new ArrayList<>();
+    private List<LocationStructure> locationsList = new ArrayList<>();
 
     public interface DataRetrieveListener{
         void onSuccess();
     }
 
-    public void getCategoriesNamesList(final DataRetrieveListener listener){
+    public void categoriesNamesListRetriever(final DataRetrieveListener listener){
         firebaseDatabase.getReference("categories").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -37,7 +38,7 @@ public class FirebaseDataManager {
         });
     }
 
-    public void getQuests(final DataRetrieveListener listener){
+    public void questsRetriever(final DataRetrieveListener listener){
         firebaseDatabase.getReference("quests").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -67,6 +68,28 @@ public class FirebaseDataManager {
             }
         }
         return foundQuests;
+    }
+
+    public void locationsListRetriever(final DataRetrieveListener listener){
+        firebaseDatabase.getReference("locations").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1:
+                     dataSnapshot.getChildren()) {
+                    locationsList.add(dataSnapshot1.getValue(LocationStructure.class));
+                }
+                listener.onSuccess();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void findLocationsById(){
+
     }
 
     public List<QuestCategory> getQuestCategoryList() {
