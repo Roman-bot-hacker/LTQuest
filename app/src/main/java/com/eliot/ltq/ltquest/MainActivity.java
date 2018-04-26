@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
+import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,9 +65,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View screen1;
     private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
-    private FirebaseDataManager manager = new FirebaseDataManager();
-    private FirstScreen firstScreen = new FirstScreen();
-    private SecondScreen secondScreen = new SecondScreen();
+    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
         screen2.setVisibility(View.GONE);
-        firstScreen.startButtonsOnClickListener();
-        secondScreen.setCategoriesText();
-        secondScreen.startButtonsOnClickListener();
+        screen1ButtonsOnClickListener();
+        screen2ButtonsOnClickListener();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -254,4 +252,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void screen1ButtonsOnClickListener() {
+        Button startNew = findViewById(id.start_new);
+        Button continueQuest = findViewById(id.continue_quest);
+        startNew.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                screen1.setVisibility(View.GONE);
+                screen2.setVisibility(View.VISIBLE);
+            }
+        });
+        continueQuest.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
+    public void screen2ButtonsOnClickListener() {
+        View category1 = findViewById(id.button1);
+        View category2 = findViewById(id.button2);
+        View category3 = findViewById(id.button3);
+        View seeAll = findViewById(id.see_all);
+        category1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        category2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        category3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        seeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
 }

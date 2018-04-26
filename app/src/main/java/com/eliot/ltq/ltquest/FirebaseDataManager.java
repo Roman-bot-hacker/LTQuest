@@ -2,6 +2,7 @@ package com.eliot.ltq.ltquest;
 
 import android.util.Log;
 
+import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -89,7 +90,10 @@ public class FirebaseDataManager {
     }
 
     public void findLocationsById(){
+    }
 
+    public void addUserDataToFirabase(UserInformation userInformation){
+        firebaseDatabase.getReference().child("userData").child("Tania").setValue(userInformation);
     }
 
     public List<QuestCategory> getQuestCategoryList() {
