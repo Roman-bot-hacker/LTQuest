@@ -96,9 +96,26 @@ public class FirebaseDataManager {
     public void findLocationsById(){
     }
 
-    public void addUserDataToFirabase(UserInformation userInformation){
+    public void writeCurrentUserData(UserInformation userInformation){
         FirebaseAuth auth = FirebaseAuth.getInstance();
         firebaseDatabase.getReference().child("userData").child(auth.getCurrentUser().getUid()).setValue(userInformation);
+    }
+
+    public void getCurrentUserData(final DataRetrieveListener listener){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        firebaseDatabase.getReference().child("userData").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation = new UserInformation();
+                userInformation = dataSnapshot.getValue(UserInformation.class);
+                listener.onSuccess();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public List<QuestCategory> getQuestCategoryList() {
