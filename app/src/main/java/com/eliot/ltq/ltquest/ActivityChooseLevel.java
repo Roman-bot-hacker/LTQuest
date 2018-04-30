@@ -1,11 +1,13 @@
 package com.eliot.ltq.ltquest;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,12 @@ public class ActivityChooseLevel extends AppCompatActivity {
                 easyRecyclerView.setLayoutManager(mLayoutManager1);
                 easyRecyclerView.setItemAnimator(new DefaultItemAnimator());
                 easyRecyclerView.setAdapter(easyQuestItemAdapter);
+                easyRecyclerView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
             }
         });
     }
