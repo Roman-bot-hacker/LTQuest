@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return latLng;
     }
 
-    private void askMyLocationPermissions() {
+    void askMyLocationPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         category1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(new Intent(MainActivity.this, ActivityChooseLevel.class));
             }
         });
         category2.setOnClickListener(new View.OnClickListener() {
