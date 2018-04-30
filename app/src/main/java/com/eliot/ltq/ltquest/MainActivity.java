@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FirebaseApp.initializeApp(this);
         firebaseAuth = FirebaseAuth.getInstance();
         setContentView(layout.activity_main);
+        setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
@@ -267,6 +268,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
 
+            }
+        });
+    }
+
+    public void setCategoriesText(){
+        final TextView firstButtonText = findViewById(R.id.button1_text);
+        final TextView secondButtonText = findViewById(R.id.button2_text);
+        final TextView thirdButtonText = findViewById(R.id.button3_text);
+        firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListener(){
+            @Override
+            public void onSuccess() {
+                firstButtonText.setText(firebaseDataManager.getQuestCategoryList().get(0).getName());
+                secondButtonText.setText(firebaseDataManager.getQuestCategoryList().get(1).getName());
+                thirdButtonText.setText(firebaseDataManager.getQuestCategoryList().get(2).getName());
             }
         });
     }

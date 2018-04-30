@@ -19,5 +19,9 @@ public class QuestStructure {
     public String getQuestName() {
         return questName;
     }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
 
 }

@@ -44,14 +44,14 @@ public class FirebaseDataManager {
     }
 
     public void questsRetriever(final DataRetrieveListener listener){
-        firebaseDatabase.getReference("quests").addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseDatabase.getReference("quest").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSpanshot1:
                      dataSnapshot.getChildren()) {
                     questStructureList.add(dataSpanshot1.getValue(QuestStructure.class));
-                    listener.onSuccess();
                 }
+                listener.onSuccess();
             }
 
             @Override

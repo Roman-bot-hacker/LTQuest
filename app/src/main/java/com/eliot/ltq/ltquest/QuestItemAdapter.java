@@ -11,7 +11,7 @@ import java.util.List;
 
 public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyViewHolder> {
 
-    private List<QuestStructure> questList;
+    private List<Quest> questList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView name,distance;
@@ -27,7 +27,7 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
     }
 
 
-    public QuestItemAdapter(List<QuestStructure> moviesList) {
+    public QuestItemAdapter(List<Quest> moviesList) {
         this.questList = moviesList;
     }
 
@@ -41,10 +41,9 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        QuestStructure quest = questList.get(position);
+        Quest quest = questList.get(position);
         holder.name.setText(quest.getName());
         holder.distance.setText(quest.getDistance()+" km");
-        holder.image.setImageResource(quest.getImage());
     }
 
     @Override

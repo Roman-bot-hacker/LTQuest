@@ -14,7 +14,7 @@ import java.util.List;
 public class ChooseLevelActivity extends AppCompatActivity {
 
     private RecyclerView easyRecyclerView;
-    private List<QuestStructure> easyQuests =new ArrayList<>();
+    private List<Quest> easyQuests =new ArrayList<>();
     private QuestItemAdapter easyQuestItemAdapter;
 
     private RecyclerView recyclerView;
