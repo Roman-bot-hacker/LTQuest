@@ -48,16 +48,10 @@ public class FirebaseAuthManager {
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
-        gSingInAccount = GoogleSignIn.getLastSignedInAccount(activity);
     }
 
     public FirebaseUser getCurrentUser(){
         return auth.getCurrentUser();
-    }
-
-    public boolean isGoogleAccountEnabled(){
-        if (gSingInOptions!=null) return true;
-        else return false;
     }
 
     public void registerUser(String email, String password, final UserLoginListener listener) {
@@ -100,6 +94,7 @@ public class FirebaseAuthManager {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data, UserLoginListener listener){
+        gSingInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);

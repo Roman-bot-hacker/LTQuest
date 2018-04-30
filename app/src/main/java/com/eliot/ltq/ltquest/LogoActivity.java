@@ -16,7 +16,7 @@ public class LogoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logo);
-        if((manager.isUserLoggedIn())||(manager.isGoogleAccountEnabled())){
+        if(manager.isUserLoggedIn()){
             finish();
             startActivity(new Intent(this, MainActivity.class));
         }
