@@ -16,11 +16,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.eliot.ltq.ltquest.authentication.ProfileActivity;
+import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,14 +34,28 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import static com.eliot.ltq.ltquest.R.*;
+import java.io.IOException;
+
+import static com.eliot.ltq.ltquest.R.drawable;
+import static com.eliot.ltq.ltquest.R.id;
+import static com.eliot.ltq.ltquest.R.layout;
+import static com.eliot.ltq.ltquest.R.raw;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
     private LocationManager locationManager;
+    FirebaseAuth firebaseAuth;
     private boolean firstCameraOnMyPosition = true;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 111;
     private static final double DEFAULT_LATITUDE = 49.841787;
@@ -47,11 +65,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View screen1;
     private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
+        firebaseAuth = FirebaseAuth.getInstance();
         setContentView(layout.activity_main);
+        setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
@@ -110,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return latLng;
     }
 
-    private void askMyLocationPermissions() {
+    void askMyLocationPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
@@ -215,8 +237,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        if (id==R.id.nav_home){
+
+        }
+
         if (id== R.id.nav_balance){
             startActivity(new Intent(MainActivity.this, Balance.class));
+        }
+
+        if(id==R.id.nav_settings){
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -242,6 +272,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    public void setCategoriesText(){
+        final TextView firstButtonText = findViewById(R.id.button1_text);
+        final TextView secondButtonText = findViewById(R.id.button2_text);
+        final TextView thirdButtonText = findViewById(R.id.button3_text);
+        firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListener(){
+            @Override
+            public void onSuccess() {
+                firstButtonText.setText(firebaseDataManager.getQuestCategoryList().get(0).getName());
+                secondButtonText.setText(firebaseDataManager.getQuestCategoryList().get(1).getName());
+                thirdButtonText.setText(firebaseDataManager.getQuestCategoryList().get(2).getName());
+            }
+        });
+    }
+
     public void screen2ButtonsOnClickListener() {
         View category1 = findViewById(id.button1);
         View category2 = findViewById(id.button2);
@@ -250,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         category1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(new Intent(MainActivity.this, ActivityChooseLevel.class));
             }
         });
         category2.setOnClickListener(new View.OnClickListener() {
@@ -272,4 +316,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
+
 }

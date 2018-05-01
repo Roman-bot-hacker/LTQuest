@@ -13,9 +13,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
     <string name="choose_level">Choose Level</string>
-    <string name="level_1">Level 1</string>
-    <string name="level2">Level2</string>
-    <string name="level3">Level3</string>
+    <string name="level1">Level 1</string>
+    <string name="level2">Level 2</string>
+    <string name="level3">Level 3</string>
     <string name="center_cafes">Center cafes</string>
     <string name="_1km">1km</string>
     <string name="themed_cafes">Themed cafes</string>
@@ -27,11 +27,19 @@
     <string name="dollar">Dollar</string>
     <string name="Current_balance">Current balance</string>
 
+    <string name="email">user@mail</string>
+    <string name="name_user">User Name</string>
+    <string name="log_out">Log Out</string>
+
     <string name="app_name">LTQuest</string>
     <string name="title_activity_main">Main</string>
     <string name="location_permission_denied">location permission denied</string>
     <string name="permission_required_toast">permission required toast</string>
     <string name="permission_rationale_location">permission rationale location</string>
+
+    //Auth Activity
+    <string name="to_sing_in">Already Registered? Sing in here!</string>
+    <string name="to_sing_up">Do not have an account? Sing up here!</string>
 
     //This strings resources are just a part of design and will delete in future
     <string name="point_">534</string>
