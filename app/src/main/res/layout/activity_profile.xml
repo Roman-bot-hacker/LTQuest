@@ -23,7 +23,7 @@
 
 
         <ImageView
-            android:id="@+id/user_avatan"
+            android:id="@+id/user_avatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentTop="true"
@@ -39,8 +39,8 @@
             android:id="@+id/plus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/user_avatan"
-            android:layout_alignTop="@+id/user_avatan"
+            android:layout_alignEnd="@+id/user_avatar"
+            android:layout_alignTop="@+id/user_avatar"
             android:src="@drawable/plus" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:id="@+id/name_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_avatan"
+            android:layout_below="@+id/user_avatar"
             android:layout_centerHorizontal="true"
             android:text="@string/name_user"
             android:textSize="25sp"
@@ -78,7 +78,7 @@
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:layout_alignTop="@+id/facebook"
-            android:layout_toStartOf="@+id/user_avatan"
+            android:layout_toStartOf="@+id/user_avatar"
             android:src="@drawable/inst" />
 
         <ImageView
@@ -86,7 +86,7 @@
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:layout_alignTop="@+id/facebook"
-            android:layout_toEndOf="@+id/user_avatan"
+            android:layout_toEndOf="@+id/user_avatar"
             android:src="@drawable/gmail" />
 
         <TextView

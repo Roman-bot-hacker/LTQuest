@@ -1,11 +1,13 @@
 package com.eliot.ltq.ltquest.authentication;
 
 
+import android.net.Uri;
+
 public class UserInformation {
 
     public String name;
     public Integer points;
-    public String photoLink;
+    public Uri photoLink;
 
     public UserInformation(){
 
@@ -15,6 +17,12 @@ public class UserInformation {
         this.name = name;
         points = 0;
         photoLink = null;
+    }
+
+    public UserInformation(String name, Uri photoLink){
+        this.name = name;
+        points = 0;
+        this.photoLink = photoLink;
     }
 
     public String getName() {
@@ -33,11 +41,11 @@ public class UserInformation {
         this.points = points;
     }
 
-    public String getPhotoLink() {
+    public Uri getPhotoLink() {
         return photoLink;
     }
 
-    public void setPhotoLink(String photoLink) {
+    public void setPhotoLink(Uri photoLink) {
         this.photoLink = photoLink;
     }
 }

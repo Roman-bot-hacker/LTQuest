@@ -74,19 +74,28 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         textViewChangeType.setText(R.string.to_sing_up);
     }
 
-    public String getEmail(EditText editTextEmail){
+    public String getEmail(){
         String email = editTextEmail.getText().toString().trim();
         return email;
     }
 
-    public String getPassword(EditText editTextPassword){
+    public String getPassword(){
         String password = editTextPassword.getText().toString().trim();
         return password;
     }
 
-    public boolean isFieldEmpty(String email, String password){
-        boolean bool = (TextUtils.isEmpty(email)||TextUtils.isEmpty(password));
+    public String getName(){
+        String name = editTextName.getText().toString().trim();
+        return  name;
+    }
+
+    public boolean isFieldEmpty(String field){
+        boolean bool = (TextUtils.isEmpty(field));
         return bool;
+    }
+
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
 
@@ -94,14 +103,20 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick (View view) {
         switch (view.getId()) {
             case R.id.buttonLogIn: {
-                if (isFieldEmpty(getEmail(editTextEmail), getPassword(editTextPassword))) {
+                if (isFieldEmpty(getEmail())&&isFieldEmpty(getPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
+                if ((authType==AuthType.REGISTRATION)&&(isFieldEmpty(getName()))){
+                    Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
+                }
+                if (!(isEmailValid((CharSequence)getEmail()))){
+                    Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
+                }
                 } else {
                     if (authType == AuthType.REGISTRATION) {
-                        manager.registerUser(getEmail(editTextEmail), getPassword(editTextPassword), new FirebaseAuthManager.UserLoginListener() {
+                        manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                //Here must be a method to create a new user in Firebase
+                                manager.createNewUserWithEmail(getName());
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                             }
@@ -113,7 +128,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         });
                     }
                     if (authType == AuthType.LOGIN) {
-                        manager.loginUser(getEmail(editTextEmail), getPassword(editTextPassword), new FirebaseAuthManager.UserLoginListener() {
+                        manager.loginUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
                                 finish();
@@ -149,11 +164,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         manager.onActivityResult(requestCode, resultCode, data, new FirebaseAuthManager.UserLoginListener() {
             @Override
             public void onSuccess() {
-                if(authType==AuthType.REGISTRATION){
-                    //Method to add new user to Firebase
+                if(authType==AuthType.REGISTRATION) {
+                    manager.createNewUserWithGoogle();
                     startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                 }
-                if(authType==AuthType.LOGIN) {
+                if(authType==AuthType.LOGIN){
+                    manager.createNewUserWithGoogle();
                     startActivity(new Intent(AuthActivity.this, MainActivity.class));
                 }
             }
