@@ -94,6 +94,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         return bool;
     }
 
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
 
     @Override
     public void onClick (View view) {
@@ -103,6 +107,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
                 if ((authType==AuthType.REGISTRATION)&&(isFieldEmpty(getName()))){
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
+                }
+                if (!(isEmailValid((CharSequence)getEmail()))){
+                    Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
                 }
                 } else {
                     if (authType == AuthType.REGISTRATION) {
@@ -157,7 +164,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         manager.onActivityResult(requestCode, resultCode, data, new FirebaseAuthManager.UserLoginListener() {
             @Override
             public void onSuccess() {
-                manager.createNewUserWithGoogle();
+                if(authType==AuthType.REGISTRATION) {
+                    manager.createNewUserWithGoogle();
+                    startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                }
+                if(authType==AuthType.LOGIN){
+                    manager.createNewUserWithGoogle();
+                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                }
             }
 
             @Override
