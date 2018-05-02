@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.eliot.ltq.ltquest.authentication.AuthActivity;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 public class LogoActivity extends AppCompatActivity {
 
