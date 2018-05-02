@@ -41,7 +41,7 @@
     <string name="to_sing_in">Already Registered? Sing in here!</string>
     <string name="to_sing_up">Do not have an account? Sing up here!</string>
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
-    <string name="google_default_client_id">192781036687-43olmd7jlk01734r2k2tqv4r6eigr80i.apps.googleusercontent.com</string>
+    <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
 
 
     //This strings resources are just a part of design and will delete in future

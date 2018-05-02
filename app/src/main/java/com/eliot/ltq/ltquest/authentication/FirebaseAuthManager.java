@@ -31,15 +31,19 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseAuthManager {
 
     private static final int RC_SIGN_IN = 121;
     private static FirebaseAuth auth;
     private static GoogleSignInAccount gSingInAccount;
+    private static GoogleSignInOptions gSingInOptions;
+    private static GoogleSignInClient gSingInClient;
     private Activity activity;
-    private GoogleSignInOptions gSingInOptions;
-    private GoogleSignInClient gSingInClient;
+
 
     public FirebaseAuthManager(Activity activity) {
         FirebaseApp.initializeApp(activity);
@@ -102,7 +106,6 @@ public class FirebaseAuthManager {
             try {
                 gSingInAccount = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(gSingInAccount, listener);
-                // Signed in successfully, show authenticated UI.
                 listener.onSuccess();
             } catch (ApiException e) {
                 listener.onError(e.getLocalizedMessage());
@@ -128,6 +131,20 @@ public class FirebaseAuthManager {
                         listener.onError("Cannot sing in with your Google account");
                     }
                 });
+    }
+
+    public  void createNewUserWithEmail(String name){
+        UserInformation userInformation = new UserInformation(name);
+        //here must be a method which take userInformation and send it to Firebase
+    }
+
+    public void createNewUserWithGoogle(){
+        UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName(), gSingInAccount.getPhotoUrl());
+        //here must be a method which take userInformation and send it to Firebase
+    }
+
+    public void signOut(){
+        auth.signOut();
     }
 
     public boolean isUserLoggedIn () {
