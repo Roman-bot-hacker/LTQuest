@@ -47,6 +47,7 @@ public class FirebaseAuthManager {
         auth = FirebaseAuth.getInstance();
         this.activity = activity;
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
     }
