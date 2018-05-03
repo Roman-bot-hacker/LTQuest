@@ -10,7 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 public class LogoActivity extends AppCompatActivity {
 
-    FirebaseAuthManager manager = new FirebaseAuthManager(this);
+    FirebaseAuthManager manager = new FirebaseAuthManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -39,36 +39,27 @@ import com.google.firebase.database.ValueEventListener;
 public class FirebaseAuthManager {
 
     private final FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
-    private static final int RC_SIGN_IN = 121;
     private static FirebaseAuth auth;
-    private static GoogleSignInAccount gSingInAccount;
-    private static GoogleSignInOptions gSingInOptions;
-    private static GoogleSignInClient gSingInClient;
-    private Activity activity;
 
 
     public FirebaseAuthManager() {
         auth = FirebaseAuth.getInstance();
-        this.activity = activity;
-        gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
+
     }
 
-    public FirebaseUser getCurrentUser(){
+    public FirebaseUser getCurrentUser() {
         return auth.getCurrentUser();
     }
 
     public void registerUser(String email, String password, final UserLoginListener listener) {
         auth.createUserWithEmailAndPassword(email, password)
-                .addOnFailureListener(activity, new OnFailureListener() {
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         listener.onError(e.getLocalizedMessage());
                     }
                 })
-                .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         listener.onSuccess();
@@ -77,15 +68,15 @@ public class FirebaseAuthManager {
 
     }
 
-    public void loginUser(String email, String password, final UserLoginListener listener){
+    public void loginUser(String email, String password, final UserLoginListener listener) {
         auth.signInWithEmailAndPassword(email, password)
-                .addOnFailureListener(activity, new OnFailureListener() {
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         listener.onError(e.getLocalizedMessage());
                     }
                 })
-                .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         listener.onSuccess();
@@ -93,13 +84,8 @@ public class FirebaseAuthManager {
                 });
     }
 
-    public void singInWithGoogle() {
-        gSingInClient = GoogleSignIn.getClient(activity, gSingInOptions);
-        Intent signInIntent = gSingInClient.getSignInIntent();
-        activity.startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data, UserLoginListener listener){
+    /*public void onActivityResult(int requestCode, int resultCode, Intent data, UserLoginListener listener){
         gSingInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -107,7 +93,6 @@ public class FirebaseAuthManager {
             try {
                 gSingInAccount = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(gSingInAccount, listener);
-                listener.onSuccess();
             } catch (ApiException e) {
                 listener.onError(e.getLocalizedMessage());
             }
@@ -115,18 +100,18 @@ public class FirebaseAuthManager {
         else {
             listener.onError("Cannot sing in with your Google account");
         }
-    }
+    }*/
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount account, final UserLoginListener listener) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+    public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
+
         auth.signInWithCredential(credential)
-                .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         listener.onSuccess();
                     }
                 })
-                .addOnFailureListener(activity, new OnFailureListener() {
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         listener.onError("Cannot sing in with your Google account");
@@ -134,26 +119,27 @@ public class FirebaseAuthManager {
                 });
     }
 
-    public  void createNewUserWithEmail(String name){
+    public void createNewUserWithEmail(String name) {
         UserInformation userInformation = new UserInformation(name);
         firebaseDataManager.writeCurrentUserData(userInformation);
     }
 
-    public void createNewUserWithGoogle(){
+    /*public void createNewUserWithGoogle(){
         UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName());
         firebaseDataManager.writeCurrentUserData(userInformation);
-    }
+    }*/
 
-    public void signOut(){
+    public void signOut() {
         auth.signOut();
     }
 
-    public boolean isUserLoggedIn () {
-        return auth.getCurrentUser() != null; }
+    public boolean isUserLoggedIn() {
+        return auth.getCurrentUser() != null;
+    }
 
-        public interface UserLoginListener {
-            void onSuccess();
+    public interface UserLoginListener {
+        void onSuccess();
 
-            String onError(String massage);
-        }
+        String onError(String massage);
+    }
 }
