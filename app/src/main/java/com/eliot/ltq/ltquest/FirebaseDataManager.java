@@ -108,12 +108,12 @@ public class FirebaseDataManager {
 
     }
 
-    public void getCurrentUserData(final DataRetrieveListener listener){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        firebaseDatabase.getReference().child("userData").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getCurrentUserData(String uId, final DataRetrieveListener listener){
+
+        firebaseDatabase.getReference().child("userData").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInformation userInformation = new UserInformation();
+                UserInformation userInformation;
                 userInformation = dataSnapshot.getValue(UserInformation.class);
                 listener.onSuccess();
             }

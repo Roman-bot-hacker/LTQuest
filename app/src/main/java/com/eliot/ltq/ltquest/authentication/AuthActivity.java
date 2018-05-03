@@ -11,16 +11,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static AuthType authType = AuthType.LOGIN;
     private FirebaseAuthManager manager;
+    private FirebaseDataManager dataManager;
     private Button buttonLogIn;
     private EditText editTextEmail;
     private EditText editTextPassword;
@@ -31,9 +35,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_authentication);
 
-        manager = new FirebaseAuthManager(this);
+        manager = new FirebaseAuthManager();
+        dataManager = new FirebaseDataManager();
 
         buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
@@ -116,7 +122,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                manager.createNewUserWithEmail(getName());
+                                dataManager.writeCurrentUserData(new UserInformation(getName()));
+
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                             }
@@ -170,6 +177,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 if(authType==AuthType.LOGIN){
                     manager.createNewUserWithGoogle();
+
                     startActivity(new Intent(AuthActivity.this, MainActivity.class));
                 }
             }

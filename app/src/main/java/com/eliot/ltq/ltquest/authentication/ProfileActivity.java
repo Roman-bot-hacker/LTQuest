@@ -17,7 +17,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     FirebaseUser user;
     UserInformation userInformation = new UserInformation();
 
-    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
+    private FirebaseDataManager firebaseDataManager;
     private TextView textViewUserEmail;
     private TextView textViewName;
     private ImageView imageViewUserPhoto;
@@ -25,19 +25,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private TextView logOut;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
         FirebaseApp.initializeApp(this);
-        authManager = new FirebaseAuthManager(this);
+        firebaseDataManager = new FirebaseDataManager();
+        authManager = new FirebaseAuthManager();
         user = authManager.getCurrentUser();
 
-        if(user == null){
+        if (user == null) {
             AuthActivity.setAuthType(AuthType.REGISTRATION);
             finish();
             startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }
+
 
         textViewUserEmail = (TextView) findViewById(R.id.email);
         //set email
@@ -48,19 +50,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(this);
 
-        firebaseDataManager.getCurrentUserData(new FirebaseDataManager.DataRetrieveListener() {
-            @Override
-            public void onSuccess() {
-                textViewName = (TextView) findViewById(R.id.name_user);
-                textViewName.setText(userInformation.getName());
-            }
-        });
+        if (authManager.isUserLoggedIn())
+            firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListener() {
+                @Override
+                public void onSuccess() {
+                    textViewName = (TextView) findViewById(R.id.name_user);
+                    textViewName.setText(userInformation.getName());
+                }
+            });
 
     }
 
     @Override
     public void onClick(View view) {
-        if(view == logOut){
+        if (view == logOut) {
             authManager.signOut();
             AuthActivity.setAuthType(AuthType.LOGIN);
             finish();

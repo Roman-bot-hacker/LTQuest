@@ -14,7 +14,6 @@ public class UserInformation {
 
     public UserInformation(String name) {
         this.name = name;
-        points = 0;
     }
 
     public String getName() {

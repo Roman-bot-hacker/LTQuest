@@ -47,8 +47,7 @@ public class FirebaseAuthManager {
     private Activity activity;
 
 
-    public FirebaseAuthManager(Activity activity) {
-        FirebaseApp.initializeApp(activity);
+    public FirebaseAuthManager() {
         auth = FirebaseAuth.getInstance();
         this.activity = activity;
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -57,7 +56,7 @@ public class FirebaseAuthManager {
                 .build();
     }
 
-    public static FirebaseUser getCurrentUser(){
+    public FirebaseUser getCurrentUser(){
         return auth.getCurrentUser();
     }
 
@@ -141,7 +140,7 @@ public class FirebaseAuthManager {
     }
 
     public void createNewUserWithGoogle(){
-        UserInformation userInformation = new UserInformation("Some Name");
+        UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName());
         firebaseDataManager.writeCurrentUserData(userInformation);
     }
 
