@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,6 +17,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     FirebaseUser user;
     UserInformation userInformation = new UserInformation();
 
+    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private TextView textViewUserEmail;
     private TextView textViewName;
     private ImageView imageViewUserPhoto;
@@ -39,12 +41,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         textViewUserEmail = (TextView) findViewById(R.id.email);
         //set email
-        textViewName = (TextView) findViewById(R.id.name_user);
+
         //set name
         imageViewUserPhoto = (ImageView) findViewById(R.id.user_avatar);
         //set photo (only if photo != null
         logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(this);
+
+        firebaseDataManager.getCurrentUserData(new FirebaseDataManager.DataRetrieveListener() {
+            @Override
+            public void onSuccess() {
+                textViewName = (TextView) findViewById(R.id.name_user);
+                textViewName.setText(userInformation.getName());
+            }
+        });
+
     }
 
     @Override

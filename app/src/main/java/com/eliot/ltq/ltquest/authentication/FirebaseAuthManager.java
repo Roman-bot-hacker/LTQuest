@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
 import com.google.android.gms.auth.api.Auth;
@@ -37,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseAuthManager {
 
+    private final FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private static final int RC_SIGN_IN = 121;
     private static FirebaseAuth auth;
     private static GoogleSignInAccount gSingInAccount;
@@ -55,7 +57,7 @@ public class FirebaseAuthManager {
                 .build();
     }
 
-    public FirebaseUser getCurrentUser(){
+    public static FirebaseUser getCurrentUser(){
         return auth.getCurrentUser();
     }
 
@@ -135,12 +137,12 @@ public class FirebaseAuthManager {
 
     public  void createNewUserWithEmail(String name){
         UserInformation userInformation = new UserInformation(name);
-        //here must be a method which take userInformation and send it to Firebase
+        firebaseDataManager.writeCurrentUserData(userInformation);
     }
 
     public void createNewUserWithGoogle(){
-        UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName(), gSingInAccount.getPhotoUrl());
-        //here must be a method which take userInformation and send it to Firebase
+        UserInformation userInformation = new UserInformation("Some Name");
+        firebaseDataManager.writeCurrentUserData(userInformation);
     }
 
     public void signOut(){

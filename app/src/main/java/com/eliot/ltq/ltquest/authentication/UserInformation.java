@@ -7,7 +7,6 @@ public class UserInformation {
 
     public String name;
     public Integer points;
-    public Uri photoLink;
 
     public UserInformation(){
 
@@ -16,13 +15,6 @@ public class UserInformation {
     public UserInformation(String name) {
         this.name = name;
         points = 0;
-        photoLink = null;
-    }
-
-    public UserInformation(String name, Uri photoLink){
-        this.name = name;
-        points = 0;
-        this.photoLink = photoLink;
     }
 
     public String getName() {
@@ -39,13 +31,5 @@ public class UserInformation {
 
     public void setPoints(Integer points) {
         this.points = points;
-    }
-
-    public Uri getPhotoLink() {
-        return photoLink;
-    }
-
-    public void setPhotoLink(Uri photoLink) {
-        this.photoLink = photoLink;
     }
 }

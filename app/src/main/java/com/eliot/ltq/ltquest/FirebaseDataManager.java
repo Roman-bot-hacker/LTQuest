@@ -12,14 +12,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseDataManager {
+    private FirebaseAuthManager firebaseAuthManager;
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private List<QuestCategory> questCategoryList = new ArrayList<>();
     private List<QuestStructure> questStructureList = new ArrayList<>();
     private List<LocationStructure> locationsList = new ArrayList<>();
+
 
     public interface DataRetrieveListener{
         void onSuccess();
@@ -97,8 +100,12 @@ public class FirebaseDataManager {
     }
 
     public void writeCurrentUserData(UserInformation userInformation){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        firebaseDatabase.getReference().child("userData").child(auth.getCurrentUser().getUid()).setValue(userInformation);
+        FirebaseUser user = firebaseAuthManager.getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            firebaseDatabase.getReference().child("userData").child(uid).setValue(userInformation);
+        }
+
     }
 
     public void getCurrentUserData(final DataRetrieveListener listener){
