@@ -121,7 +121,7 @@ public class FirebaseAuthManager {
 
     public void createNewUserWithEmail(String name) {
         UserInformation userInformation = new UserInformation(name);
-        firebaseDataManager.writeCurrentUserData(userInformation);
+        firebaseDataManager.writeCurrentUserData(getCurrentUser().getUid(), userInformation);
     }
 
     /*public void createNewUserWithGoogle(){

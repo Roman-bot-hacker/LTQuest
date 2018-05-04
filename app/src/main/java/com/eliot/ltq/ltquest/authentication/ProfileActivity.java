@@ -3,6 +3,7 @@ package com.eliot.ltq.ltquest.authentication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -51,12 +53,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         logOut.setOnClickListener(this);
 
         if (authManager.isUserLoggedIn())
-            firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListener() {
+            firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
                 @Override
-                public void onSuccess() {
+                public void onSuccess(UserInformation userInformation) {
                     textViewName = (TextView) findViewById(R.id.name_user);
                     textViewName.setText(userInformation.getName());
                 }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Log.e("FirebaseDataManager","Can not retrieve userInformation");
+                }
+
             });
 
     }

@@ -17,49 +17,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseDataManager {
-    private FirebaseAuthManager firebaseAuthManager;
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    private List<QuestCategory> questCategoryList = new ArrayList<>();
-    private List<QuestStructure> questStructureList = new ArrayList<>();
-    private List<LocationStructure> locationsList = new ArrayList<>();
-
 
     public interface DataRetrieveListener{
         void onSuccess();
     }
 
-    public void categoriesNamesListRetriever(final DataRetrieveListener listener){
+    public interface DataRetrieveListenerForQuestCategory{
+        void onSuccess(List<QuestCategory> questCategoryList);
+        void onError(DatabaseError databaseError);
+    }
+
+    public interface DataRetrieveListenerForQuestStructure{
+        void onSuccess(List<QuestStructure> questStructureList);
+        void onError(DatabaseError databaseError);
+    }
+
+    public interface DataRetrieveListenerForLocationsStructure{
+        void onSuccess(List<LocationStructure> locationStructureList);
+        void onError(DatabaseError databaseError);
+    }
+
+    public interface DataRetrieveListenerForUserInformation{
+        void onSuccess(UserInformation userInformation);
+        void onError(DatabaseError databaseError);
+    }
+
+    public void categoriesNamesListRetriever(final DataRetrieveListenerForQuestCategory listener){
         firebaseDatabase.getReference("categories").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                List<QuestCategory> questCategoryList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot1:
                      dataSnapshot.getChildren()) {
                     questCategoryList.add(dataSnapshot1.getValue(QuestCategory.class));
                 }
-                listener.onSuccess();
+                listener.onSuccess(questCategoryList);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                listener.onError(databaseError);
             }
         });
     }
 
-    public void questsRetriever(final DataRetrieveListener listener){
+    public void questsRetriever(final DataRetrieveListenerForQuestStructure listener){
         firebaseDatabase.getReference("quest").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {List<QuestStructure> questStructureList = new ArrayList<>();
                 for (DataSnapshot dataSpanshot1:
                      dataSnapshot.getChildren()) {
                     questStructureList.add(dataSpanshot1.getValue(QuestStructure.class));
                 }
-                listener.onSuccess();
+                listener.onSuccess(questStructureList);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                listener.onError(databaseError);
             }
         });
     }
@@ -78,20 +94,21 @@ public class FirebaseDataManager {
         return foundQuests;
     }
 
-    public void locationsListRetriever(final DataRetrieveListener listener){
+    public void locationsListRetriever(final DataRetrieveListenerForLocationsStructure listener){
         firebaseDatabase.getReference("locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                List<LocationStructure> locationsList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot1:
                      dataSnapshot.getChildren()) {
                     locationsList.add(dataSnapshot1.getValue(LocationStructure.class));
                 }
-                listener.onSuccess();
+                listener.onSuccess(locationsList);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                listener.onError(databaseError);
             }
         });
     }
@@ -99,37 +116,23 @@ public class FirebaseDataManager {
     public void findLocationsById(){
     }
 
-    public void writeCurrentUserData(UserInformation userInformation){
-        FirebaseUser user = firebaseAuthManager.getCurrentUser();
-        if (user != null) {
-            String uid = user.getUid();
-            firebaseDatabase.getReference().child("userData").child(uid).setValue(userInformation);
-        }
-
+    public void writeCurrentUserData(String uId, UserInformation userInformation){
+            firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
     }
 
-    public void getCurrentUserData(String uId, final DataRetrieveListener listener){
-
+    public void getCurrentUserData(String uId, final DataRetrieveListenerForUserInformation listener){
         firebaseDatabase.getReference().child("userData").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInformation userInformation;
                 userInformation = dataSnapshot.getValue(UserInformation.class);
-                listener.onSuccess();
+                listener.onSuccess(userInformation);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                listener.onError(databaseError);
             }
         });
-    }
-
-    public List<QuestCategory> getQuestCategoryList() {
-        return questCategoryList;
-    }
-
-    public List<QuestStructure> getQuestStructureList() {
-        return questStructureList;
     }
 }

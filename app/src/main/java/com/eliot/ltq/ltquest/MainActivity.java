@@ -44,6 +44,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
 import static com.eliot.ltq.ltquest.R.id;
@@ -276,12 +277,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         final TextView firstButtonText = findViewById(R.id.button1_text);
         final TextView secondButtonText = findViewById(R.id.button2_text);
         final TextView thirdButtonText = findViewById(R.id.button3_text);
-        firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListener(){
+        firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestCategory(){
             @Override
-            public void onSuccess() {
-                firstButtonText.setText(firebaseDataManager.getQuestCategoryList().get(0).getName());
-                secondButtonText.setText(firebaseDataManager.getQuestCategoryList().get(1).getName());
-                thirdButtonText.setText(firebaseDataManager.getQuestCategoryList().get(2).getName());
+            public void onSuccess(List<QuestCategory> questCategoryList) {
+                firstButtonText.setText(questCategoryList.get(0).getName());
+                secondButtonText.setText(questCategoryList.get(1).getName());
+                thirdButtonText.setText(questCategoryList.get(2).getName());
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("FirebaseDataManager", "Can not retrieve QuestCategory");
             }
         });
     }

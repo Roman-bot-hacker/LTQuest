@@ -141,7 +141,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                dataManager.writeCurrentUserData(new UserInformation(getName()));
+                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getName()));
 
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
@@ -200,11 +200,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess() {
                         if (authType == AuthType.REGISTRATION) {
 
-                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
                         if (authType == AuthType.LOGIN) {
-                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
 
                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }
