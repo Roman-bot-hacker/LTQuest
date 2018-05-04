@@ -32,6 +32,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -40,6 +41,7 @@ public class FirebaseAuthManager {
 
     private final FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private static FirebaseAuth auth;
+    private boolean checkIfEmailInFirebase;
 
 
     public FirebaseAuthManager() {
@@ -119,10 +121,22 @@ public class FirebaseAuthManager {
                 });
     }
 
-    public void createNewUserWithEmail(String name) {
+    public boolean checkEmailInFirebase(String email){
+        auth.fetchProvidersForEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+                        checkIfEmailInFirebase = !task.getResult().getProviders().isEmpty();
+
+                    }
+                });
+        return checkIfEmailInFirebase;
+    }
+
+    /*public void createNewUserWithEmail(String name) {
         UserInformation userInformation = new UserInformation(name);
         firebaseDataManager.writeCurrentUserData(userInformation);
-    }
+    }*/
 
     /*public void createNewUserWithGoogle(){
         UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName());

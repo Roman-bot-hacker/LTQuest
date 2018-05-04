@@ -198,7 +198,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        if (authType == AuthType.REGISTRATION) {
+                        /*if (authType == AuthType.REGISTRATION) {
 
                             dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
@@ -207,6 +207,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
 
                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                        }*/
+                        if(manager.checkEmailInFirebase(gSingInAccount.getEmail())){
+                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                        }
+                        else {
+                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
+                            startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
                     }
 
