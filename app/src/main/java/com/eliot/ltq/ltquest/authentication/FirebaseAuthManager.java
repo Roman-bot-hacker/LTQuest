@@ -154,6 +154,6 @@ public class FirebaseAuthManager {
     public interface UserLoginListener {
         void onSuccess();
 
-        String onError(String massage);
+        void onError(String massage);
     }
 }

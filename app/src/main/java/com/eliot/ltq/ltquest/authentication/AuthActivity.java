@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
+    private ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         editTextName = (EditText) findViewById(R.id.editTextName);
         textViewChangeType = (TextView) findViewById(R.id.textChangeType);
         buttonGoogleSingIn = (ImageView) findViewById(R.id.google_sing_in);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com")
@@ -70,6 +75,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void chooseAuth() {
+        progressBar.setVisibility(View.GONE);
         buttonLogIn.setOnClickListener(this);
         textViewChangeType.setOnClickListener(this);
         buttonGoogleSingIn.setOnClickListener(this);
@@ -123,6 +129,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
+    public void progressBarVisible(){
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void progressBarGone(){
+        progressBar.setVisibility(View.GONE);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -130,26 +144,27 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonLogIn: {
                 if (isFieldEmpty(getEmail()) && isFieldEmpty(getPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
-                        Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    }
-                    if (!(isEmailValid((CharSequence) getEmail()))) {
-                        Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
+                }
+                else if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
+                    Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
+                }
+                else if (!(isEmailValid((CharSequence) getEmail()))) {
+                    Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     if (authType == AuthType.REGISTRATION) {
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                dataManager.writeCurrentUserData(new UserInformation(getName()));
+                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getName()));
 
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                             }
 
                             @Override
-                            public String onError(String message) {
-                                return message;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, massage, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -162,34 +177,34 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public String onError(String massage) {
-                                return massage;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, massage, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                 }
-            }
+            } break;
             case R.id.textChangeType: {
-                if (authType == AuthType.REGISTRATION) {
-                    authType = AuthType.LOGIN;
-                    chooseAuth();
-                }
                 if (authType == AuthType.LOGIN) {
                     authType = AuthType.REGISTRATION;
                     chooseAuth();
                 }
-            }
+                else {
+                    authType = AuthType.LOGIN;
+                    chooseAuth();
+                }
+            } break;
             case R.id.google_sing_in: {
                 singInWithGoogle();
-            }
+            } break;
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        progressBarVisible();
         gSingInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -198,28 +213,18 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        /*if (authType == AuthType.REGISTRATION) {
-
-                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
-                            startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
-                        }
-                        if (authType == AuthType.LOGIN) {
-                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
-
-                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                        }*/
                         if(manager.checkEmailInFirebase(gSingInAccount.getEmail())){
                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }
                         else {
-                            dataManager.writeCurrentUserData(new UserInformation(gSingInAccount.getDisplayName()));
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
                     }
 
                     @Override
-                    public String onError(String massage) {
-                        return massage;
+                    public void onError(String massage) {
+                        Toast.makeText(AuthActivity.this, massage, Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (ApiException e) {
@@ -228,6 +233,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         } else {
            Log.e("Error","Cannot sing in with your Google account");
         }
-
+        progressBarGone();
     }
 }

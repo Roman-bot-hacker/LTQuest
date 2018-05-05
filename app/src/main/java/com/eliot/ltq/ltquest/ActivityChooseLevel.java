@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +37,10 @@ public class ActivityChooseLevel extends AppCompatActivity {
 
 
     private void prepareQuestData() {
-        manager.questsRetriever(new FirebaseDataManager.DataRetrieveListener() {
+        manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
             @Override
-            public void onSuccess() {
-                List<QuestStructure> questsList = new ArrayList<>(manager.getQuestStructureList());
-                for (QuestStructure questStructure : questsList) {
+            public void onSuccess(List<QuestStructure> questStructureList) {
+                for (QuestStructure questStructure : questStructureList) {
                     if (questStructure.getLevel() == 1) {
                         Quest quest = new Quest(R.drawable.lviv1, questStructure.getQuestName(), questStructure.getDistance());
                         quests.add(quest);
@@ -65,6 +67,11 @@ public class ActivityChooseLevel extends AppCompatActivity {
 
                     }
                 });
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("Error","Can not retrieve QuestStructure");
             }
         });
     }
