@@ -41,6 +41,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
+    private boolean isNewGoogleUser = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,8 +149,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public String onError(String message) {
-                                return message;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -162,8 +163,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public String onError(String massage) {
-                                return massage;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -201,21 +202,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        if (authType == AuthType.REGISTRATION) {
-
+                        if(isNewGoogleUser) {
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
-                        if (authType == AuthType.LOGIN) {
-                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
-
-                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                        }
+                        else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                     }
 
                     @Override
-                    public String onError(String massage) {
-                        return massage;
+                    public void onError(String massage) {
+                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (ApiException e) {

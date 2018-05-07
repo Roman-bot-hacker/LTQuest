@@ -32,6 +32,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.ProviderQueryResult;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -85,26 +87,10 @@ public class FirebaseAuthManager {
     }
 
 
-    /*public void onActivityResult(int requestCode, int resultCode, Intent data, UserLoginListener listener){
-        gSingInAccount = GoogleSignIn.getLastSignedInAccount(activity);
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                gSingInAccount = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(gSingInAccount, listener);
-            } catch (ApiException e) {
-                listener.onError(e.getLocalizedMessage());
-            }
-        }
-        else {
-            listener.onError("Cannot sing in with your Google account");
-        }
-    }*/
-
     public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
 
-        auth.signInWithCredential(credential)
+        //boolean isNewUser =
+                auth.signInWithCredential(credential)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
@@ -117,17 +103,9 @@ public class FirebaseAuthManager {
                         listener.onError("Cannot sing in with your Google account");
                     }
                 });
+                //.getResult().getAdditionalUserInfo().isNewUser();
+        //return isNewUser;
     }
-
-    public void createNewUserWithEmail(String name) {
-        UserInformation userInformation = new UserInformation(name);
-        firebaseDataManager.writeCurrentUserData(getCurrentUser().getUid(), userInformation);
-    }
-
-    /*public void createNewUserWithGoogle(){
-        UserInformation userInformation = new UserInformation(gSingInAccount.getDisplayName());
-        firebaseDataManager.writeCurrentUserData(userInformation);
-    }*/
 
     public void signOut() {
         auth.signOut();
@@ -140,6 +118,6 @@ public class FirebaseAuthManager {
     public interface UserLoginListener {
         void onSuccess();
 
-        String onError(String massage);
+        void onError(String massage);
     }
 }
