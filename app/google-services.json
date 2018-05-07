@@ -15,16 +15,16 @@
       },
       "oauth_client": [
         {
-          "client_id": "192781036687-43olmd7jlk01734r2k2tqv4r6eigr80i.apps.googleusercontent.com",
+          "client_id": "192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "192781036687-52fufd6po7ptvinr62qma49l4vbob9ei.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.eliot.ltq.ltquest",
             "certificate_hash": "0f4bc7b8961c7a10ffc6d1e85b20762c5a9572b3"
           }
-        },
-        {
-          "client_id": "192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com",
+              "client_id": "192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
