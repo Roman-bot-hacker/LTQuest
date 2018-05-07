@@ -37,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         user = authManager.getCurrentUser();
 
         if (user == null) {
-            AuthActivity.setAuthType(AuthType.REGISTRATION);
+            AuthActivity.setAuthType(AuthType.LOGIN);
             finish();
             startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }

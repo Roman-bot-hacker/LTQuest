@@ -59,7 +59,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         buttonGoogleSingIn = (ImageView) findViewById(R.id.google_sing_in);
 
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com")
+                .requestIdToken("192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         chooseAuth();
@@ -168,6 +168,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         });
                     }
                 }
+                break;
             }
             case R.id.textChangeType: {
                 if (authType == AuthType.REGISTRATION) {
@@ -178,9 +179,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     authType = AuthType.REGISTRATION;
                     chooseAuth();
                 }
+                break;
             }
             case R.id.google_sing_in: {
                 singInWithGoogle();
+                break;
             }
         }
     }
