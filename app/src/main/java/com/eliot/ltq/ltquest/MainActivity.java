@@ -1,6 +1,7 @@
 package com.eliot.ltq.ltquest;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -16,26 +17,39 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.androidmapsextensions.GoogleMap;
+import com.androidmapsextensions.Marker;
+import com.androidmapsextensions.MarkerOptions;
+import com.androidmapsextensions.OnMapReadyCallback;
+import com.androidmapsextensions.SupportMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.*;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
+    TextView numberOfPoint;
     private GoogleMap mMap;
     private LocationManager locationManager;
     private boolean firstCameraOnMyPosition = true;
@@ -47,14 +61,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View screen1;
     private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+    private ArrayList<InfoFromJson> data = new ArrayList<>();
+    private static final Type contentType = new TypeToken<List<InfoFromJson>>() {
+    }.getType();
+    private  View changedMarkerInflated ;
+    private TextView markerTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_main);
+
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
+        markerTextView = changedMarkerInflated.findViewById(id.number_text_view);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getExtendedMapAsync(this);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         screen1 = findViewById(id.screen1);
@@ -101,6 +124,69 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         catch (Resources.NotFoundException e) {
             e.getMessage();
         }
+
+        //AssetFileDescriptor descriptor = getAssets().openFd("quest.json");
+        String myJson = inputStreamToString(this.getResources().openRawResource(raw.quest));
+        Gson gson = new Gson();
+        //JsonReader reader = new JsonReader(myJson);
+        data = gson.fromJson(myJson, contentType);
+        createMarker(data);
+    }
+
+    private String inputStreamToString(InputStream inputStream){
+        try{
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes,0,bytes.length);
+            return new String(bytes);
+        }catch(IOException e){
+            return null;
+        }
+    }
+
+    private void createMarker(ArrayList<InfoFromJson> list) {
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View markerInflated = inflater.inflate(R.layout.marker, null);
+        numberOfPoint = (TextView) markerInflated.findViewById(R.id.number_text_view);
+        TextView distanceBetweenPoint = (TextView) markerInflated.findViewById(R.id.text_text_view);
+        for (int i = 0; i < list.size(); i++) {
+            int j = i + 1;
+            numberOfPoint.setText("" + j);
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(list.get(i).getLat(),list.get(i).getLng()))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
+        }
+        changeMarkerListener();
+    }
+
+    public void changeMarkerListener() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                /*mMap.addMarker(new MarkerOptions()
+                        .position(marker.getPosition())
+                        .anchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated))));*/
+                markerTextView.setText("3");
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                return true;
+
+            }
+        });
+    }
+
+
+    public static Bitmap getBitmapFromView(View view) {
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.draw(canvas);
+        return bitmap;
     }
 
     private LatLng getMyLocation(Location location) {
