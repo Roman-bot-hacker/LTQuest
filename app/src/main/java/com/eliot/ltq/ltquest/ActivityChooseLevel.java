@@ -3,11 +3,14 @@ package com.eliot.ltq.ltquest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.firebase.database.DatabaseError;
@@ -16,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ActivityChooseLevel extends AppCompatActivity {
+public class ActivityChooseLevel extends AppCompatActivity{
     FirebaseDataManager manager = new FirebaseDataManager();
     private RecyclerView easyRecyclerView;
     private List<Quest> easyQuests = new ArrayList<>();
@@ -96,4 +99,5 @@ public class ActivityChooseLevel extends AppCompatActivity {
             }
         });*/
     }
+
 }

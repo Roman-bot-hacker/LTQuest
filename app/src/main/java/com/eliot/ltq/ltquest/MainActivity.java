@@ -53,10 +53,9 @@ import static com.eliot.ltq.ltquest.R.raw;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
-
     private GoogleMap mMap;
     private LocationManager locationManager;
-    FirebaseAuth firebaseAuth;
+    private FirebaseAuth firebaseAuth;
     private boolean firstCameraOnMyPosition = true;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 111;
     private static final double DEFAULT_LATITUDE = 49.841787;
