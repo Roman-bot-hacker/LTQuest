@@ -9,7 +9,6 @@
         android:layout_width="wrap_content"
         android:layout_height="180dp"
         android:id="@+id/field1"
-        android:background="@drawable/background"
         android:layout_marginBottom="285dp">
 
         <ImageView
@@ -71,13 +70,13 @@
         android:layout_marginLeft="24dp"
         android:layout_marginTop="200dp"
         android:padding="6dp"
-        android:elevation="6dp"
-        android:background="@drawable/shadows">
+        android:elevation="6dp">
 
         <LinearLayout
             android:id="@+id/liner_facebook"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground">
 
             <ImageView
                 android:id="@+id/facebok_logo"
@@ -134,7 +133,8 @@
             android:id="@+id/liner_google"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/liner_facebook">
+            android:layout_below="@+id/liner_facebook"
+            android:background="@color/colorBackground">
 
             <ImageView
                 android:id="@+id/google_logo"
@@ -188,7 +188,8 @@
             android:id="@+id/liner_mail"
             android:layout_below="@+id/liner_google"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground">
 
             <ImageView
                 android:id="@+id/google_logo1"

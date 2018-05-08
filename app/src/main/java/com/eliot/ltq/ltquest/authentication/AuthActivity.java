@@ -23,7 +23,6 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,9 +34,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonLogIn;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private EditText editTextName;
     private TextView textViewChangeType;
     private ImageView buttonGoogleSingIn;
+    private TextView textViewForgotPass;
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
@@ -52,12 +51,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         manager = new FirebaseAuthManager();
         dataManager = new FirebaseDataManager();
 
-        buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
-        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        editTextName = (EditText) findViewById(R.id.editTextName);
-        textViewChangeType = (TextView) findViewById(R.id.textChangeType);
-        buttonGoogleSingIn = (ImageView) findViewById(R.id.google_sing_in);
+        buttonLogIn = (Button) findViewById(R.id.login);
+        editTextEmail = (EditText) findViewById(R.id.editEmail);
+        editTextPassword = (EditText) findViewById(R.id.editPassword);
+        textViewChangeType = (TextView) findViewById(R.id.changeTypeReg);
+        textViewForgotPass = (TextView) findViewById(R.id.forgotpass);
+        buttonGoogleSingIn = (ImageView) findViewById(R.id.authButtonGoogle);
 
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com")
@@ -96,15 +95,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setRegistrationVisibility() {
-        buttonLogIn.setText("Registration");
-        editTextName.setVisibility(View.VISIBLE);
-        textViewChangeType.setText(R.string.to_sing_in);
+        buttonLogIn.setText("SIGN IN");
+        textViewChangeType.setText(R.string.haven_t_got_an_account_sign_in_with);
     }
 
     public void setLoginVisibility() {
-        buttonLogIn.setText("Login");
-        editTextName.setVisibility(View.GONE);
-        textViewChangeType.setText(R.string.to_sing_up);
+        buttonLogIn.setText("LOGIN");
+        textViewChangeType.setText(R.string.have_an_account_login);
     }
 
     public String getEmail() {
@@ -113,10 +110,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public String getPassword() {
         return editTextPassword.getText().toString().trim();
-    }
-
-    public String getName() {
-        return editTextName.getText().toString().trim();
     }
 
     public boolean isFieldEmpty(String field) {
@@ -131,21 +124,21 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.buttonLogIn: {
+            case R.id.login: {
                 if (isFieldEmpty(getEmail()) && isFieldEmpty(getPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
+                    /*if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
                         Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    }
-                    if (!(isEmailValid((CharSequence) getEmail()))) {
-                        Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
-                    }
+                    }*/
+                }
+                else if (!(isEmailValid((CharSequence) getEmail()))) {
+                    Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
                 } else {
                     if (authType == AuthType.REGISTRATION) {
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.EMAIL, getName(), getEmail()));
+                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
 
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
@@ -174,18 +167,18 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
-            case R.id.textChangeType: {
-                if (authType == AuthType.REGISTRATION) {
-                    authType = AuthType.LOGIN;
-                    chooseAuth();
-                }
+            case R.id.changeTypeReg: {
                 if (authType == AuthType.LOGIN) {
                     authType = AuthType.REGISTRATION;
                     chooseAuth();
                 }
+                else {
+                    authType = AuthType.LOGIN;
+                    chooseAuth();
+                }
                 break;
             }
-            case R.id.google_sing_in: {
+            case R.id.authButtonGoogle: {
                 singInWithGoogle();
                 break;
             }

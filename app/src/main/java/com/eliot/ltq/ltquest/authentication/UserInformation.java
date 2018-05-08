@@ -16,14 +16,17 @@ public class UserInformation {
 
     }
 
+    public UserInformation(String account){
+        this.email = account;
+        this.name = "Your Name";
+        this.points = 0;
+        this.sex = UserSex.CHOOSE_SEX;
+    }
+
     public UserInformation(AccountType accountType, String name, String account){
         this.name = name;
         this.points = 0;
         switch(accountType) {
-            case EMAIL: {
-                this.email = account;
-            }
-                break;
             case GOOGLE: {
                 this.googleEmail = account;
             } break;

@@ -70,14 +70,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         default: {textViewSex.setText("Choose sex"); }
                     };
                     textViewFacebookLink = (TextView) findViewById(R.id.email_facebok);
-                    if(userInformation.getFacebookLink()==null) {facebookLayout.setVisibility(View.GONE); }
-                    else { textViewFacebookLink.setText(userInformation.getFacebookLink()); }
+                    if(!(userInformation.getFacebookLink()==null)) {
+                        textViewFacebookLink.setText(userInformation.getFacebookLink());
+                    } else {textViewFacebookLink.setText(" ");}
                     textViewGoogleEmail = (TextView) findViewById(R.id.email_google);
-                    if(userInformation.getGoogleEmail()==null) {googleLayout.setVisibility(View.GONE);}
-                    else {textViewGoogleEmail.setText(userInformation.getGoogleEmail());}
+                    if(!(userInformation.getGoogleEmail()==null)) {
+                        textViewGoogleEmail.setText(userInformation.getGoogleEmail());
+                    } else {textViewGoogleEmail.setText(" ");}
                     textViewUserEmail = (TextView) findViewById(R.id.email_mail);
-                    if(userInformation.getEmail()==null){emailLayout.setVisibility(View.GONE);}
-                    else {textViewUserEmail.setText(userInformation.getEmail());}
+                    if(!(userInformation.getEmail()==null)) {
+                        textViewUserEmail.setText(userInformation.getEmail());
+                    } else {textViewUserEmail.setText(" ");}
                 }
 
                 @Override
