@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
@@ -309,6 +310,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 else {
                     toolbarEmail.setText(userInformation.getFacebookLink());
                 }
+                LinearLayout toolbarProfile = (LinearLayout) findViewById(id.toolbarProfile);
+                toolbarProfile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                    }
+                });
             }
 
             @Override
