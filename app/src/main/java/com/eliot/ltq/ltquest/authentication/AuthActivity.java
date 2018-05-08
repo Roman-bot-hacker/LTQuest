@@ -41,7 +41,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
-    private boolean isNewGoogleUser = true;
+    private static boolean isNewGoogleUser = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public static void setAuthType(AuthType authType) {
         AuthActivity.authType = authType;
+    }
+    public static void setIsNewGoogleUser(boolean isNewUser){
+        isNewGoogleUser = isNewUser;
     }
 
     public void chooseAuth() {

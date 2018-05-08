@@ -89,11 +89,16 @@ public class FirebaseAuthManager {
 
     public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
 
-        //boolean isNewUser =
                 auth.signInWithCredential(credential)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        if(authResult.getAdditionalUserInfo().isNewUser()){
+                            AuthActivity.setIsNewGoogleUser(true);
+                        }
+                        else {
+                            AuthActivity.setIsNewGoogleUser(false);
+                        }
                         listener.onSuccess();
                     }
                 })
@@ -103,8 +108,6 @@ public class FirebaseAuthManager {
                         listener.onError("Cannot sing in with your Google account");
                     }
                 });
-                //.getResult().getAdditionalUserInfo().isNewUser();
-        //return isNewUser;
     }
 
     public void signOut() {
