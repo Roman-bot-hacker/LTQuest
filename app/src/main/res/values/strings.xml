@@ -49,4 +49,10 @@
     <string name="dollar_">1</string>
     <string name="title">Title</string>
     <string name="numbers">23463</string>
+    <string name="lvivtripquest">LvivTripQuest</string>
+    <string name="your_password">Your Password</string>
+    <string name="email_adress">Email Adress</string>
+    <string name="forgot_a_password">Forgot a password?</string>
+    <string name="login">Login</string>
+    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign in with</string>
 </resources>

@@ -8,4 +8,9 @@
     <color name="colorBackground">#E6FFFFFF</color>
     <color name="colorTextGray">#4A4A4A</color>
     <color name="colorBottomSheet">#F27D7D7D</color>
+
+    \\color of registration
+    <color name="colorBackground2">#FF907AEC</color>
+    <color name="textColor">#DEFFFFFF</color>
+    <color name="color4">#91FFFFFF</color>
 </resources>
