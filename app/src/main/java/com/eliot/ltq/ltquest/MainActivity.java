@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,7 +56,6 @@ import static com.eliot.ltq.ltquest.R.raw;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private FirebaseAuth firebaseAuth;
     private boolean firstCameraOnMyPosition = true;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 111;
     private static final double DEFAULT_LATITUDE = 49.841787;
@@ -66,13 +66,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View screen2;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
+    private FirebaseAuthManager firebaseAuthManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
+        setToolbarUserInf();
         setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
@@ -287,6 +289,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onError(DatabaseError databaseError) {
                 Log.e("FirebaseDataManager", "Can not retrieve QuestCategory");
+            }
+        });
+    }
+
+    public void setToolbarUserInf(){
+        firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+            @Override
+            public void onSuccess(UserInformation userInformation) {
+                TextView toolbarUserName = (TextView) findViewById(id.toolbarUserName);
+                toolbarUserName.setText(userInformation.getName());
+                TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
+                if(!(userInformation.getGoogleEmail()==null)){
+                    toolbarEmail.setText(userInformation.getGoogleEmail());
+                }
+                else if(!(userInformation.getEmail()==null)){
+                    toolbarEmail.setText(userInformation.getEmail());
+                }
+                else {
+                    toolbarEmail.setText(userInformation.getFacebookLink());
+                }
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("FirebaseDataManager","Can not retrieve userInformation");
             }
         });
     }
