@@ -41,6 +41,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
+    private static boolean isNewGoogleUser = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public static void setAuthType(AuthType authType) {
         AuthActivity.authType = authType;
+    }
+    public static void setIsNewGoogleUser(boolean isNewUser){
+        isNewGoogleUser = isNewUser;
     }
 
     public void chooseAuth() {
@@ -141,15 +145,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
-                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getName()));
+                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.EMAIL, getName(), getEmail()));
 
                                 finish();
                                 startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                             }
 
                             @Override
-                            public String onError(String message) {
-                                return message;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -162,8 +166,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public String onError(String massage) {
-                                return massage;
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -201,21 +205,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        if (authType == AuthType.REGISTRATION) {
-
-                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
+                        if(isNewGoogleUser) {
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
-                        if (authType == AuthType.LOGIN) {
-                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(gSingInAccount.getDisplayName()));
-
-                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                        }
+                        else startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                     }
 
                     @Override
-                    public String onError(String massage) {
-                        return massage;
+                    public void onError(String massage) {
+                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (ApiException e) {

@@ -84,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text3"
-        android:layout_marginTop="10dp" >
+        android:layout_marginTop="11dp" >
 
         <TextView
             android:id="@+id/text4"
@@ -99,7 +99,7 @@
             android:id="@+id/text6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="56dp"
+            android:layout_marginStart="64dp"
 
             android:text="@string/point"/>
 
@@ -120,8 +120,8 @@
             android:textColor="#4A4A4A"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="35dp"
             android:background="@drawable/transfer"
             />
@@ -136,12 +136,17 @@
             android:textColor="#4A4A4A"/>
 
         <Button
-            android:layout_width="44dp"
-            android:layout_height="36dp"
+            android:layout_width="54dp"
+            android:layout_height="46dp"
             android:layout_marginStart="48dp"
             android:background="@color/colorButton"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="@string/buy"
-            android:textColor="#FFFFFF" />
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:typeface="normal"
+            android:visibility="visible" />
 
     </LinearLayout>
 
