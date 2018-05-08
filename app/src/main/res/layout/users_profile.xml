@@ -44,7 +44,7 @@
             android:textColor="#202020"
             android:lineSpacingExtra="8sp"
             android:gravity="center_horizontal"
-            android:text="@string/gerald_morrison"/>
+            android:text="@string/useres_name"/>
 
         <TextView
             android:id="@+id/sex"
@@ -58,7 +58,7 @@
             android:textStyle="normal"
             android:textColor="#858585"
             android:lineSpacingExtra="7sp"
-            android:text="@string/male" />
+            android:text="@string/sex" />
 
     </RelativeLayout>
 
@@ -105,7 +105,7 @@
                android:textColor="#dd000000"
                android:textSize="18sp"
                android:textStyle="normal"
-               tools:text="FBlink.com" />
+               android:text="@string/email_facebook"/>
 
            <TextView
                android:id="@+id/facebok"
@@ -117,7 +117,7 @@
                android:textStyle="normal"
                android:textColor="#8a000000"
                android:lineSpacingExtra="6sp"
-               tools:text="Facebook"/>
+               android:text="@string/facebook"/>
 
            <ImageView
                android:layout_width="wrap_content"
@@ -159,7 +159,7 @@
                    android:textColor="#dd000000"
                    android:textSize="18sp"
                    android:textStyle="normal"
-                   tools:text="Googlelink.com" />
+                   android:text="@string/email_google"/>
 
                <TextView
                    android:id="@+id/google"
@@ -171,7 +171,7 @@
                    android:textStyle="normal"
                    android:textColor="#8a000000"
                    android:lineSpacingExtra="6sp"
-                   tools:text="Google+"/>
+                   android:text="@string/google"/>
 
                <ImageView
                    android:layout_width="wrap_content"
@@ -213,7 +213,7 @@
            android:textColor="#dd000000"
            android:textSize="18sp"
            android:textStyle="normal"
-           tools:text="Mail@lala.com" />
+           tools:text="@string/email_mail" />
 
        <TextView
            android:id="@+id/mail"
@@ -225,7 +225,7 @@
            android:textStyle="normal"
            android:textColor="#8a000000"
            android:lineSpacingExtra="6sp"
-           tools:text="Emal "/>
+           android:text="@string/Email"/>
 
        <ImageView
            android:layout_width="wrap_content"
