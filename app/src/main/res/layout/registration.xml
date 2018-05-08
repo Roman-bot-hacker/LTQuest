@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout android:layout_width="match_parent"
+    android:theme="@style/AppTheme.NoActionBar"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground2"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/orientation_logo"
+            android:layout_marginEnd="@dimen/orientation_logo"
+            android:layout_marginTop="@dimen/margin_top"
+            app:srcCompat="@android:color/background_light"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginEnd="@dimen/margin_end"
+            android:layout_marginTop="@dimen/top_appname"
+            android:text="@string/lvivtripquest"
+            android:textColor="@color/colorBackground"
+            android:layout_centerHorizontal="true"/>
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_name"
+            android:layout_marginStart="@dimen/margin_top_for_button"
+            android:layout_marginEnd="@dimen/margin_top_for_button"
+            android:layout_marginTop="@dimen/margin_top_for_button"
+            android:inputType="textEmailAddress"
+            android:text="@string/email_adress"
+            android:textColor="@color/textColor"
+            android:layout_centerHorizontal="true"/>
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editText"
+            android:layout_marginStart="@dimen/margin_top_for_button"
+            android:layout_marginEnd="@dimen/margin_top_for_button"
+            android:layout_marginTop="@dimen/between_email_password"
+            android:inputType="textPassword"
+            android:text="@string/your_password"
+            android:textColor="@color/textColor"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/forgotpass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editText2"
+            android:layout_marginStart="@dimen/margin_top_for_button"
+            android:layout_marginEnd="@dimen/end_of_forgotpassword"
+            android:layout_marginTop="@dimen/between_password_forgot"
+            android:text="@string/forgot_a_password"
+            android:textColor="@color/color4"
+            android:layout_centerHorizontal="true"/>
+
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/forgotpass"
+            android:layout_marginStart="@dimen/margin_top_for_button"
+            android:layout_marginEnd="@dimen/margin_top_for_button"
+            android:layout_marginTop="@dimen/top_of_login"
+            android:text="@string/login"
+            android:textColor="#FF907AEC"
+            tools:text="Login"
+            android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/haventAcc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/start_havent_account"
+        android:layout_marginEnd="@dimen/end_havent_account"
+        android:layout_below="@+id/login"
+        android:layout_marginTop="@dimen/between_forgot_haventAcc"
+        android:text="@string/haven_t_got_an_account_sign_in_with"
+        android:textColor="@color/textColor"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/start_of_facebook"
+        android:layout_marginTop="@dimen/top_of_google_face"
+        app:srcCompat="@drawable/facebook__2_" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/start_of_google"
+        android:layout_marginTop="@dimen/top_of_google_face"
+        app:srcCompat="@drawable/google_plus"/>
+
+
+
+</RelativeLayout>
+
+
