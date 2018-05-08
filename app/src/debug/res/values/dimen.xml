@@ -24,4 +24,23 @@
     <dimen name="size_name">16sp</dimen>
     <dimen name="size_km">13sp</dimen>
 
+    //dimens for registration
+    <dimen name="orientation_logo">105dp</dimen>
+    <dimen name="margin_start">123dp</dimen>
+    <dimen name="margin_end">121dp</dimen>
+    <dimen name="margin_top">60dp</dimen>
+    <dimen name="margin_top_for_button">25dp</dimen>
+    <dimen name="start_appname">100dp</dimen>
+    <dimen name="top_appname">5dp</dimen>
+    <dimen name="between_email_password">8dp</dimen>
+    <dimen name="between_password_forgot">20dp</dimen>
+    <dimen name="top_of_login">16dp</dimen>
+    <dimen name="end_of_forgotpassword">400dp</dimen>
+    <dimen name="start_havent_account">95dp</dimen>
+    <dimen name="end_havent_account">64dp</dimen>
+    <dimen name="between_forgot_haventAcc">52dp</dimen>
+    <dimen name="top_of_google_face">400dp</dimen>
+    <dimen name="start_of_google">200dp</dimen>
+    <dimen name="start_of_facebook">64dp</dimen>
+
 </resources>

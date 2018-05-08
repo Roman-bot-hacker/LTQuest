@@ -36,7 +36,7 @@
     <string name="email_google">Googlelink.com</string>
     <string name="google">Google+</string>
     <string name="email_mail">Mail@lala.com</string>
-    <string name="Email">Emal</string>
+    <string name="Email">Email</string>
 
     <string name="app_name">LTQuest</string>
     <string name="title_activity_main">Main</string>
@@ -45,8 +45,13 @@
     <string name="permission_rationale_location">permission rationale location</string>
 
     //Auth Activity
-    <string name="to_sing_in">Already Registered? Sing in here!</string>
-    <string name="to_sing_up">Do not have an account? Sing up here!</string>
+    <string name="lvivtripquest">LvivTripQuest</string>
+    <string name="your_password">Your Password</string>
+    <string name="email_adress">Email Adress</string>
+    <string name="forgot_a_password">Forgot a password?</string>
+    <string name="login">Login</string>
+    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign in with</string>
+    <string name="have_an_account_login">Already have an account? Login here!</string>
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
 
