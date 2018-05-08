@@ -42,15 +42,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }
 
-
-        textViewUserEmail = (TextView) findViewById(R.id.email);
-        //set email
-
-        //set name
         imageViewUserPhoto = (ImageView) findViewById(R.id.user_avatar);
-        //set photo (only if photo != null
         logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(this);
+
 
         if (authManager.isUserLoggedIn())
             firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
@@ -58,6 +53,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 public void onSuccess(UserInformation userInformation) {
                     textViewName = (TextView) findViewById(R.id.name_user);
                     textViewName.setText(userInformation.getName());
+                    textViewUserEmail = (TextView) findViewById(R.id.email);
+                    if(!(userInformation.getGoogleEmail()==null)) {textViewUserEmail.setText(userInformation.getGoogleEmail());}
+                    else { textViewUserEmail.setVisibility(View.GONE);}
                 }
 
                 @Override
