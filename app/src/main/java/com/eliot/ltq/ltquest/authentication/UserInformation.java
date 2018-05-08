@@ -6,8 +6,9 @@ import android.net.Uri;
 public class UserInformation {
 
     private String name;
-    private Integer points;
     private String email;
+    private UserSex sex;
+    private Integer points;
     private String googleEmail;
     private String facebookLink;
 
@@ -30,7 +31,7 @@ public class UserInformation {
                 this.facebookLink = account;
             }
         }
-        this.googleEmail = account;
+        this.sex = UserSex.CHOOSE_SEX;
     }
 
     public String getEmail(){ return email; }
@@ -69,5 +70,13 @@ public class UserInformation {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public UserSex getSex() {
+        return sex;
+    }
+
+    public void setSex(UserSex sex) {
+        this.sex = sex;
     }
 }

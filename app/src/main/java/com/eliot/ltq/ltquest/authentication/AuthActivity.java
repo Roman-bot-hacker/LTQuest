@@ -209,7 +209,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
                             startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                         }
-                        else startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                        else startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
                     }
 
                     @Override

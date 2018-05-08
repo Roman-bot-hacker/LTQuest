@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eliot.ltq.ltquest.FirebaseDataManager;
@@ -13,6 +14,8 @@ import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
+
+import org.w3c.dom.Text;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +25,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseDataManager firebaseDataManager;
     private TextView textViewUserEmail;
     private TextView textViewName;
+    private TextView textViewSex;
+    private TextView textViewFacebookLink;
+    private TextView textViewGoogleEmail;
+    private LinearLayout facebookLayout;
+    private LinearLayout googleLayout;
+    private LinearLayout emailLayout;
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
     private TextView logOut;
@@ -29,7 +38,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.users_profile);
 
         FirebaseApp.initializeApp(this);
         firebaseDataManager = new FirebaseDataManager();
@@ -42,9 +51,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
         }
 
-        imageViewUserPhoto = (ImageView) findViewById(R.id.user_avatar);
-        logOut = (TextView) findViewById(R.id.logout);
-        logOut.setOnClickListener(this);
+        imageViewUserPhoto = (ImageView) findViewById(R.id.avatar);
+        facebookLayout = (LinearLayout) findViewById(R.id.liner_facebook);
+        googleLayout = (LinearLayout) findViewById(R.id.liner_google);
+        emailLayout = (LinearLayout) findViewById(R.id.liner_mail);
 
 
         if (authManager.isUserLoggedIn())
@@ -53,9 +63,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 public void onSuccess(UserInformation userInformation) {
                     textViewName = (TextView) findViewById(R.id.name_user);
                     textViewName.setText(userInformation.getName());
-                    textViewUserEmail = (TextView) findViewById(R.id.email);
-                    if(!(userInformation.getGoogleEmail()==null)) {textViewUserEmail.setText(userInformation.getGoogleEmail());}
-                    else { textViewUserEmail.setVisibility(View.GONE);}
+                    textViewSex = (TextView) findViewById(R.id.sex);
+                    switch (userInformation.getSex()){
+                        case MALE: { textViewSex.setText("Male"); } break;
+                        case FEMALE: { textViewSex.setText("Female"); } break;
+                        default: {textViewSex.setText("Choose sex"); }
+                    };
+                    textViewFacebookLink = (TextView) findViewById(R.id.email_facebok);
+                    if(userInformation.getFacebookLink()==null) {facebookLayout.setVisibility(View.GONE); }
+                    else { textViewFacebookLink.setText(userInformation.getFacebookLink()); }
+                    textViewGoogleEmail = (TextView) findViewById(R.id.email_google);
+                    if(userInformation.getGoogleEmail()==null) {googleLayout.setVisibility(View.GONE);}
+                    else {textViewGoogleEmail.setText(userInformation.getGoogleEmail());}
+                    textViewUserEmail = (TextView) findViewById(R.id.email_mail);
+                    if(userInformation.getEmail()==null){emailLayout.setVisibility(View.GONE);}
+                    else {textViewUserEmail.setText(userInformation.getEmail());}
                 }
 
                 @Override
@@ -69,11 +91,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if (view == logOut) {
-            authManager.signOut();
-            AuthActivity.setAuthType(AuthType.LOGIN);
-            finish();
-            startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
-        }
+
     }
 }
