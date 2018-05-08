@@ -26,6 +26,9 @@
     <string name="point">Point</string>
     <string name="dollar">Dollar</string>
     <string name="Current_balance">Current balance</string>
+    <string name="email">heyfromjonathan@gmail.com</string>
+    <string name="name_user">William Snoe</string>
+
 
     <string name="email">user@mail</string>
     <string name="name_user">User Name</string>
@@ -49,4 +52,6 @@
     <string name="dollar_">1</string>
     <string name="title">Title</string>
     <string name="numbers">23463</string>
+    <string name="log_out">log out</string>
+    <string name="italic_text"><i>Italic text</i></string>
 </resources>
