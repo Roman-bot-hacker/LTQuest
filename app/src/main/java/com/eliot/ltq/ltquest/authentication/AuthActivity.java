@@ -141,7 +141,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                 dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
 
                                 finish();
-                                startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                                startActivity(new Intent(AuthActivity.this, MainActivity.class));
                             }
 
                             @Override
@@ -200,9 +200,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess() {
                         if(isNewGoogleUser) {
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
-                            startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }
-                        else startActivity(new Intent(AuthActivity.this, ProfileActivity.class));
+                        else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                     }
 
                     @Override
