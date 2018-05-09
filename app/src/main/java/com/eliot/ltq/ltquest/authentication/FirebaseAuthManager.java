@@ -1,42 +1,14 @@
 package com.eliot.ltq.ltquest.authentication;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eliot.ltq.ltquest.FirebaseDataManager;
-import com.eliot.ltq.ltquest.MainActivity;
-import com.eliot.ltq.ltquest.R;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.ProviderQueryResult;
-import com.google.firebase.auth.SignInMethodQueryResult;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseAuthManager {
 
@@ -64,19 +36,11 @@ public class FirebaseAuthManager {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        boolean isNewUser = authResult.getAdditionalUserInfo().isNewUser();
+                        AuthActivity.setIsNewUser(isNewUser);
                         listener.onSuccess();
                     }
                 });
-
-    }
-
-    public void logout(UserLoginListener listener){
-        try {
-            auth.signOut();
-            listener.onSuccess();
-        } catch (Exception e) {
-            listener.onError(e.getLocalizedMessage());
-        }
     }
 
     public void loginUser(String email, String password, final UserLoginListener listener) {
@@ -95,6 +59,15 @@ public class FirebaseAuthManager {
                 });
     }
 
+    public void logout(UserLoginListener listener){
+        try {
+            auth.signOut();
+            listener.onSuccess();
+        } catch (Exception e) {
+            listener.onError(e.getLocalizedMessage());
+        }
+    }
+
 
     public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
 
@@ -103,10 +76,10 @@ public class FirebaseAuthManager {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         if(authResult.getAdditionalUserInfo().isNewUser()){
-                            AuthActivity.setIsNewGoogleUser(true);
+                            AuthActivity.setIsNewUser(true);
                         }
                         else {
-                            AuthActivity.setIsNewGoogleUser(false);
+                            AuthActivity.setIsNewUser(false);
                         }
                         listener.onSuccess();
                     }

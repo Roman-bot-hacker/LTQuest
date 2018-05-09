@@ -44,7 +44,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
-    private static boolean isNewGoogleUser = true;
+    private static boolean isNewUser = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +73,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public static void setAuthType(AuthType authType) {
         AuthActivity.authType = authType;
     }
-    public static void setIsNewGoogleUser(boolean isNewUser){
-        isNewGoogleUser = isNewUser;
+    public static void setIsNewUser(boolean isNewUser){
+        AuthActivity.isNewUser = isNewUser;
     }
 
     public void chooseAuth() {
@@ -152,10 +152,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                             @Override
                             public void onError(String massage) {
-                                if(isNetworkAvailable()) {
-                                    Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show();
+                                if(!isNetworkAvailable()) {
+                                    Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
                                 }
-                                else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
+                                else {Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show(); }
                                 Log.e("User Mail Login: ",massage);
                             }
                         });
@@ -172,10 +172,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                 @Override
                                 public void onError(String massage) {
-                                    if(isNetworkAvailable()) {
-                                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                                    if(!isNetworkAvailable()) {
+                                        Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
                                     }
-                                    else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
+                                    else if(getPassword().length()<6){
+                                        Toast.makeText(AuthActivity.this, "Password should be at least 6 characters", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else if(!isNewUser){Toast.makeText(AuthActivity.this, "User with this email is already exist", Toast.LENGTH_SHORT).show();}
+                                    else { Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();}
                                     Log.e("User Mail Regist: ",massage);
                                 }
                             });
@@ -217,7 +221,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        if(isNewGoogleUser) {
+                        if(isNewUser) {
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }
