@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,14 +31,17 @@ public class ActivityChooseLevel extends AppCompatActivity{
     private RecyclerView recyclerView;
     private List<Quest> quests = new ArrayList<>();
     private QuestItemAdapter questItemAdapter;
+    private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
+        toolbar = findViewById(R.id.toolbar);
         prepareQuestData();
         startNewButton();
+        configureToolbar();
     }
 
 
@@ -98,6 +104,28 @@ public class ActivityChooseLevel extends AppCompatActivity{
                 startActivity(new Intent(ActivityChooseLevel.this, QuestScreen.class));
             }
         });*/
+    }
+
+    private void configureToolbar() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("Choose level");
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case android.R.id.home:
+                startActivity(new Intent(ActivityChooseLevel.this, MainActivity.class));
+                return true;
+        }
+
+        return true;
     }
 
 }

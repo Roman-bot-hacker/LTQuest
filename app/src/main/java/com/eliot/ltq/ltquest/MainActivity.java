@@ -11,11 +11,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,9 +66,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LATITUDE = 49.841787;
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
+    private Toolbar toolbar;
     private ImageView myLocationButton;
     private View screen1;
     private View screen2;
+    private DrawerLayout drawerLayout;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
@@ -75,19 +81,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FirebaseApp.initializeApp(this);
         firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
-        setToolbarUserInf();
         setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        toolbar = findViewById(R.id.toolbar);
         screen1 = findViewById(id.screen1);
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
+        configureNavigationDraver();
+        configureToolbarForFirstScreen();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -249,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         if(id==R.id.nav_settings){
-            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -265,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 screen1.setVisibility(View.GONE);
                 screen2.setVisibility(View.VISIBLE);
+                configureToolbarForSecondScreen();
             }
         });
         continueQuest.setOnClickListener(new Button.OnClickListener() {
@@ -294,11 +303,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+
     public void setToolbarUserInf(){
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(id.toolbarUserName);
+                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
                 toolbarUserName.setText(userInformation.getName());
                 TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
                 if(!(userInformation.getGoogleEmail()==null)){
@@ -307,10 +317,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 else if(!(userInformation.getEmail()==null)){
                     toolbarEmail.setText(userInformation.getEmail());
                 }
-                else {
+                else if(!(userInformation.getFacebookLink()==null)){
                     toolbarEmail.setText(userInformation.getFacebookLink());
                 }
-                LinearLayout toolbarProfile = (LinearLayout) findViewById(id.toolbarProfile);
+                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
                 toolbarProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -355,6 +365,69 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+    }
+
+    public void configureNavigationDraver(){
+        drawerLayout = findViewById(id.drawer_layout);
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                setToolbarUserInf();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+    }
+
+    private void configureToolbarForFirstScreen() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("Home page");
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void configureToolbarForSecondScreen() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("Choose Category");
+        actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case android.R.id.home:
+                if(screen1.getVisibility() == View.VISIBLE) {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+                else if(screen2.getVisibility() == View.VISIBLE){
+                    screen2.setVisibility(View.GONE);
+                    screen1.setVisibility(View.VISIBLE);
+                    configureToolbarForFirstScreen();
+                }
+                return true;
+        }
+
+        return true;
     }
 
 }

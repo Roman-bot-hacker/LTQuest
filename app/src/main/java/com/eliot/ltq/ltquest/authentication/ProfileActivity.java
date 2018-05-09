@@ -2,14 +2,24 @@ package com.eliot.ltq.ltquest.authentication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eliot.ltq.ltquest.Balance;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
+import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,11 +28,12 @@ import com.google.firebase.database.DatabaseError;
 import org.w3c.dom.Text;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
+    private DrawerLayout drawerLayout;
+    private FirebaseUser user;
+    private UserInformation userInformation = new UserInformation();
+    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
+    private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
 
-    FirebaseUser user;
-    UserInformation userInformation = new UserInformation();
-
-    private FirebaseDataManager firebaseDataManager;
     private TextView textViewUserEmail;
     private TextView textViewName;
     private TextView textViewSex;
@@ -44,6 +55,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         firebaseDataManager = new FirebaseDataManager();
         authManager = new FirebaseAuthManager();
         user = authManager.getCurrentUser();
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        configureNavigationDrawer();
+        configureToolbar();
 
         if (user == null) {
             AuthActivity.setAuthType(AuthType.LOGIN);
@@ -96,4 +111,102 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
 
     }
+
+    private void configureToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("User profile");
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void configureNavigationDrawer() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                setToolbarUserInf();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_home) {
+                    startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                }
+
+                if (id == R.id.nav_balance) {
+                    startActivity(new Intent(ProfileActivity.this, Balance.class));
+                }
+
+                if (id == R.id.nav_settings) {
+
+                }
+
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        
+        switch (itemId) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return true;
+    }
+
+    public void setToolbarUserInf(){
+        firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+            @Override
+            public void onSuccess(UserInformation userInformation) {
+                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
+                toolbarUserName.setText(userInformation.getName());
+                TextView toolbarEmail = (TextView) findViewById(R.id.toolbarEmail);
+                if(!(userInformation.getGoogleEmail()==null)){
+                    toolbarEmail.setText(userInformation.getGoogleEmail());
+                }
+                else if(!(userInformation.getEmail()==null)){
+                    toolbarEmail.setText(userInformation.getEmail());
+                }
+                else if(!(userInformation.getFacebookLink()==null)){
+                    toolbarEmail.setText(userInformation.getFacebookLink());
+                }
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("FirebaseDataManager","Can not retrieve userInformation");
+            }
+        });
+    }
+
 }

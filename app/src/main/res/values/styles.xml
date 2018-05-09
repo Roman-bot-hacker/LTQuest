@@ -11,6 +11,7 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <item name="android:textColor">@color/colorText</item>
     </style>
 
     <style name="MainButton">
@@ -39,6 +40,10 @@
         <item name="android:textColor">@color/colorText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
 
+    </style>
+
+    <style name="ToolBarTheme" parent="AppTheme">
+        <item name="android:textColorPrimary">@color/colorText </item>
     </style>
 
 </resources>
