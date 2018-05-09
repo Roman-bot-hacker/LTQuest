@@ -2,182 +2,20 @@
 
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <include
-        layout="@layout/toolbar"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:id="@+id/linearLayout">
-
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/oval"
-            />
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp">
+    android:fitsSystemWindows="true">
 
 
-            <TextView
-                android:id="@+id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/Current_balance"
-                android:textColor="#4a4a4a" />
+    <include layout="@layout/balance_content"/>
 
-            <TextView
-                android:id="@+id/text2"
-                android:layout_width="114dp"
-                android:layout_height="41dp"
-                android:layout_alignParentBottom="true"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/numbers"
-                android:textColor="#4a4a4a"
-                android:textSize="34sp" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <ImageView
-        android:layout_below="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/line"
-        android:id="@+id/toolbarImage" />
-
-    <TextView
-        android:id="@+id/text3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/linearLayout"
-        android:layout_below="@+id/toolbarImage"
-        android:layout_marginStart="@dimen/fab_margin"
-        android:layout_marginTop="18dp"
-
-        android:text="@string/title"
-        android:textColor="#000000"
-        android:textSize="20sp" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/text3"
-        android:layout_marginTop="11dp" >
-
-        <TextView
-            android:id="@+id/text4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dollar"
-
-            android:layout_marginStart="24dp"
-            />
-
-        <TextView
-            android:id="@+id/text6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
-
-            android:text="@string/point"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout3"
-        android:layout_below="@+id/linearLayout2"
-        android:layout_marginStart="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dollar_"
-            android:textSize="34sp"
-            android:textColor="#4A4A4A"/>
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="35dp"
-            android:background="@drawable/transfer"
-            />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="@string/point_"
-            android:textSize="34sp"
-            android:textColor="#4A4A4A"/>
-
-        <Button
-            android:layout_width="54dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="48dp"
-            android:background="@color/colorButton"
-            android:fontFamily="sans-serif-smallcaps"
-            android:text="@string/buy"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:typeface="normal"
-            android:visibility="visible" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout4"
-        android:layout_below="@+id/linearLayout3"
-        android:layout_marginStart="24dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/smal_line"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="31dp"
-            android:background="@drawable/smal_line"/>
-    </LinearLayout>
-
-</LinearLayout>
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:visibility="gone"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
