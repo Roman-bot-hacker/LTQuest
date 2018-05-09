@@ -1,6 +1,9 @@
 package com.eliot.ltq.ltquest.authentication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -149,7 +152,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                             @Override
                             public void onError(String massage) {
-                                Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show();
+                                if(isNetworkAvailable()) {
+                                    Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show();
+                                }
+                                else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
+                                Log.e("User Mail Login: ",massage);
                             }
                         });
                     }
@@ -165,7 +172,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                 @Override
                                 public void onError(String massage) {
-                                    Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                                    if(isNetworkAvailable()) {
+                                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
+                                    Log.e("User Mail Regist: ",massage);
                                 }
                             });
                         }
@@ -215,7 +226,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onError(String massage) {
-                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                        if(isNetworkAvailable()) {
+                            Toast.makeText(AuthActivity.this, "Cannot sign in with google, some problems found", Toast.LENGTH_SHORT).show();
+                        }
+                        else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
+                        Log.e("User Google sign: ",massage);
                     }
                 });
             } catch (ApiException e) {
@@ -225,5 +240,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("Error","Cannot sing in with your Google account");
         }
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

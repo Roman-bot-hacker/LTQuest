@@ -47,7 +47,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout emailLayout;
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
-    private TextView logOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
