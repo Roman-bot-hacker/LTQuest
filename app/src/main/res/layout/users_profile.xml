@@ -5,237 +5,246 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/sex"
+       />
+
+    <ImageView
+        android:id="@+id/avatar"
         android:layout_width="wrap_content"
-        android:layout_height="180dp"
-        android:id="@+id/field1"
-        android:background="@drawable/background"
-        android:layout_marginBottom="285dp">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/avatar" />
 
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="84dp"
-            android:layout_height="84dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="138dp"
-            android:layout_marginRight="138dp"
-            android:layout_marginTop="28dp"
-            android:src="@drawable/avatar"/>
+    <ImageView
+        android:id="@+id/question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/ic_settings_black_24dp" />
 
-        <ImageView
-            android:id="@+id/question"
+    <TextView
+        android:id="@+id/name_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/avatar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="8sp"
+        android:text="@string/users_name"
+        android:textColor="#202020"
+        android:textSize="24sp"
+        android:textStyle="normal" />
+
+    <TextView
+        android:id="@+id/sex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_user"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif"
+        android:lineSpacingExtra="7sp"
+        android:text="@string/sex"
+        android:textColor="#858585"
+        android:textSize="13sp"
+        android:textStyle="normal"
+        android:paddingBottom="10dp"/>
+
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/sex"
+        app:cardElevation="8dp"
+        android:padding="6dp">
+
+
+        <LinearLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="340dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="15dp"
-            android:src="@drawable/question" />
-
-        <TextView
-            android:id="@+id/name_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/avatar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
-            android:textColor="#202020"
-            android:lineSpacingExtra="8sp"
-            android:gravity="center_horizontal"
-            android:text="@string/useres_name"/>
-
-        <TextView
-            android:id="@+id/sex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/name_user"
-            android:layout_marginBottom="4dp"
-            android:layout_centerHorizontal="true"
-            android:textSize="13sp"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
-            android:textColor="#858585"
-            android:lineSpacingExtra="7sp"
-            android:text="@string/sex" />
-
-    </RelativeLayout>
+            android:orientation="vertical">
 
 
-   <RelativeLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_centerHorizontal="true"
-       android:layout_marginRight="24dp"
-       android:layout_marginLeft="24dp"
-       android:layout_marginTop="200dp"
-       android:padding="6dp"
-       android:elevation="6dp"
-       android:background="@drawable/shadows">
+            <LinearLayout
+                android:id="@+id/liner_facebok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-       <LinearLayout
-           android:id="@+id/liner_facebok"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content">
-
-       <ImageView
-           android:id="@+id/facebok_logo"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_marginTop="21dp"
-           android:layout_marginRight="26dp"
-           android:layout_marginLeft="30dp"
-           android:src="@drawable/facebook_logo"/>
+                <ImageView
+                    android:id="@+id/facebok_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="26dp"
+                    android:layout_marginTop="21dp"
+                    android:src="@drawable/facebook_logo" />
 
 
+                <RelativeLayout
+                    android:id="@+id/facebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-       <RelativeLayout
-           android:id="@+id/facebook"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/email_facebok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="8sp"
+                        android:text="@string/email_facebook"
+                        android:textColor="#dd000000"
+                        android:textSize="18sp"
+                        android:textStyle="normal" />
 
-           <TextView
-               android:id="@+id/email_facebok"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="12dp"
-               android:fontFamily="sans-serif"
-               android:lineSpacingExtra="8sp"
-               android:textColor="#dd000000"
-               android:textSize="18sp"
-               android:textStyle="normal"
-               android:text="@string/email_facebook"/>
+                    <TextView
+                        android:id="@+id/facebok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/email_facebok"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/facebook"
+                        android:textColor="#8a000000"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
 
-           <TextView
-               android:id="@+id/facebok"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/email_facebok"
-               android:textSize="16sp"
-               android:fontFamily="sans-serif"
-               android:textStyle="normal"
-               android:textColor="#8a000000"
-               android:lineSpacingExtra="6sp"
-               android:text="@string/facebook"/>
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/facebok"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/lightdrayline"
+                         />
 
-           <ImageView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/facebok"
-               android:layout_marginTop="8dp"
-               android:src="@drawable/line" />
+                </RelativeLayout>
 
-       </RelativeLayout>
+            </LinearLayout>
 
-       </LinearLayout>
+            <LinearLayout
+                android:id="@+id/liner_google"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/liner_facebok">
 
-       <LinearLayout
-           android:id="@+id/liner_google"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/liner_facebok">
+                <ImageView
+                    android:id="@+id/google_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="19dp"
+                    android:layout_marginTop="24dp"
+                    android:src="@drawable/google_logo" />
 
-           <ImageView
-               android:id="@+id/google_logo"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="24dp"
-               android:layout_marginRight="19dp"
-               android:layout_marginLeft="30dp"
-               android:src="@drawable/google_logo" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/email_google"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="8sp"
+                        android:text="@string/email_google"
+                        android:textColor="#dd000000"
+                        android:textSize="18sp"
+                        android:textStyle="normal" />
 
-               <TextView
-                   android:id="@+id/email_google"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="12dp"
-                   android:fontFamily="sans-serif"
-                   android:lineSpacingExtra="8sp"
-                   android:textColor="#dd000000"
-                   android:textSize="18sp"
-                   android:textStyle="normal"
-                   android:text="@string/email_google"/>
+                    <TextView
+                        android:id="@+id/google"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/email_google"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/google"
+                        android:textColor="#8a000000"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
 
-               <TextView
-                   android:id="@+id/google"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_below="@+id/email_google"
-                   android:textSize="16sp"
-                   android:fontFamily="sans-serif"
-                   android:textStyle="normal"
-                   android:textColor="#8a000000"
-                   android:lineSpacingExtra="6sp"
-                   android:text="@string/google"/>
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/google"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/lightdrayline"
+                        />
 
-               <ImageView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_below="@+id/google"
-                   android:layout_marginTop="8dp"
-                   android:src="@drawable/line" />
+                </RelativeLayout>
 
-           </RelativeLayout>
+            </LinearLayout>
 
-       </LinearLayout>
+            <LinearLayout
+                android:id="@+id/liner_mail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/liner_google">
 
-       <LinearLayout
-           android:id="@+id/liner_mail"
-           android:layout_below="@+id/liner_google"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/google_logo1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="26dp"
+                    android:layout_marginTop="24dp"
+                    android:src="@drawable/mail" />
 
-           <ImageView
-               android:id="@+id/google_logo1"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="24dp"
-               android:layout_marginRight="26dp"
-               android:layout_marginLeft="30dp"
-               android:src="@drawable/mail" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-       <RelativeLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/email_mail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="8sp"
+                        android:textColor="#dd000000"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        tools:text="@string/email_mail" />
 
-       <TextView
-           android:id="@+id/email_mail"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_marginTop="12dp"
-           android:fontFamily="sans-serif"
-           android:lineSpacingExtra="8sp"
-           android:textColor="#dd000000"
-           android:textSize="18sp"
-           android:textStyle="normal"
-           tools:text="@string/email_mail" />
+                    <TextView
+                        android:id="@+id/mail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/email_mail"
+                        android:fontFamily="sans-serif"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/Email"
+                        android:textColor="#8a000000"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
 
-       <TextView
-           android:id="@+id/mail"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/email_mail"
-           android:textSize="16sp"
-           android:fontFamily="sans-serif"
-           android:textStyle="normal"
-           android:textColor="#8a000000"
-           android:lineSpacingExtra="6sp"
-           android:text="@string/Email"/>
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/mail"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/lightdrayline"
+                        />
 
-       <ImageView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/mail"
-           android:layout_marginTop="8dp"
-           android:src="@drawable/line" />
+                </RelativeLayout>
+            </LinearLayout>
 
-   </RelativeLayout>
-       </LinearLayout>
-
-   </RelativeLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>
