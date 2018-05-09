@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <RelativeLayout android:layout_width="match_parent"
     android:theme="@style/AppTheme.NoActionBar"
     android:layout_height="match_parent"
     android:background="@color/colorBackground2"
+    android:animateLayoutChanges="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -14,10 +13,8 @@
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/orientation_logo"
-        android:layout_marginEnd="@dimen/orientation_logo"
         android:layout_marginTop="@dimen/margin_top"
-        app:srcCompat="@android:color/background_light"
+        app:srcCompat="@drawable/ava"
         android:layout_centerHorizontal="true"/>
 
     <TextView
@@ -62,21 +59,19 @@
         android:id="@+id/confirmPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editPassword"
         android:layout_marginStart="@dimen/margin_top_for_button"
         android:layout_marginEnd="@dimen/margin_top_for_button"
-        android:layout_marginTop="@dimen/between_email_password"
+        android:layout_below="@+id/editPassword"
         android:inputType="textPassword"
-        android:hint="@string/your_password"
+        android:hint="@string/confirm_password"
         android:textColor="@color/textColor"
-        android:visibility="gone"
         android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/forgotpass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editPassword"
+        android:layout_below="@+id/confirmPassword"
         android:layout_marginStart="@dimen/margin_top_for_button"
         android:gravity="start"
         android:layout_marginTop="@dimen/between_password_forgot"
@@ -98,22 +93,8 @@
         tools:text="Log In"
         android:layout_centerHorizontal="true"/>
 
-    <Button
-        android:id="@+id/registration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/confirmPassword"
-        android:layout_marginStart="@dimen/margin_top_for_button"
-        android:layout_marginEnd="@dimen/margin_top_for_button"
-        android:layout_marginTop="@dimen/top_of_login"
-        android:text="Sign In"
-        android:textColor="#FF907AEC"
-        android:visibility="gone"
-        tools:text="Login"
-        android:layout_centerHorizontal="true"/>
-
     <TextView
-        android:id="@+id/changeTypeToRegistration"
+        android:id="@+id/changeTypeAuth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -124,33 +105,30 @@
         android:layout_centerHorizontal="true"
         />
 
-    <TextView
-        android:id="@+id/changeTypeToLogin"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/registration"
-        android:layout_marginTop="@dimen/between_forgot_haventAcc"
-        android:text="@string/already_have_an_acc"
-        android:textColor="@color/textColor"
-        android:layout_centerHorizontal="true"
-        />
+        android:layout_below="@id/changeTypeAuth"
+        android:layout_marginTop="10dp">
+        <ImageButton
+            android:id="@+id/authButtonFacebook"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
 
-    <ImageView
-        android:id="@+id/authButtonFacebook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/start_of_facebook"
-        android:layout_marginTop="@dimen/top_of_google_face"
-        app:srcCompat="@drawable/facebook_auth" />
+            app:srcCompat="@drawable/facebook_auth" />
 
-    <ImageView
-        android:id="@+id/authButtonGoogle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/start_of_google"
-        android:layout_marginTop="@dimen/top_of_google_face"
-        app:srcCompat="@drawable/google_plus"/>
+        <ImageButton
+            android:id="@+id/authButtonGoogle"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/google_plus"/>
+    </LinearLayout>
+
+
 
 
 

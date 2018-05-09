@@ -56,6 +56,7 @@
     <string name="have_an_account_login">Already have an account? Login here!</string>
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
+    <string name="confirm_password">Confirm password</string>
 
     //Profile Dialoge
     <string name="edit_options">Edit options</string>
