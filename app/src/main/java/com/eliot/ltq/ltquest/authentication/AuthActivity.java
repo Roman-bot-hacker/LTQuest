@@ -32,10 +32,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuthManager manager;
     private FirebaseDataManager dataManager;
     private Button buttonLogIn;
+    private Button buttonSignUp;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private TextView textViewChangeType;
+    private EditText editTextConfirmPassword;
     private ImageView buttonGoogleSingIn;
+    private View changeTypeToLogin;
+    private View changeTypeToRegistration;
     private TextView textViewForgotPass;
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
@@ -52,9 +55,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         dataManager = new FirebaseDataManager();
 
         buttonLogIn = (Button) findViewById(R.id.login);
+        buttonSignUp = (Button) findViewById(R.id.registration);
         editTextEmail = (EditText) findViewById(R.id.editEmail);
         editTextPassword = (EditText) findViewById(R.id.editPassword);
-        textViewChangeType = (TextView) findViewById(R.id.changeTypeReg);
+        editTextConfirmPassword = (EditText) findViewById(R.id.confirmPassword);
+        changeTypeToLogin = findViewById(R.id.changeTypeToLogin);
+        changeTypeToRegistration = findViewById(R.id.changeTypeToRegistration);
         textViewForgotPass = (TextView) findViewById(R.id.forgotpass);
         buttonGoogleSingIn = (ImageView) findViewById(R.id.authButtonGoogle);
 
@@ -73,8 +79,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void chooseAuth() {
+        buttonSignUp.setOnClickListener(this);
         buttonLogIn.setOnClickListener(this);
-        textViewChangeType.setOnClickListener(this);
+        changeTypeToLogin.setOnClickListener(this);
+        changeTypeToRegistration.setOnClickListener(this);
         buttonGoogleSingIn.setOnClickListener(this);
         switch (authType) {
             case REGISTRATION: {
@@ -95,13 +103,36 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setRegistrationVisibility() {
-        buttonLogIn.setText("SIGN IN");
-        textViewChangeType.setText(R.string.haven_t_got_an_account_sign_in_with);
+        buttonSignUp.setText("Sign UP");
+        buttonLogIn.setVisibility(View.GONE);
+        View forgotPass = findViewById(R.id.forgotpass);
+        forgotPass.setVisibility(View.GONE);
+        View confirmPassword = findViewById(R.id.confirmPassword);
+        confirmPassword.setVisibility(View.VISIBLE);
+        View registrationButton = findViewById(R.id.registration);
+        registrationButton.setVisibility(View.VISIBLE);
+        View loginButton = findViewById(R.id.login);
+        loginButton.setVisibility(View.GONE);
+        View changeTypeToLogin = findViewById(R.id.changeTypeToLogin);
+        changeTypeToLogin.setVisibility(View.VISIBLE);
+        View changeTypeToRegistration = findViewById(R.id.changeTypeToRegistration);
+        changeTypeToRegistration.setVisibility(View.GONE);
     }
 
     public void setLoginVisibility() {
-        buttonLogIn.setText("LOGIN");
-        textViewChangeType.setText(R.string.have_an_account_login);
+        buttonLogIn.setText("LOG IN");
+        View forgotPass = findViewById(R.id.forgotpass);
+        forgotPass.setVisibility(View.VISIBLE);
+        View confirmPassword = findViewById(R.id.confirmPassword);
+        confirmPassword.setVisibility(View.GONE);
+        View registrationButton = findViewById(R.id.registration);
+        registrationButton.setVisibility(View.GONE);
+        View loginButton = findViewById(R.id.login);
+        loginButton.setVisibility(View.VISIBLE);
+        View changeTypeToLogin = findViewById(R.id.changeTypeToLogin);
+        changeTypeToLogin.setVisibility(View.GONE);
+        View changeTypeToRegistration = findViewById(R.id.changeTypeToRegistration);
+        changeTypeToRegistration.setVisibility(View.VISIBLE);
     }
 
     public String getEmail() {
@@ -111,6 +142,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public String getPassword() {
         return editTextPassword.getText().toString().trim();
     }
+
+    public String getConfirmPassword(){return editTextConfirmPassword.getText().toString().trim();}
 
     public boolean isFieldEmpty(String field) {
         return (TextUtils.isEmpty(field));
@@ -125,7 +158,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.login: {
-                if (isFieldEmpty(getEmail()) && isFieldEmpty(getPassword())) {
+                if (isFieldEmpty(getEmail()) && isFieldEmpty(getPassword()) && isFieldEmpty(getConfirmPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
                     /*if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
                         Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
@@ -134,22 +167,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 else if (!(isEmailValid((CharSequence) getEmail()))) {
                     Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (authType == AuthType.REGISTRATION) {
-                        manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
-                            @Override
-                            public void onSuccess() {
-                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
-
-                                finish();
-                                startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                            }
-
-                            @Override
-                            public void onError(String massage) {
-                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
                     if (authType == AuthType.LOGIN) {
                         manager.loginUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
@@ -167,15 +184,42 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
-            case R.id.changeTypeReg: {
-                if (authType == AuthType.LOGIN) {
+            case R.id.registration: {
+                if (authType == AuthType.REGISTRATION) {
+                    if (getPassword().equals(getConfirmPassword()) && !isFieldEmpty(getEmail()) && !isFieldEmpty(getPassword()) && !isFieldEmpty(getConfirmPassword())) {
+                        manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
+                            @Override
+                            public void onSuccess() {
+                                dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
+
+                                finish();
+                                startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                            }
+
+                            @Override
+                            public void onError(String massage) {
+                                Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    if(isFieldEmpty(getEmail()) || isFieldEmpty(getPassword()) || isFieldEmpty(getConfirmPassword())){
+                        Toast.makeText(this, "Fields can\'t be empty", Toast.LENGTH_SHORT).show();
+                    }
+
+                    else if (!getPassword().equals(getConfirmPassword())) {
+                        Toast.makeText(this, "Passwords don\'t match each other", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                }
+            }
+            case R.id.changeTypeToLogin: {
+                authType = AuthType.LOGIN;
+                chooseAuth();
+                break;
+            }
+            case R.id.changeTypeToRegistration: {
                     authType = AuthType.REGISTRATION;
                     chooseAuth();
-                }
-                else {
-                    authType = AuthType.LOGIN;
-                    chooseAuth();
-                }
                 break;
             }
             case R.id.authButtonGoogle: {

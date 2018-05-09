@@ -58,13 +58,27 @@
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"/>
 
+    <EditText
+        android:id="@+id/confirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editPassword"
+        android:layout_marginStart="@dimen/margin_top_for_button"
+        android:layout_marginEnd="@dimen/margin_top_for_button"
+        android:layout_marginTop="@dimen/between_email_password"
+        android:inputType="textPassword"
+        android:hint="@string/your_password"
+        android:textColor="@color/textColor"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"/>
+
     <TextView
         android:id="@+id/forgotpass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/editPassword"
         android:layout_marginStart="@dimen/margin_top_for_button"
-        android:layout_marginEnd="@dimen/end_of_forgotpassword"
+        android:gravity="start"
         android:layout_marginTop="@dimen/between_password_forgot"
         android:text="@string/forgot_a_password"
         android:textColor="@color/color4"
@@ -81,18 +95,43 @@
         android:layout_marginTop="@dimen/top_of_login"
         android:text="@string/login"
         android:textColor="#FF907AEC"
+        tools:text="Log In"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/registration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/confirmPassword"
+        android:layout_marginStart="@dimen/margin_top_for_button"
+        android:layout_marginEnd="@dimen/margin_top_for_button"
+        android:layout_marginTop="@dimen/top_of_login"
+        android:text="Sign In"
+        android:textColor="#FF907AEC"
+        android:visibility="gone"
         tools:text="Login"
         android:layout_centerHorizontal="true"/>
 
     <TextView
-        android:id="@+id/changeTypeReg"
+        android:id="@+id/changeTypeToRegistration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/start_havent_account"
-        android:layout_marginEnd="@dimen/end_havent_account"
+        android:gravity="center"
         android:layout_below="@+id/login"
         android:layout_marginTop="@dimen/between_forgot_haventAcc"
-        android:text="@string/haven_t_got_an_account_sign_in_with"
+        android:text="@string/dont_have_acc"
+        android:textColor="@color/textColor"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:id="@+id/changeTypeToLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/registration"
+        android:layout_marginTop="@dimen/between_forgot_haventAcc"
+        android:text="@string/already_have_an_acc"
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"
         />
