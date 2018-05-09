@@ -57,6 +57,10 @@
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
 
+    //Profile Dialoge
+    <string name="edit_options">Edit options</string>
+    <string name="sexf">Female</string>
+
 
     //This strings resources are just a part of design and will delete in future
     <string name="point_">534</string>

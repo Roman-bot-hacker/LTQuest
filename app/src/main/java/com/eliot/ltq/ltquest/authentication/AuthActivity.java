@@ -158,11 +158,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.login: {
-                if (isFieldEmpty(getEmail()) && isFieldEmpty(getPassword()) && isFieldEmpty(getConfirmPassword())) {
+                if (isFieldEmpty(getEmail()) || isFieldEmpty(getPassword()) || isFieldEmpty(getConfirmPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    /*if ((authType == AuthType.REGISTRATION) && (isFieldEmpty(getName()))) {
-                        Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                    }*/
                 }
                 else if (!(isEmailValid((CharSequence) getEmail()))) {
                     Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
@@ -186,7 +183,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.registration: {
                 if (authType == AuthType.REGISTRATION) {
-                    if (getPassword().equals(getConfirmPassword()) && !isFieldEmpty(getEmail()) && !isFieldEmpty(getPassword()) && !isFieldEmpty(getConfirmPassword())) {
+                    if (getPassword().equals(getConfirmPassword()) && !isFieldEmpty(getEmail()) && !isFieldEmpty(getPassword()) && !isFieldEmpty(getConfirmPassword()) && isEmailValid((CharSequence) getEmail())) {
                         manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                             @Override
                             public void onSuccess() {
@@ -202,6 +199,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                     }
+                    if (!(isEmailValid((CharSequence) getEmail()))) {
+                        Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();}
                     if(isFieldEmpty(getEmail()) || isFieldEmpty(getPassword()) || isFieldEmpty(getConfirmPassword())){
                         Toast.makeText(this, "Fields can\'t be empty", Toast.LENGTH_SHORT).show();
                     }
