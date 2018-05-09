@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,7 +82,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FirebaseApp.initializeApp(this);
         firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
+        configureNavigationDraver();
         setCategoriesText();
+        drawerLayout = drawerLayout = findViewById(id.drawer_layout_main);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
@@ -94,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
-        configureNavigationDraver();
         configureToolbarForFirstScreen();
+        navigationView.getMenu().getItem(0).setChecked(true);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -261,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -305,12 +308,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    public boolean isFieldEmpty(String field) {
+        return (TextUtils.isEmpty(field));
+    }
+
     public void setToolbarUserInf(){
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
                 TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                //toolbarUserName.setText(userInformation.getName());
+                toolbarUserName.setText(userInformation.getName());
                 TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
                 if(!(userInformation.getGoogleEmail()==null)){
                     toolbarEmail.setText(userInformation.getGoogleEmail());
@@ -370,27 +377,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void configureNavigationDraver(){
         drawerLayout = findViewById(id.drawer_layout);
-        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
 
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                setToolbarUserInf();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
     }
 
     private void configureToolbarForFirstScreen() {
@@ -414,7 +401,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-
         switch (itemId) {
             case android.R.id.home:
                 if(screen1.getVisibility() == View.VISIBLE) {

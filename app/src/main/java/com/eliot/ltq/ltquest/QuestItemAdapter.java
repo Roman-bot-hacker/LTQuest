@@ -14,7 +14,7 @@ import java.util.List;
 
 public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyViewHolder> {
 
-    private List<Quest> questList;
+    private List<QuestStructure> questList;
     private Context context;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -24,10 +24,15 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
 
         public MyViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.quest_name);
-            distance = (TextView) view.findViewById(R.id.quest_distance);
-            image = (ImageView) view.findViewById(R.id.quest_image);
+            name = view.findViewById(R.id.quest_name);
+            distance = view.findViewById(R.id.quest_distance);
+            image = view.findViewById(R.id.quest_image);
             view.setOnClickListener(this);
+        }
+
+        public void setQuest(QuestStructure questStructure){
+            name.setText(questStructure.getQuestName());
+            distance.setText(questStructure.getDistance()+" km");
         }
 
         public void setItemClickListener(ItemClickListener itemOnClickListener){
@@ -41,8 +46,8 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
     }
 
 
-    public QuestItemAdapter(List<Quest> moviesList) {
-        this.questList = moviesList;
+    public QuestItemAdapter(List<QuestStructure> questsList) {
+        this.questList = questsList;
     }
 
     @Override
@@ -55,13 +60,12 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final Quest quest = questList.get(position);
-        holder.name.setText(quest.getName());
-        holder.distance.setText(quest.getDistance()+" km");
+        final QuestStructure questStructure = questList.get(position);
+        holder.setQuest(questStructure);
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Log.d(" Clicked: ",quest.getName());
+                Log.d(" Clicked: ",questStructure.getQuestName());
             }
         });
     }

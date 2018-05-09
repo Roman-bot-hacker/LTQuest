@@ -1,20 +1,15 @@
 package com.eliot.ltq.ltquest;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -34,14 +29,17 @@ public class Balance extends AppCompatActivity {
     private Toolbar toolbar;
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.balance);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        configureNavigationDrawer();
         configureToolbar();
+        drawerLayout = findViewById(R.id.drawer_layout);
+        configureNavigationDrawer();
+        setNavigationHeaderUserInf();
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void configureToolbar() {
@@ -67,8 +65,7 @@ public class Balance extends AppCompatActivity {
     }
 
     private void configureNavigationDrawer() {
-        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+       navigationView = findViewById(R.id.nav_view);
 
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -78,7 +75,7 @@ public class Balance extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                setToolbarUserInf();
+
             }
 
             @Override
@@ -109,20 +106,19 @@ public class Balance extends AppCompatActivity {
                     startActivity(new Intent(Balance.this, ProfileActivity.class));
                 }
 
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
     }
 
-    public void setToolbarUserInf() {
+    public void setNavigationHeaderUserInf() {
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                //toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(R.id.toolbarEmail);
+                TextView toolbarUserName = navigationView.getHeaderView(0).findViewById(R.id.toolbar_user_name);
+                toolbarUserName.setText(userInformation.getName());
+                TextView toolbarEmail = navigationView.getHeaderView(0).findViewById(R.id.toolbarEmail);
                 if (!(userInformation.getGoogleEmail() == null)) {
                     toolbarEmail.setText(userInformation.getGoogleEmail());
                 } else if (!(userInformation.getEmail() == null)) {
@@ -130,7 +126,7 @@ public class Balance extends AppCompatActivity {
                 } else if (!(userInformation.getFacebookLink() == null)) {
                     toolbarEmail.setText(userInformation.getFacebookLink());
                 }
-                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
+                LinearLayout toolbarProfile = navigationView.getHeaderView(0).findViewById(R.id.toolbarProfile);
                 toolbarProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -49,23 +49,14 @@ public class ActivityChooseLevel extends AppCompatActivity{
         manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
             @Override
             public void onSuccess(List<QuestStructure> questStructureList) {
-                for (QuestStructure questStructure : questStructureList) {
-                    if (questStructure.getLevel() == 1) {
-                        Quest quest = new Quest(R.drawable.lviv1, questStructure.getQuestName(), questStructure.getDistance());
-                        quests.add(quest);
-                    } else if (questStructure.getLevel() == 2) {
-                        Quest easyQuest = new Quest(R.drawable.lviv1, questStructure.getQuestName(), questStructure.getDistance());
-                        easyQuests.add(easyQuest);
-                    }
-                }
                 recyclerView = findViewById(R.id.first_recycler_view);
-                questItemAdapter = new QuestItemAdapter(quests);
+                questItemAdapter = new QuestItemAdapter(questStructureList);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView.setLayoutManager(mLayoutManager);
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(questItemAdapter);
                 easyRecyclerView = findViewById(R.id.second_recycler_view);
-                easyQuestItemAdapter = new QuestItemAdapter(easyQuests);
+                easyQuestItemAdapter = new QuestItemAdapter(questStructureList);
                 RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                 easyRecyclerView.setLayoutManager(mLayoutManager1);
                 easyRecyclerView.setItemAnimator(new DefaultItemAnimator());
