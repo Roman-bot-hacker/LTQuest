@@ -70,6 +70,10 @@ public class FirebaseAuthManager {
 
     }
 
+    public void logout(){
+        auth.signOut();
+    }
+
     public void loginUser(String email, String password, final UserLoginListener listener) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnFailureListener(new OnFailureListener() {
@@ -89,7 +93,7 @@ public class FirebaseAuthManager {
 
     public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
 
-                auth.signInWithCredential(credential)
+        auth.signInWithCredential(credential)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {

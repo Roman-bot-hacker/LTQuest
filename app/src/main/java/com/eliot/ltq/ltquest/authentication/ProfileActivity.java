@@ -39,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private TextView textViewSex;
     private TextView textViewFacebookLink;
     private TextView textViewGoogleEmail;
+    private TextView textViewLayout;
     private LinearLayout facebookLayout;
     private LinearLayout googleLayout;
     private LinearLayout emailLayout;
@@ -69,7 +70,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         imageViewUserPhoto = (ImageView) findViewById(R.id.avatar);
         facebookLayout = (LinearLayout) findViewById(R.id.liner_facebook);
         googleLayout = (LinearLayout) findViewById(R.id.liner_google);
+        textViewLayout = (TextView) findViewById(R.id.logout);
         emailLayout = (LinearLayout) findViewById(R.id.liner_mail);
+
+        textViewLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                authManager.logout();
+                AuthActivity.setAuthType(AuthType.LOGIN);
+                finish();
+                startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
+            }
+        });
 
 
         if (authManager.isUserLoggedIn())
@@ -174,7 +186,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        
+
         switch (itemId) {
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
