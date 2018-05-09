@@ -1,5 +1,6 @@
 package com.eliot.ltq.ltquest.authentication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eliot.ltq.ltquest.Balance;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
@@ -57,10 +59,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         authManager = new FirebaseAuthManager();
         user = authManager.getCurrentUser();
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        configureNavigationDrawer();
-        configureToolbar();
-
         if (user == null) {
             AuthActivity.setAuthType(AuthType.LOGIN);
             finish();
@@ -72,16 +70,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         googleLayout = (LinearLayout) findViewById(R.id.liner_google);
         textViewLayout = (TextView) findViewById(R.id.logout);
         emailLayout = (LinearLayout) findViewById(R.id.liner_mail);
-
-        textViewLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                authManager.logout();
-                AuthActivity.setAuthType(AuthType.LOGIN);
-                finish();
-                startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
-            }
-        });
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        configureNavigationDrawer();
+        configureToolbar();
+        textViewLayout.setOnClickListener(this);
 
 
         if (authManager.isUserLoggedIn())
@@ -99,15 +91,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     textViewFacebookLink = (TextView) findViewById(R.id.email_facebok);
                     if(!(userInformation.getFacebookLink()==null)) {
                         textViewFacebookLink.setText(userInformation.getFacebookLink());
-                    } else {textViewFacebookLink.setText(" ");}
+                    } else {facebookLayout.setVisibility(View.GONE);}
                     textViewGoogleEmail = (TextView) findViewById(R.id.email_google);
                     if(!(userInformation.getGoogleEmail()==null)) {
                         textViewGoogleEmail.setText(userInformation.getGoogleEmail());
-                    } else {textViewGoogleEmail.setText(" ");}
+                    } else {googleLayout.setVisibility(View.GONE);}
                     textViewUserEmail = (TextView) findViewById(R.id.email_mail);
                     if(!(userInformation.getEmail()==null)) {
                         textViewUserEmail.setText(userInformation.getEmail());
-                    } else {textViewUserEmail.setText(" ");}
+                    } else {emailLayout.setVisibility(View.GONE);}
                 }
 
                 @Override
@@ -121,7 +113,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.logout: {
+                authManager.logout(new FirebaseAuthManager.UserLoginListener() {
+                    @Override
+                    public void onSuccess() {
+                        AuthActivity.setAuthType(AuthType.LOGIN);
+                        finish();
+                        startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
+                    }
 
+                    @Override
+                    public void onError(String massage) {
+                        Log.e("User LogOut: ",massage);
+                        Toast.makeText(ProfileActivity.this, "Cannot logout, something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 
     private void configureToolbar() {

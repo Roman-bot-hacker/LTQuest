@@ -70,8 +70,13 @@ public class FirebaseAuthManager {
 
     }
 
-    public void logout(){
-        auth.signOut();
+    public void logout(UserLoginListener listener){
+        try {
+            auth.signOut();
+            listener.onSuccess();
+        } catch (Exception e) {
+            listener.onError(e.getLocalizedMessage());
+        }
     }
 
     public void loginUser(String email, String password, final UserLoginListener listener) {
@@ -112,10 +117,6 @@ public class FirebaseAuthManager {
                         listener.onError("Cannot sing in with your Google account");
                     }
                 });
-    }
-
-    public void signOut() {
-        auth.signOut();
     }
 
     public boolean isUserLoggedIn() {
