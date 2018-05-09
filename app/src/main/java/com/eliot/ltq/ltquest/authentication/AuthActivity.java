@@ -99,7 +99,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void setRegistrationVisibility() {
         editTextConfirmPassword.setVisibility(View.VISIBLE);
         buttonLogIn.setText("SIGN UP");
-        textViewForgotPass.setVisibility(View.GONE);
+        textViewForgotPass.setVisibility(View.INVISIBLE);
         changeTypeAuth.setText(R.string.have_an_account_login);
     }
 
