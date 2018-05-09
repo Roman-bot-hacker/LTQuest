@@ -70,6 +70,10 @@ public class FirebaseAuthManager {
 
     }
 
+    public void logout(){
+        auth.signOut();
+    }
+
     public void loginUser(String email, String password, final UserLoginListener listener) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnFailureListener(new OnFailureListener() {
