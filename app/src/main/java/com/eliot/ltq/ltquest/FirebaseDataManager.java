@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -41,6 +42,11 @@ public class FirebaseDataManager {
     public interface DataRetrieveListenerForUserInformation{
         void onSuccess(UserInformation userInformation);
         void onError(DatabaseError databaseError);
+    }
+
+    public interface UserInformationWritingListener{
+        void onSuccess(UserInformation userInformation);
+        void onError();
     }
 
     public void categoriesNamesListRetriever(final DataRetrieveListenerForQuestCategory listener){
@@ -116,8 +122,32 @@ public class FirebaseDataManager {
     public void findLocationsById(){
     }
 
-    public void writeCurrentUserData(String uId, UserInformation userInformation){
+    public void writeCurrentUserData(String uId, final UserInformation userInformation, final UserInformationWritingListener listener){
             firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
+            try{
+                getCurrentUserData(uId, new DataRetrieveListenerForUserInformation() {
+                    @Override
+                    public void onSuccess(UserInformation userInformation) {
+                        if(userInformation.getName()!=null){
+                            Log.e("User Inf create: ", "Creation successful");
+                            listener.onSuccess(userInformation);
+                        }
+                        else {
+                            Log.e("User Inf create: ", "Creation failed");
+                            listener.onError();
+                        }
+                    }
+
+                    @Override
+                    public void onError(DatabaseError databaseError) {
+                        Log.e("FirebaseDataManager: ",databaseError.getMessage());
+                        listener.onError();
+                    }
+                });
+            }
+            catch (NullPointerException e){
+
+            }
     }
 
     public void getCurrentUserData(String uId, final DataRetrieveListenerForUserInformation listener){

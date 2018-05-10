@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseError;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -165,9 +166,19 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                                 @Override
                                 public void onSuccess() {
-                                    dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
-                                    finish();
-                                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                    dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                            new UserInformation(getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
+                                                @Override
+                                                public void onSuccess(UserInformation userInformation) {
+                                                    finish();
+                                                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } );
                                 }
 
                                 @Override
@@ -222,8 +233,19 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess() {
                         if(isNewUser) {
-                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
-                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                    new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(),
+                                            gSingInAccount.getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
+                                        @Override
+                                        public void onSuccess(UserInformation userInformation) {
+                                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Toast.makeText(AuthActivity.this, "Cannot sign in with google, some problems found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                         }
                         else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                     }
