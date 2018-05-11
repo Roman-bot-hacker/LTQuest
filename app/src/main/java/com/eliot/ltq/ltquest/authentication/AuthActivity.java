@@ -169,16 +169,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                     dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
                                             new UserInformation(getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
                                                 @Override
-                                                public void onSuccess(UserInformation userInformation) {
-                                                    finish();
+                                                public void onSuccess() {
                                                     startActivity(new Intent(AuthActivity.this, MainActivity.class));
                                                 }
 
                                                 @Override
                                                 public void onError() {
-                                                    Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(AuthActivity.this, "Something wrong with your registration, please try again", Toast.LENGTH_SHORT).show();
                                                 }
-                                            } );
+                                            });
                                 }
 
                                 @Override
@@ -237,13 +236,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                     new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(),
                                             gSingInAccount.getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
                                         @Override
-                                        public void onSuccess(UserInformation userInformation) {
+                                        public void onSuccess() {
                                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
                                         }
 
                                         @Override
                                         public void onError() {
-                                            Toast.makeText(AuthActivity.this, "Cannot sign in with google, some problems found", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(AuthActivity.this, "Something wrong with your sign in, please try again", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }
@@ -263,7 +262,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("Error",e.getLocalizedMessage());
             }
         } else {
-            Log.e("Error","Cannot sing in with your Google account");
+            if(!isNetworkAvailable()) {
+                Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+            }
+            else {Log.e("Error","Cannot sing in with your Google account");}
         }
 
     }
