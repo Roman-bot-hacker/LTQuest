@@ -26,6 +26,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseError;
 
@@ -176,6 +177,29 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 @Override
                                                 public void onError() {
                                                     Toast.makeText(AuthActivity.this, "Something wrong with your registration, please try again", Toast.LENGTH_SHORT).show();
+                                                    FirebaseUser user = manager.getCurrentUser();
+                                                    manager.logout(new FirebaseAuthManager.UserLoginListener() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError(String massage) {
+
+                                                        }
+                                                    });
+                                                    manager.deleteUser(user, new FirebaseAuthManager.UserLoginListener() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError(String massage) {
+                                                            Log.e("MailRegUsDelFail: ",massage);
+                                                        }
+                                                    });
                                                 }
                                             });
                                 }
@@ -243,6 +267,29 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                         @Override
                                         public void onError() {
                                             Toast.makeText(AuthActivity.this, "Something wrong with your sign in, please try again", Toast.LENGTH_SHORT).show();
+                                            FirebaseUser user = manager.getCurrentUser();
+                                            manager.logout(new FirebaseAuthManager.UserLoginListener() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError(String massage) {
+
+                                                }
+                                            });
+                                            manager.deleteUser(user, new FirebaseAuthManager.UserLoginListener() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError(String massage) {
+                                                    Log.e("GogRegUsDelFail:", massage);
+                                                }
+                                            });
                                         }
                                     });
                         }

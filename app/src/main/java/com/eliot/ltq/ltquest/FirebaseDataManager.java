@@ -125,7 +125,7 @@ public class FirebaseDataManager {
     }
 
     public void writeCurrentUserData(String uId, final UserInformation userInformation, final UserInformationWritingListener listener){
-            firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
+            //firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
             checkIfUserInformationIsWritten(uId, new UserInformationWritingListener() {
                 @Override
                 public void onSuccess() {
@@ -145,11 +145,16 @@ public class FirebaseDataManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInformation userInformation;
                 userInformation = dataSnapshot.getValue(UserInformation.class);
-                try {
-                    String infIsAvailable = userInformation.getName();
-                    listener.onSuccess();
+                try{
+                    //trying if user information is written on database
+                    if(userInformation.getName()==null){
+                        listener.onError();
+                    }
+                    else {
+                        listener.onSuccess();
+                    }
                 }
-                catch (NullPointerException e) {
+                catch (NullPointerException e){
                     listener.onError();
                 }
             }

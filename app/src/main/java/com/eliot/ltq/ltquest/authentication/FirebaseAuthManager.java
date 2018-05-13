@@ -68,6 +68,22 @@ public class FirebaseAuthManager {
         }
     }
 
+    public void deleteUser(FirebaseUser user, final UserLoginListener listener){
+        user.delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onError(e.getLocalizedMessage());
+                    }
+                });
+    }
+
 
     public void firebaseAuthWithGoogle(AuthCredential credential, final UserLoginListener listener) {
 
