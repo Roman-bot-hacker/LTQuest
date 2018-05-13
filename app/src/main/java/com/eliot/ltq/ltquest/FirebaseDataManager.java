@@ -125,7 +125,7 @@ public class FirebaseDataManager {
     }
 
     public void writeCurrentUserData(String uId, final UserInformation userInformation, final UserInformationWritingListener listener){
-            //firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
+            firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
             checkIfUserInformationIsWritten(uId, new UserInformationWritingListener() {
                 @Override
                 public void onSuccess() {

@@ -4,4 +4,38 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground2">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/logo_screen_layout"
+            android:orientation="vertical"
+            android:gravity="start">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/main_logo"
+                android:src="@drawable/ltq_logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/logo_app_name"
+                android:text="@string/lvivtripquest"
+                android:textColor="@color/colorBackground"
+                android:layout_below="@+id/main_logo"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>
