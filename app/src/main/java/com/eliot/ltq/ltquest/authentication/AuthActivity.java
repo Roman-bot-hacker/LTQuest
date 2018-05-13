@@ -176,6 +176,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                                 @Override
                                                 public void onError() {
+                                                    /*
+                                                    it check if app can read current UserData and if its false, delete user's Firebase account
+                                                     */
                                                     Toast.makeText(AuthActivity.this, "Something wrong with your registration, please try again", Toast.LENGTH_SHORT).show();
                                                     FirebaseUser user = manager.getCurrentUser();
                                                     manager.logout(new FirebaseAuthManager.UserLoginListener() {
@@ -266,6 +269,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                         @Override
                                         public void onError() {
+                                            /*
+                                                    it check if app can read current UserData and if its false, delete user's Firebase account
+                                                     */
                                             Toast.makeText(AuthActivity.this, "Something wrong with your sign in, please try again", Toast.LENGTH_SHORT).show();
                                             FirebaseUser user = manager.getCurrentUser();
                                             manager.logout(new FirebaseAuthManager.UserLoginListener() {
@@ -322,5 +328,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
     }
 }

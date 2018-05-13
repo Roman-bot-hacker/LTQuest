@@ -37,4 +37,9 @@ public class LogoActivity extends AppCompatActivity {
             }
         }, TIME_TO_SHOW_LOGO);
     }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
 }

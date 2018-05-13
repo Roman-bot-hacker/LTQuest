@@ -431,4 +431,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
+
 }
