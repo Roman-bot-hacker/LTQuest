@@ -128,4 +128,9 @@ public class ActivityChooseLevel extends AppCompatActivity{
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
+
 }

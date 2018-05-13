@@ -55,6 +55,12 @@ public class ChooseLevelActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
+
     private void startNewButton(){
         /*ImageView CenterCafes = (ImageView) findViewById(R.id.my_recycler_view1);
         TextView CenterCafes0 = (TextView) findViewById(R.id.textView2);*/

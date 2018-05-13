@@ -329,4 +329,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
 }
