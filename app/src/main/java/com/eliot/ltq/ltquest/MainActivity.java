@@ -256,11 +256,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(new Intent(MainActivity.this, Balance.class));
         }
 
-        if(id==R.id.nav_settings){
-            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
