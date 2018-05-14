@@ -1,5 +1,7 @@
 package com.eliot.ltq.ltquest;
 
+import android.support.annotation.NonNull;
+
 public class QuestStructure {
     private int level;
     private int questID;
@@ -8,6 +10,15 @@ public class QuestStructure {
     private int parentCategoryID;
     private String imageUrl;
     private double distance;
+    private int imageViewId;
+
+    public int getImageViewId() {
+        return imageViewId;
+    }
+
+    public void setImageViewId(int imageViewId) {
+        this.imageViewId = imageViewId;
+    }
 
     public int getLevel() {
         return level;
@@ -24,4 +35,7 @@ public class QuestStructure {
     }
 
 
+    public int getParentCategoryID() {
+        return parentCategoryID;
+    }
 }

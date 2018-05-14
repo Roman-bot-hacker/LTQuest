@@ -14,10 +14,12 @@
         android:id="@+id/quest_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/cardview_dark_background"
         android:text="First Quest"/>
     <TextView
         android:id="@+id/quest_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/cardview_dark_background"
         android:text="12 km"/>
 </LinearLayout>

@@ -105,15 +105,13 @@ public class Balance extends AppCompatActivity {
 
                 }
 
-                if (id == R.id.nav_settings) {
-                    startActivity(new Intent(Balance.this, ProfileActivity.class));
-                }
-
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
+
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     public void setToolbarUserInf() {

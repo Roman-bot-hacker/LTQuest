@@ -102,6 +102,20 @@ public class FirebaseDataManager {
         return foundQuests;
     }
 
+    public List<QuestStructure> findQuestsByCategory(List<QuestStructure> fullList, int categoryId){
+        List<QuestStructure> foundQuests = new ArrayList<>();
+        for (QuestStructure questStructure:
+                fullList) {
+            if (questStructure.getParentCategoryID() == categoryId){
+                foundQuests.add(questStructure);
+            }
+            else {
+                Log.d(" Unfited Quest:", questStructure.getQuestName());
+            }
+        }
+        return foundQuests;
+    }
+
     public void locationsListRetriever(final DataRetrieveListenerForLocationsStructure listener){
         firebaseDatabase.getReference("locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

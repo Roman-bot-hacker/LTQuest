@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         toolbar = findViewById(R.id.toolbar);
         screen1 = findViewById(id.screen1);
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
-        configureNavigationDraver();
+        configureNavigationDrawer();
         configureToolbarForFirstScreen();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
@@ -256,11 +257,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(new Intent(MainActivity.this, Balance.class));
         }
 
-        if(id==R.id.nav_settings){
-            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -286,9 +282,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setCategoriesText(){
-        final TextView firstButtonText = findViewById(R.id.button1_text);
-        final TextView secondButtonText = findViewById(R.id.button2_text);
-        final TextView thirdButtonText = findViewById(R.id.button3_text);
+        final TextView firstButtonText = findViewById(R.id.button0_text);
+        final TextView secondButtonText = findViewById(R.id.button1_text);
+        final TextView thirdButtonText = findViewById(R.id.button2_text);
         firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestCategory(){
             @Override
             public void onSuccess(List<QuestCategory> questCategoryList) {
@@ -338,37 +334,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void screen2ButtonsOnClickListener() {
+        View category0 = findViewById(id.button0);
         View category1 = findViewById(id.button1);
         View category2 = findViewById(id.button2);
-        View category3 = findViewById(id.button3);
         View seeAll = findViewById(id.see_all);
+        category0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","0");
+                startActivityForResult(intent, 1);
+            }
+        });
         category1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, ActivityChooseLevel.class));
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","1");
+                startActivityForResult(intent, 1);
             }
         });
         category2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-            }
-        });
-        category3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","2");
+                startActivityForResult(intent, 1);
             }
         });
         seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","all");
+                startActivityForResult(intent, 1);
             }
         });
     }
 
-    public void configureNavigationDraver(){
+    public void configureNavigationDrawer(){
         drawerLayout = findViewById(id.drawer_layout);
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -391,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     private void configureToolbarForFirstScreen() {
@@ -429,6 +434,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                screen1 = findViewById(id.screen1);
+                screen2 = findViewById(id.screen2);
+                screen1.setVisibility(View.GONE);
+                screen2.setVisibility(View.VISIBLE);
+            }
+        }
+
     }
 
     @Override
