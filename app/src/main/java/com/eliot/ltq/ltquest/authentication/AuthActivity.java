@@ -26,7 +26,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseError;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -165,9 +167,44 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                                 @Override
                                 public void onSuccess() {
-                                    dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(getEmail()));
-                                    finish();
-                                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                    dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                            new UserInformation(getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    /*
+                                                    it check if app can read current UserData and if its false, delete user's Firebase account
+                                                     */
+                                                    Toast.makeText(AuthActivity.this, "Something wrong with your registration, please try again", Toast.LENGTH_SHORT).show();
+                                                    FirebaseUser user = manager.getCurrentUser();
+                                                    manager.logout(new FirebaseAuthManager.UserLoginListener() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError(String massage) {
+
+                                                        }
+                                                    });
+                                                    manager.deleteUser(user, new FirebaseAuthManager.UserLoginListener() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError(String massage) {
+                                                            Log.e("MailRegUsDelFail: ",massage);
+                                                        }
+                                                    });
+                                                }
+                                            });
                                 }
 
                                 @Override
@@ -222,8 +259,45 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess() {
                         if(isNewUser) {
-                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(), new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(), gSingInAccount.getEmail()));
-                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                    new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(),
+                                            gSingInAccount.getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
+                                        @Override
+                                        public void onSuccess() {
+                                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            /*
+                                                    it check if app can read current UserData and if its false, delete user's Firebase account
+                                                     */
+                                            Toast.makeText(AuthActivity.this, "Something wrong with your sign in, please try again", Toast.LENGTH_SHORT).show();
+                                            FirebaseUser user = manager.getCurrentUser();
+                                            manager.logout(new FirebaseAuthManager.UserLoginListener() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError(String massage) {
+
+                                                }
+                                            });
+                                            manager.deleteUser(user, new FirebaseAuthManager.UserLoginListener() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError(String massage) {
+                                                    Log.e("GogRegUsDelFail:", massage);
+                                                }
+                                            });
+                                        }
+                                    });
                         }
                         else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                     }
@@ -241,7 +315,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("Error",e.getLocalizedMessage());
             }
         } else {
-            Log.e("Error","Cannot sing in with your Google account");
+            if(!isNetworkAvailable()) {
+                Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+            }
+            else {Log.e("Error","Cannot sing in with your Google account");}
         }
 
     }
@@ -251,5 +328,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
     }
 }

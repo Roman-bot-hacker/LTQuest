@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onSuccess(UserInformation userInformation) {
                 TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                //toolbarUserName.setText(userInformation.getName());
+                toolbarUserName.setText(userInformation.getName());
                 TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
                 if(!(userInformation.getGoogleEmail()==null)){
                     toolbarEmail.setText(userInformation.getGoogleEmail());
@@ -447,6 +447,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
     }
 
 }

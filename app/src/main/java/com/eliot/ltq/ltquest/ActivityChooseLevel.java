@@ -193,4 +193,9 @@ public class ActivityChooseLevel extends AppCompatActivity{
         return quests;
     }
 
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
+
 }

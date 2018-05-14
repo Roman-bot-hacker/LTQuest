@@ -143,4 +143,9 @@ public class Balance extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
 }

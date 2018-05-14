@@ -1,9 +1,12 @@
 package com.eliot.ltq.ltquest;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import com.eliot.ltq.ltquest.authentication.AuthActivity;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -41,6 +44,11 @@ public class FirebaseDataManager {
     public interface DataRetrieveListenerForUserInformation{
         void onSuccess(UserInformation userInformation);
         void onError(DatabaseError databaseError);
+    }
+
+    public interface UserInformationWritingListener{
+        void onSuccess();
+        void onError();
     }
 
     public void categoriesNamesListRetriever(final DataRetrieveListenerForQuestCategory listener){
@@ -130,8 +138,46 @@ public class FirebaseDataManager {
     public void findLocationsById(){
     }
 
-    public void writeCurrentUserData(String uId, UserInformation userInformation){
+    public void writeCurrentUserData(String uId, final UserInformation userInformation, final UserInformationWritingListener listener){
             firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);
+            checkIfUserInformationIsWritten(uId, new UserInformationWritingListener() {
+                @Override
+                public void onSuccess() {
+                    listener.onSuccess();
+                }
+
+                @Override
+                public void onError() {
+                    listener.onError();
+                }
+            });
+    }
+
+    public void checkIfUserInformationIsWritten(String uId, final UserInformationWritingListener listener) {
+        firebaseDatabase.getReference().child("userData").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation;
+                userInformation = dataSnapshot.getValue(UserInformation.class);
+                try{
+                    //trying if user information is written on database
+                    if(userInformation.getName()==null){
+                        listener.onError();
+                    }
+                    else {
+                        listener.onSuccess();
+                    }
+                }
+                catch (NullPointerException e){
+                    listener.onError();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("UserInf problem: ",databaseError.getMessage());
+            }
+        });
     }
 
     public void getCurrentUserData(String uId, final DataRetrieveListenerForUserInformation listener){
