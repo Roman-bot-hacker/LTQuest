@@ -14,7 +14,7 @@ import java.util.List;
 
 public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyViewHolder> {
 
-    private List<Quest> questList;
+    private List<QuestStructure> questList;
     private Context context;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -41,7 +41,7 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
     }
 
 
-    public QuestItemAdapter(List<Quest> moviesList) {
+    public QuestItemAdapter(List<QuestStructure> moviesList) {
         this.questList = moviesList;
     }
 
@@ -55,13 +55,13 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final Quest quest = questList.get(position);
-        holder.name.setText(quest.getName());
-        holder.distance.setText(quest.getDistance()+" km");
+        final QuestStructure quest = questList.get(position);
+        holder.name.setText(quest.getQuestName());
+        holder.distance.setText((quest.getDistance())+" km");
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Log.d(" Clicked: ",quest.getName());
+                Log.d(" Clicked: ",quest.getQuestName());
             }
         });
     }

@@ -7,6 +7,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:id="@+id/button0"
+            android:layout_width="@dimen/button_weight"
+            android:layout_height="@dimen/button_hight"
+            style="@style/MainButton.background"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/button1"
+            android:layout_alignStart="@+id/button1"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:layout_width="@dimen/size_icon"
+                android:layout_height="@dimen/size_icon"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/ic_shop"/>
+
+            <TextView
+                android:id="@+id/button0_text"
+                style="@style/Text_categoty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/between_icon_category"
+                android:layout_marginTop="@dimen/top_category" />
+        </LinearLayout>
+
+
+        <LinearLayout
             android:id="@+id/button1"
             android:layout_width="@dimen/button_weight"
             android:layout_height="@dimen/button_hight"
@@ -21,37 +48,10 @@
                 android:layout_height="@dimen/size_icon"
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/ic_shop"/>
-
-            <TextView
-                android:id="@+id/button1_text"
-                style="@style/Text_categoty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/between_icon_category"
-                android:layout_marginTop="@dimen/top_category" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/button2"
-            android:layout_width="@dimen/button_weight"
-            android:layout_height="@dimen/button_hight"
-            style="@style/MainButton.background"
-            android:layout_centerHorizontal="true"
-            android:layout_above="@+id/button3"
-            android:layout_alignStart="@+id/button3"
-            android:layout_marginBottom="20dp">
-
-            <ImageView
-                android:layout_width="@dimen/size_icon"
-                android:layout_height="@dimen/size_icon"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="8dp"
                 android:background="@drawable/ic_star"/>
 
             <TextView
-                android:id="@+id/button2_text"
+                android:id="@+id/button1_text"
                 style="@style/Text_categoty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button3"
+            android:id="@+id/button2"
             android:layout_width="@dimen/button_weight"
             android:layout_height="@dimen/button_hight"
             style="@style/MainButton.background"
@@ -78,7 +78,7 @@
                 android:background="@drawable/ic_norm_home"/>
 
             <TextView
-                android:id="@+id/button3_text"
+                android:id="@+id/button2_text"
                 style="@style/Text_categoty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

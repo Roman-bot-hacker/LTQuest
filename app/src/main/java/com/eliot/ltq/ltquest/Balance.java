@@ -110,6 +110,8 @@ public class Balance extends AppCompatActivity {
                 return true;
             }
         });
+
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     public void setToolbarUserInf() {

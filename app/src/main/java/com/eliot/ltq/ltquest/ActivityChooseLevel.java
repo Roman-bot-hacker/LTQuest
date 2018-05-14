@@ -19,17 +19,19 @@ import android.view.View;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 public class ActivityChooseLevel extends AppCompatActivity{
     FirebaseDataManager manager = new FirebaseDataManager();
     private RecyclerView easyRecyclerView;
-    private List<Quest> easyQuests = new ArrayList<>();
+    private List<QuestStructure> easyQuests = new ArrayList<>();
     private QuestItemAdapter easyQuestItemAdapter;
 
     private RecyclerView recyclerView;
-    private List<Quest> quests = new ArrayList<>();
+    private List<QuestStructure> quests = new ArrayList<>();
     private QuestItemAdapter questItemAdapter;
     private Toolbar toolbar;
 
@@ -39,6 +41,18 @@ public class ActivityChooseLevel extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
         toolbar = findViewById(R.id.toolbar);
+        recyclerView = findViewById(R.id.first_recycler_view);
+        questItemAdapter = new QuestItemAdapter(quests);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(questItemAdapter);
+        easyRecyclerView = findViewById(R.id.second_recycler_view);
+        easyQuestItemAdapter = new QuestItemAdapter(easyQuests);
+        RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        easyRecyclerView.setLayoutManager(mLayoutManager1);
+        easyRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        easyRecyclerView.setAdapter(easyQuestItemAdapter);
         prepareQuestData();
         startNewButton();
         configureToolbar();
@@ -46,36 +60,63 @@ public class ActivityChooseLevel extends AppCompatActivity{
 
 
     private void prepareQuestData() {
+        final String categoryToShow = getIntent().getStringExtra("Category");
         manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
             @Override
             public void onSuccess(List<QuestStructure> questStructureList) {
-                for (QuestStructure questStructure : questStructureList) {
-                    if (questStructure.getLevel() == 1) {
-                        Quest quest = new Quest(R.drawable.lviv1, questStructure.getQuestName(), questStructure.getDistance());
-                        quests.add(quest);
-                    } else if (questStructure.getLevel() == 2) {
-                        Quest easyQuest = new Quest(R.drawable.lviv1, questStructure.getQuestName(), questStructure.getDistance());
-                        easyQuests.add(easyQuest);
-                    }
-                }
-                recyclerView = findViewById(R.id.first_recycler_view);
-                questItemAdapter = new QuestItemAdapter(quests);
-                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                recyclerView.setLayoutManager(mLayoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(questItemAdapter);
-                easyRecyclerView = findViewById(R.id.second_recycler_view);
-                easyQuestItemAdapter = new QuestItemAdapter(easyQuests);
-                RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                easyRecyclerView.setLayoutManager(mLayoutManager1);
-                easyRecyclerView.setItemAnimator(new DefaultItemAnimator());
-                easyRecyclerView.setAdapter(easyQuestItemAdapter);
-                easyRecyclerView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                questStructureList = sortQuestsForRecycler(questStructureList);
+                switch (categoryToShow) {
+                    case "0":
+                        List<QuestStructure> questsInCategory0 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 0));
+                        for (QuestStructure questStructure : questsInCategory0) {
+                            if (questStructure.getLevel() == 1) {
+                                quests.add(questStructure);
+                                questItemAdapter.notifyDataSetChanged();
+                            } else if (questStructure.getLevel() == 2) {
+                                easyQuests.add(questStructure);
+                                easyQuestItemAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        break;
 
-                    }
-                });
+                    case "1":
+                        List<QuestStructure> questsInCategory1 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 1));
+                        for (QuestStructure questStructure : questsInCategory1) {
+                            if (questStructure.getLevel() == 1) {
+                                quests.add(questStructure);
+                                questItemAdapter.notifyDataSetChanged();
+                            } else if (questStructure.getLevel() == 2) {
+                                easyQuests.add(questStructure);
+                                easyQuestItemAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        break;
+
+                    case "2":
+                        List<QuestStructure> questsInCategory2 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 2));
+                        for (QuestStructure questStructure : questsInCategory2) {
+                            if (questStructure.getLevel() == 1) {
+                                quests.add(questStructure);
+                                questItemAdapter.notifyDataSetChanged();
+                            } else if (questStructure.getLevel() == 2) {
+                                easyQuests.add(questStructure);
+                                easyQuestItemAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        break;
+
+                    case "all":
+                        for (QuestStructure questStructure : questStructureList) {
+                            if (questStructure.getLevel() == 1) {
+                                quests.add(questStructure);
+                                questItemAdapter.notifyDataSetChanged();
+                            } else if (questStructure.getLevel() == 2) {
+                                easyQuests.add(questStructure);
+                                easyQuestItemAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        break;
+                }
             }
 
             @Override
@@ -121,11 +162,35 @@ public class ActivityChooseLevel extends AppCompatActivity{
 
         switch (itemId) {
             case android.R.id.home:
-                startActivity(new Intent(ActivityChooseLevel.this, MainActivity.class));
+                Intent intent = new Intent(ActivityChooseLevel.this, MainActivity.class);
+                setResult(RESULT_OK);
+                finish();
                 return true;
         }
 
         return true;
+    }
+
+    public List<QuestStructure> sortQuestsForRecycler(List<QuestStructure> quests){
+        List<QuestStructure> sortedQuests = new ArrayList<>();
+        Collections.sort(quests, new Comparator<QuestStructure>() {
+            @Override
+            public int compare(QuestStructure o1, QuestStructure o2) {
+                String name1 = o1.getQuestName();
+                String name2 = o2.getQuestName();
+                return name1.compareTo(name2);
+            }
+        });
+        Collections.sort(quests, new Comparator<QuestStructure>() {
+            @Override
+            public int compare(QuestStructure o1, QuestStructure o2) {
+                int category1 = o1.getParentCategoryID();
+                int category2 = o2.getParentCategoryID();
+                return category1 - category2;
+            }
+        });
+
+        return quests;
     }
 
 }
