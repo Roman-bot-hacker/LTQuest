@@ -8,9 +8,10 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorbackground"
         android:layout_alignParentTop="true"
-        android:layout_alignBottom="@+id/sex" />
+        android:layout_alignBottom="@+id/sex"
+        android:background="@color/colorbackground"
+        />
 
     <ImageView
         android:id="@+id/avatar"
@@ -21,7 +22,7 @@
         android:src="@drawable/avatar" />
 
     <ImageView
-        android:id="@+id/question"
+        android:id="@+id/settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -67,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_margin="24dp"
+        android:layout_margin="10dp"
         android:layout_below="@+id/sex"
         app:cardElevation="8dp"
         android:padding="6dp">
@@ -130,7 +131,7 @@
                         android:layout_below="@+id/facebok"
                         android:layout_marginTop="8dp"
                         android:background="@color/lightdrayline"
-                         />
+                        />
 
                 </RelativeLayout>
 

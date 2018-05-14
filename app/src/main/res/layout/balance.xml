@@ -12,16 +12,11 @@
         android:layout_marginTop="24dp"
         android:id="@+id/linearLayout">
 
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/oval"
-            />
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp">
+            android:layout_marginStart="10dp">
 
 
             <TextView
@@ -57,6 +52,7 @@
 
     <TextView
         android:id="@+id/text3"
+        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/linearLayout"
@@ -69,6 +65,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout2"
+        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text3"
@@ -96,9 +93,10 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:id="@+id/linearLayout3"
         android:layout_below="@+id/linearLayout2"
-        android:layout_marginStart="24dp">
+        android:layout_marginStart="34dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -143,7 +141,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout4"
         android:layout_below="@+id/linearLayout3"
-        android:layout_marginStart="24dp">
+        android:layout_marginStart="34dp">
 
         <ImageView
             android:layout_width="wrap_content"
