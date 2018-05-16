@@ -68,24 +68,20 @@
         android:layout_centerHorizontal="true"/>
 
     <TextView
-        android:id="@+id/forgotpass"
+        android:id="@+id/changeTypeAuth"
+        android:text="@string/already_have_an_acc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/confirmPassword"
-        android:layout_marginStart="@dimen/margin_top_for_button"
-        android:gravity="start"
-        android:layout_marginTop="@dimen/between_password_forgot"
-        android:text="@string/forgot_a_password"
-        android:visibility="gone"
-        android:textColor="@color/color4"
-        android:layout_centerHorizontal="true"/>
-
+        android:layout_below="@id/confirmPassword"
+        android:layout_marginTop="@dimen/between_email_password"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/forgotpass"
+        android:layout_below="@+id/changeTypeAuth"
         android:layout_marginStart="@dimen/margin_top_for_button"
         android:layout_marginEnd="@dimen/margin_top_for_button"
         android:layout_marginTop="@dimen/top_of_login"
@@ -95,13 +91,13 @@
         android:layout_centerHorizontal="true"/>
 
     <TextView
-        android:id="@+id/changeTypeAuth"
+        android:id="@+id/sign_with"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_below="@+id/login"
         android:layout_marginTop="@dimen/between_forgot_haventAcc"
-        android:text="@string/dont_have_acc"
+        android:text="Sign in with:"
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"
         />
@@ -109,7 +105,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/changeTypeAuth"
+        android:layout_below="@id/sign_with"
         android:layout_marginTop="10dp">
         <ImageButton
             android:id="@+id/authButtonFacebook"
@@ -128,9 +124,4 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/google_plus"/>
     </LinearLayout>
-
-
-
-
-
 </RelativeLayout>
