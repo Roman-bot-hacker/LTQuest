@@ -96,7 +96,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_above="@+id/socials_login"
-        android:layout_marginBottom="20dp"
         android:text="Sign in with:"
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"
@@ -109,21 +108,25 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/fab_margin">
 
+
         <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:id="@+id/authButtonFacebook"
-            android:background="?android:selectableItemBackground"
-            android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-
-            app:srcCompat="@drawable/facebook_auth" />
+            android:layout_margin="5dp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:src="@drawable/facebook_button"/>
 
         <ImageButton
-            android:id="@+id/authButtonGoogle"
-            android:background="?android:selectableItemBackground"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/google_plus"/>
+            android:id="@+id/authButtonGoogle"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:src="@drawable/google_button"
+            android:gravity="end"/>
+
     </LinearLayout>
 </RelativeLayout>
