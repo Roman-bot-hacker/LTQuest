@@ -13,9 +13,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
     <string name="choose_level">Choose Level</string>
-    <string name="level_1">Level 1</string>
-    <string name="level2">Level2</string>
-    <string name="level3">Level3</string>
+    <string name="level1">Level 1</string>
+    <string name="level2">Level 2</string>
+    <string name="level3">Level 3</string>
     <string name="center_cafes">Center cafes</string>
     <string name="_1km">1km</string>
     <string name="themed_cafes">Themed cafes</string>
@@ -29,12 +29,39 @@
     <string name="email">heyfromjonathan@gmail.com</string>
     <string name="name_user">William Snoe</string>
 
+    <string name="users_name">Gerald Morrison</string>
+    <string name="sex">Male</string>
+    <string name="email_facebook">FBlink.com</string>
+    <string name="facebook">Facebook"</string>
+    <string name="email_google">Googlelink.com</string>
+    <string name="google">Google+</string>
+    <string name="email_mail">Mail@lala.com</string>
+    <string name="Email">Email</string>
 
     <string name="app_name">LTQuest</string>
     <string name="title_activity_main">Main</string>
     <string name="location_permission_denied">location permission denied</string>
     <string name="permission_required_toast">permission required toast</string>
     <string name="permission_rationale_location">permission rationale location</string>
+
+    //Auth Activity
+    <string name="lvivtripquest">LvivTripQuest</string>
+    <string name="your_password">Your Password</string>
+    <string name="email_adress">Email Adress</string>
+    <string name="forgot_a_password">Forgot a password?</string>
+    <string name="login">Login</string>
+    <string name="dont_have_acc">Don\'t have an account? SIGN UP</string>
+    <string name="already_have_an_acc">Already have an account? LOG IN</string>
+    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign in with</string>
+    <string name="have_an_account_login">Already have an account? Login here!</string>
+    <string name="google_sing_in_error">Cannot sing in with your Google account</string>
+    <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
+    <string name="confirm_password">Confirm password</string>
+
+    //Profile Dialoge
+    <string name="edit_options">Edit options</string>
+    <string name="sexf">Female</string>
+
 
     //This strings resources are just a part of design and will delete in future
     <string name="point_">534</string>
