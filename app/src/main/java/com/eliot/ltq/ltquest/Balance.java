@@ -13,10 +13,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,14 +38,23 @@ public class Balance extends AppCompatActivity {
     private Toolbar toolbar;
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
+    private EditText editDollars;
+    private TextView exchangedPoints;
+    private Button buyPointsButton;
+    private TextView availblePoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.balance);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        editDollars = findViewById(R.id.edit_dollars);
+        exchangedPoints = findViewById(R.id.points_exchange);
         configureNavigationDrawer();
         configureToolbar();
+        pointsExchange();
+        buyPoints();
+        updatePointsInformation();
     }
 
     private void configureToolbar() {
@@ -140,6 +153,70 @@ public class Balance extends AppCompatActivity {
             @Override
             public void onError(DatabaseError databaseError) {
                 Log.e("FirebaseDataManager", "Can not retrieve userInformation");
+            }
+        });
+    }
+
+    public void pointsExchange(){
+        editDollars.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() != 0) {
+                    int dollars = Integer.parseInt(editDollars.getText().toString()) * 10;
+                    exchangedPoints.setText(String.valueOf(dollars));
+                }
+                else {
+                    exchangedPoints.setText("");
+                }
+            }
+        });
+    }
+
+    public void buyPoints(){
+        buyPointsButton = findViewById(R.id.buy_points);
+        buyPointsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int requestedPoints = Integer.parseInt(exchangedPoints.getText().toString());
+                firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+                    @Override
+                    public void onSuccess(UserInformation userInformation) {
+                        int currentPoints = userInformation.getPoints();
+                        int pointsToWrite = currentPoints + requestedPoints;
+                        firebaseDataManager.writeUserPoints(firebaseAuthManager.getCurrentUser().getUid(), pointsToWrite);
+                        updatePointsInformation();
+                    }
+
+                    @Override
+                    public void onError(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    public void updatePointsInformation(){
+        availblePoints = findViewById(R.id.available_points);
+        firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+            @Override
+            public void onSuccess(UserInformation userInformation) {
+                availblePoints.setText(String.valueOf(userInformation.getPoints()));
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+
             }
         });
     }

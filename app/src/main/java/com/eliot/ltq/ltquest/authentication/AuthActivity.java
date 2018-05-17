@@ -42,7 +42,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editTextConfirmPassword;
     private ImageView buttonGoogleSingIn;
     private TextView changeTypeAuth;
-    private TextView textViewForgotPass;
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
@@ -62,7 +61,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         editTextPassword = (EditText) findViewById(R.id.editPassword);
         editTextConfirmPassword = (EditText) findViewById(R.id.confirmPassword);
         changeTypeAuth = (TextView) findViewById(R.id.changeTypeAuth);
-        textViewForgotPass = (TextView) findViewById(R.id.forgotpass);
         buttonGoogleSingIn = (ImageView) findViewById(R.id.authButtonGoogle);
 
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -104,14 +102,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void setRegistrationVisibility() {
         editTextConfirmPassword.setVisibility(View.VISIBLE);
         buttonLogIn.setText("SIGN UP");
-        textViewForgotPass.setVisibility(View.INVISIBLE);
         changeTypeAuth.setText(R.string.have_an_account_login);
     }
 
     public void setLoginVisibility() {
         editTextConfirmPassword.setVisibility(View.GONE);
         buttonLogIn.setText("LOGIN");
-        textViewForgotPass.setVisibility(View.VISIBLE);
         changeTypeAuth.setText(R.string.haven_t_got_an_account_sign_in_with);
     }
 

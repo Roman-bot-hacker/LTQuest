@@ -37,12 +37,12 @@
                 android:textColor="#4a4a4a" />
 
             <TextView
-                android:id="@+id/text2"
+                android:id="@+id/available_points"
                 android:layout_width="114dp"
                 android:layout_height="41dp"
                 android:layout_alignParentBottom="true"
                 android:fontFamily="sans-serif-medium"
-                android:text="@string/numbers"
+                android:text="0"
                 android:textColor="#4a4a4a"
                 android:textSize="34sp" />
 
@@ -105,10 +105,12 @@
         android:layout_below="@+id/linearLayout2"
         android:layout_marginStart="24dp">
 
-        <TextView
+        <EditText
+            android:id="@+id/edit_dollars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dollar_"
+            android:text="1"
+            android:maxLength="3"
             android:textSize="34sp"
             android:textColor="#4A4A4A"/>
 
@@ -116,19 +118,21 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="35dp"
+            android:layout_gravity="center"
             android:background="@drawable/transfer"
             />
 
-
         <TextView
+            android:id="@+id/points_exchange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:text="@string/point_"
+            android:text="10"
             android:textSize="34sp"
             android:textColor="#4A4A4A"/>
 
         <Button
+            android:id="@+id/buy_points"
             android:layout_width="54dp"
             android:layout_height="46dp"
             android:layout_marginStart="48dp"
@@ -161,5 +165,6 @@
             android:layout_marginStart="31dp"
             android:background="@drawable/smal_line"/>
     </LinearLayout>
+
 
 </LinearLayout>

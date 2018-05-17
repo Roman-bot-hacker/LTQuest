@@ -195,4 +195,8 @@ public class FirebaseDataManager {
             }
         });
     }
+
+    public void writeUserPoints(String uId, final int points){
+        firebaseDatabase.getReference().child("userData").child(uId).child("points").setValue(points);
+    }
 }

@@ -47,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout emailLayout;
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,10 +134,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void configureToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         ActionBar actionbar = getSupportActionBar();
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         actionbar.setTitle("User profile");
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionbar.setDisplayHomeAsUpEnabled(true);
