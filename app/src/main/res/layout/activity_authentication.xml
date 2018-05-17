@@ -95,18 +95,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_below="@+id/login"
-        android:layout_marginTop="@dimen/between_forgot_haventAcc"
+        android:layout_above="@+id/socials_login"
+        android:layout_marginBottom="20dp"
         android:text="Sign in with:"
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"
         />
 
     <LinearLayout
+        android:id="@+id/socials_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sign_with"
-        android:layout_marginTop="10dp">
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/fab_margin">
+
         <ImageButton
             android:id="@+id/authButtonFacebook"
             android:background="?android:selectableItemBackground"
