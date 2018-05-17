@@ -11,16 +11,26 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.Layout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
+import com.eliot.ltq.ltquest.authentication.ProfileActivity;
+import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,12 +40,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import static com.eliot.ltq.ltquest.R.*;
+import java.io.IOException;
+import java.util.List;
+
+import static com.eliot.ltq.ltquest.R.drawable;
+import static com.eliot.ltq.ltquest.R.id;
+import static com.eliot.ltq.ltquest.R.layout;
+import static com.eliot.ltq.ltquest.R.raw;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
-
     private GoogleMap mMap;
     private LocationManager locationManager;
     private boolean firstCameraOnMyPosition = true;
@@ -43,26 +66,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LATITUDE = 49.841787;
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
+    private Toolbar toolbar;
     private ImageView myLocationButton;
     private View screen1;
     private View screen2;
+    private DrawerLayout drawerLayout;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+    private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
+    private FirebaseAuthManager firebaseAuthManager;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
+        firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
+        setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getMapAsync(this);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        toolbar = findViewById(R.id.toolbar);
         screen1 = findViewById(id.screen1);
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
         screen2.setVisibility(View.GONE);
         screen1ButtonsOnClickListener();
         screen2ButtonsOnClickListener();
+        configureNavigationDrawer();
+        configureToolbarForFirstScreen();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -110,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return latLng;
     }
 
-    private void askMyLocationPermissions() {
+    void askMyLocationPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
@@ -215,6 +249,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        if (id==R.id.nav_home){
+
+        }
+
         if (id== R.id.nav_balance){
             startActivity(new Intent(MainActivity.this, Balance.class));
         }
@@ -232,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 screen1.setVisibility(View.GONE);
                 screen2.setVisibility(View.VISIBLE);
+                configureToolbarForSecondScreen();
             }
         });
         continueQuest.setOnClickListener(new Button.OnClickListener() {
@@ -242,34 +281,177 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    public void setCategoriesText(){
+        final TextView firstButtonText = findViewById(R.id.button0_text);
+        final TextView secondButtonText = findViewById(R.id.button1_text);
+        final TextView thirdButtonText = findViewById(R.id.button2_text);
+        firebaseDataManager.categoriesNamesListRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestCategory(){
+            @Override
+            public void onSuccess(List<QuestCategory> questCategoryList) {
+                firstButtonText.setText(questCategoryList.get(0).getName());
+                secondButtonText.setText(questCategoryList.get(1).getName());
+                thirdButtonText.setText(questCategoryList.get(2).getName());
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("FirebaseDataManager", "Can not retrieve QuestCategory");
+            }
+        });
+    }
+
+
+    public void setToolbarUserInf(){
+        firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+            @Override
+            public void onSuccess(UserInformation userInformation) {
+                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
+                toolbarUserName.setText(userInformation.getName());
+                TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
+                if(!(userInformation.getGoogleEmail()==null)){
+                    toolbarEmail.setText(userInformation.getGoogleEmail());
+                }
+                else if(!(userInformation.getEmail()==null)){
+                    toolbarEmail.setText(userInformation.getEmail());
+                }
+                else if(!(userInformation.getFacebookLink()==null)){
+                    toolbarEmail.setText(userInformation.getFacebookLink());
+                }
+                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
+                toolbarProfile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+                Log.e("FirebaseDataManager","Can not retrieve userInformation");
+            }
+        });
+    }
+
     public void screen2ButtonsOnClickListener() {
+        View category0 = findViewById(id.button0);
         View category1 = findViewById(id.button1);
         View category2 = findViewById(id.button2);
-        View category3 = findViewById(id.button3);
         View seeAll = findViewById(id.see_all);
+        category0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","0");
+                startActivityForResult(intent, 1);
+            }
+        });
         category1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","1");
+                startActivityForResult(intent, 1);
             }
         });
         category2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-            }
-        });
-        category3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","2");
+                startActivityForResult(intent, 1);
             }
         });
         seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","all");
+                startActivityForResult(intent, 1);
             }
         });
     }
+
+    public void configureNavigationDrawer(){
+        drawerLayout = findViewById(id.drawer_layout);
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                setToolbarUserInf();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+        navigationView.getMenu().getItem(0).setChecked(true);
+    }
+
+    private void configureToolbarForFirstScreen() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("Home page");
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void configureToolbarForSecondScreen() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setTitle("Choose Category");
+        actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case android.R.id.home:
+                if(screen1.getVisibility() == View.VISIBLE) {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+                else if(screen2.getVisibility() == View.VISIBLE){
+                    screen2.setVisibility(View.GONE);
+                    screen1.setVisibility(View.VISIBLE);
+                    configureToolbarForFirstScreen();
+                }
+                return true;
+        }
+
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                screen1 = findViewById(id.screen1);
+                screen2 = findViewById(id.screen2);
+                screen1.setVisibility(View.GONE);
+                screen2.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
+    }
+
 }
