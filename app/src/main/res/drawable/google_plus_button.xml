@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/facebook_logo"
+    <item android:drawable="@drawable/google_plus_logo"
         android:gravity="center"/>
     <item android:drawable="@drawable/log_in_with_button_shape"
         android:gravity="center"/>

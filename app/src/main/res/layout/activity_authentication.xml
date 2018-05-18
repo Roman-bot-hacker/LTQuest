@@ -48,7 +48,6 @@
         android:layout_below="@+id/editEmail"
         android:layout_marginStart="@dimen/margin_top_for_button"
         android:layout_marginEnd="@dimen/margin_top_for_button"
-        android:layout_marginTop="@dimen/between_email_password"
         android:inputType="textPassword"
         android:hint="@string/your_password"
         android:textColor="@color/textColor"
@@ -105,8 +104,7 @@
         android:id="@+id/socials_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/fab_margin">
+        android:layout_alignParentBottom="true">
 
 
         <ImageButton
@@ -125,7 +123,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:src="@drawable/google_button"
+            android:src="@drawable/google_plus_button"
             android:gravity="end"/>
 
     </LinearLayout>

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextConfirmPassword;
-    private ImageView buttonGoogleSingIn;
+    private ImageButton buttonGoogleSingIn;
+    private ImageButton buttonFacebookSignIn;
     private TextView changeTypeAuth;
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
@@ -61,7 +63,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         editTextPassword = (EditText) findViewById(R.id.editPassword);
         editTextConfirmPassword = (EditText) findViewById(R.id.confirmPassword);
         changeTypeAuth = (TextView) findViewById(R.id.changeTypeAuth);
-        buttonGoogleSingIn = (ImageView) findViewById(R.id.authButtonGoogle);
+        buttonGoogleSingIn = (ImageButton) findViewById(R.id.authButtonGoogle);
+        buttonFacebookSignIn = (ImageButton) findViewById(R.id.authButtonFacebook);
 
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com")
@@ -81,6 +84,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         buttonLogIn.setOnClickListener(this);
         changeTypeAuth.setOnClickListener(this);
         buttonGoogleSingIn.setOnClickListener(this);
+        buttonFacebookSignIn.setOnClickListener(this);
         switch (authType) {
             case REGISTRATION: {
                 setRegistrationVisibility();
@@ -236,6 +240,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.authButtonGoogle: {
                 singInWithGoogle();
+                break;
+            }
+            case R.id.authButtonFacebook: {
+                Toast.makeText(this, "Sorry, sign in with Facebook is disable in this version", Toast.LENGTH_SHORT).show();
                 break;
             }
         }
