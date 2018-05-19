@@ -70,4 +70,6 @@
     <string name="numbers">23463</string>
     <string name="log_out">log out</string>
     <string name="italic_text"><i>Italic text</i></string>
+    <string name="exit">exit</string>
+    <string name="password">Password</string>
 </resources>

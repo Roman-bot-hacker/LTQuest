@@ -181,9 +181,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     startActivity(new Intent(ProfileActivity.this, Balance.class));
                 }
 
-                if (id == R.id.nav_settings) {
-
-                }
 
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#907AEC</color>
+    <color name="colorbackground">#efebff</color>
     <color name="colorPrimaryDark">#907AEC</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorText">#FFFFFF</color>
@@ -8,6 +9,13 @@
     <color name="colorBackground">#E6FFFFFF</color>
     <color name="colorTextGray">#4A4A4A</color>
     <color name="colorBottomSheet">#F27D7D7D</color>
-    <color name="lightgray">#66000000</color>
+
+    //Profile colors
     <color name="lightdrayline">#d8d8d8</color>
+
+    //registration colors
+    <color name="colorBackground2">#FF907AEC</color>
+    <color name="textColor">#DEFFFFFF</color>
+    <color name="color4">#91FFFFFF</color>
+    <color name="lightgray">#66000000</color>
 </resources>
