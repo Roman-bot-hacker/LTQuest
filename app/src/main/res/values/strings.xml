@@ -57,10 +57,12 @@
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="forgotpass">Forgot password?</string>
 
     //Profile Dialoge
     <string name="edit_options">Edit options</string>
     <string name="sexf">Female</string>
+    <string name="log_out">log out</string>
 
 
     //This strings resources are just a part of design and will delete in future
@@ -68,7 +70,6 @@
     <string name="dollar_">1</string>
     <string name="title">Title</string>
     <string name="numbers">23463</string>
-    <string name="log_out">log out</string>
     <string name="italic_text"><i>Italic text</i></string>
 
     <!-- TODO: Remove or change this placeholder text -->

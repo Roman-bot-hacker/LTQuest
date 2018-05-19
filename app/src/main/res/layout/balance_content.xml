@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/linearLayout"
         android:layout_below="@+id/toolbarImage"
-        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="18dp"
 
         android:text="@string/title"
@@ -80,18 +80,19 @@
         android:layout_marginTop="11dp" >
 
         <TextView
-            android:id="@+id/text4"
+            android:id="@+id/textDollar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dollar"
-
+            android:textColor="@color/colorTextGray"
             android:layout_marginStart="24dp"
             />
 
         <TextView
-            android:id="@+id/text6"
+            android:id="@+id/textPoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorTextGray"
             android:layout_marginStart="64dp"
 
             android:text="@string/point"/>

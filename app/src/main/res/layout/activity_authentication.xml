@@ -67,12 +67,21 @@
         android:layout_centerHorizontal="true"/>
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/forgotpass"
+        android:text="Forgot password?"
+        android:layout_below="@+id/confirmPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
         android:id="@+id/changeTypeAuth"
         android:text="@string/already_have_an_acc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/confirmPassword"
-        android:layout_marginTop="@dimen/between_email_password"
+        android:layout_below="@id/forgotpass"
+        android:layout_marginTop="14dp"
         android:layout_centerHorizontal="true"
         android:gravity="center"/>
 
@@ -95,6 +104,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_above="@+id/socials_login"
+        android:layout_marginTop="8dp"
         android:text="Sign in with:"
         android:textColor="@color/textColor"
         android:layout_centerHorizontal="true"

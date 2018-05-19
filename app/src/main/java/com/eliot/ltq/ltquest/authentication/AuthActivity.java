@@ -44,6 +44,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton buttonGoogleSingIn;
     private ImageButton buttonFacebookSignIn;
     private TextView changeTypeAuth;
+    private TextView forgotPass;
     private GoogleSignInAccount gSingInAccount;
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
@@ -63,6 +64,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         editTextPassword = (EditText) findViewById(R.id.editPassword);
         editTextConfirmPassword = (EditText) findViewById(R.id.confirmPassword);
         changeTypeAuth = (TextView) findViewById(R.id.changeTypeAuth);
+        forgotPass = (TextView) findViewById(R.id.forgotpass);
         buttonGoogleSingIn = (ImageButton) findViewById(R.id.authButtonGoogle);
         buttonFacebookSignIn = (ImageButton) findViewById(R.id.authButtonFacebook);
 
@@ -85,6 +87,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         changeTypeAuth.setOnClickListener(this);
         buttonGoogleSingIn.setOnClickListener(this);
         buttonFacebookSignIn.setOnClickListener(this);
+        forgotPass.setOnClickListener(this);
         switch (authType) {
             case REGISTRATION: {
                 setRegistrationVisibility();
@@ -104,6 +107,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setRegistrationVisibility() {
+        forgotPass.setVisibility(View.GONE);
         editTextConfirmPassword.setVisibility(View.VISIBLE);
         buttonLogIn.setText("SIGN UP");
         changeTypeAuth.setText(R.string.have_an_account_login);
@@ -111,6 +115,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setLoginVisibility() {
         editTextConfirmPassword.setVisibility(View.GONE);
+        forgotPass.setVisibility(View.VISIBLE);
         buttonLogIn.setText("LOGIN");
         changeTypeAuth.setText(R.string.haven_t_got_an_account_sign_in_with);
     }
@@ -244,6 +249,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.authButtonFacebook: {
                 Toast.makeText(this, "Sorry, sign in with Facebook is disable in this version", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.forgotpass: {
+                Toast.makeText(this, "Sorry, this function is disable in this version", Toast.LENGTH_SHORT).show();
                 break;
             }
         }

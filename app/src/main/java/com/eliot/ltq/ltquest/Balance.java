@@ -132,7 +132,7 @@ public class Balance extends AppCompatActivity {
             @Override
             public void onSuccess(UserInformation userInformation) {
                 TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                //toolbarUserName.setText(userInformation.getName());
+                toolbarUserName.setText(userInformation.getName());
                 TextView toolbarEmail = (TextView) findViewById(R.id.toolbarEmail);
                 if (!(userInformation.getGoogleEmail() == null)) {
                     toolbarEmail.setText(userInformation.getGoogleEmail());
