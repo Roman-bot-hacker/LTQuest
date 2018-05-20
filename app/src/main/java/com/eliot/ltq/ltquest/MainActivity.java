@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if (location == null)
                                 return;
                             if (firstCameraOnMyPosition) {
-                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocation(location), 17f));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getMyLocation(location), 17f));
                                 firstCameraOnMyPosition = false;
                             }
                             currentLatLng = getMyLocation(location);
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (location == null)
                         return;
                     if (firstCameraOnMyPosition) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocation(location), 17f));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getMyLocation(location), 17f));
                         firstCameraOnMyPosition = false;
                     }
                     currentLatLng = getMyLocation(location);

@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/oval"
+            android:background="@drawable/avatar"
             />
 
         <RelativeLayout
@@ -94,7 +94,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorTextGray"
             android:layout_marginStart="64dp"
-
             android:text="@string/point"/>
 
     </LinearLayout>
