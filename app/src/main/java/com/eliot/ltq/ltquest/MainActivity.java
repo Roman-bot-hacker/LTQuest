@@ -173,31 +173,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Resources.NotFoundException e) {
             e.getMessage();
         }
-        if (intent != null) {
-            String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
-            Gson gson = new Gson();
-            data = gson.fromJson(myJsonPart1, contentType);
-            createMarker(data);
+        intent = getIntent();
+        if (intent.getStringExtra("quest_name")!= null) {
+            switch (intent.getStringExtra("quest_name")){
+                case "justName":
+                    polyline();
+                    break;
+            }
+        }
+    }
 
-            Callback<DirectionResults> directionResults = new Callback<DirectionResults>() {
-                @Override
-                public void onResponse(Call<DirectionResults> call, Response<DirectionResults> response) {
-                    DirectionResults res = response.body();
-                    for (int i = 0; i < res.getRoutes().get(0).getLegs().size(); i++) {
-                        for (Steps step : res.getRoutes().get(0).getLegs().get(i).getSteps()) {
-                            DirectionsJSONParser.decodePoly(polylinesList, step.getPolyline().getPoints());
-                            Log.d("Polylines recieved", String.valueOf(polylinesList.size()));
-                        }
+    private void polyline(){
+        String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
+        Gson gson = new Gson();
+        data = gson.fromJson(myJsonPart1, contentType);
+        createMarker(data);
+
+        Callback<DirectionResults> directionResults = new Callback<DirectionResults>() {
+            @Override
+            public void onResponse(Call<DirectionResults> call, Response<DirectionResults> response) {
+                DirectionResults res = response.body();
+                for (int i = 0; i < res.getRoutes().get(0).getLegs().size(); i++) {
+                    for (Steps step : res.getRoutes().get(0).getLegs().get(i).getSteps()) {
+                        DirectionsJSONParser.decodePoly(polylinesList, step.getPolyline().getPoints());
+                        Log.d("Polylines recieved", String.valueOf(polylinesList.size()));
                     }
-                    createPolylines(polylinesList);
-
                 }
+                createPolylines(polylinesList);
 
-                @Override
-                public void onFailure(Call<DirectionResults> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-                }
-            };
+            }
+
+            @Override
+            public void onFailure(Call<DirectionResults> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+            }
+        };
 
 
 //        origin = new LatLng(data.get(0).getLat(), data.get(0).getLng());
@@ -217,34 +227,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
 //                "walking").enqueue(directionResults);
 
-            int i = 0;
-            if (data.size() > 8) {
+        int i = 0;
+        if (data.size() > 8) {
 
-                while (data.size() - i > 7) {
+            while (data.size() - i > 7) {
 
-                    origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-                    dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
-                    StringBuilder waypoints = new StringBuilder();
-                    waypointslist = data.subList(i, i + 7);
-                    for (int j = 0; j < waypointslist.size(); j++) {
-
-                        LatLng point = new LatLng(waypointslist.get(j).getLat(), waypointslist.get(j).getLng());
-                        if (j == waypointslist.size() - 1) {
-                            waypoints.append(point.latitude).append(",").append(point.longitude);
-                        } else {
-                            waypoints.append(point.latitude).append(",").append(point.longitude).append("|");
-                        }
-                    }
-                    App.getApi().getJson(
-                            origin.latitude + "," + origin.longitude,
-                            dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                            "walking").enqueue(directionResults);
-                    i += 7;
-                }
                 origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-                dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
+                dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
                 StringBuilder waypoints = new StringBuilder();
-                waypointslist = data.subList(i, data.size() - 1);
+                waypointslist = data.subList(i, i + 7);
                 for (int j = 0; j < waypointslist.size(); j++) {
 
                     LatLng point = new LatLng(waypointslist.get(j).getLat(), waypointslist.get(j).getLng());
@@ -258,10 +249,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         origin.latitude + "," + origin.longitude,
                         dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
                         "walking").enqueue(directionResults);
-
-            } else {
-
+                i += 7;
             }
+            origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
+            dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
+            StringBuilder waypoints = new StringBuilder();
+            waypointslist = data.subList(i, data.size() - 1);
+            for (int j = 0; j < waypointslist.size(); j++) {
+
+                LatLng point = new LatLng(waypointslist.get(j).getLat(), waypointslist.get(j).getLng());
+                if (j == waypointslist.size() - 1) {
+                    waypoints.append(point.latitude).append(",").append(point.longitude);
+                } else {
+                    waypoints.append(point.latitude).append(",").append(point.longitude).append("|");
+                }
+            }
+            App.getApi().getJson(
+                    origin.latitude + "," + origin.longitude,
+                    dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
+                    "walking").enqueue(directionResults);
+
+        } else {
+
         }
     }
 
@@ -628,20 +637,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     screen2.setVisibility(View.VISIBLE);
                 }
             }
-            if (data.getStringExtra("Position").equals("0")) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.GONE);
-            }
-
         }
 
     @Override
     public void onBackPressed() {
         // do nothing.
     }
-
-    public interface intentInterface{
-        void onInterfaceRecieve(Intent i);
-    }
-
 }

@@ -63,7 +63,7 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
             @Override
             public void onClick(View view, int position) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
-                intent.putExtra("Position", "" + position);
+                intent.putExtra("quest_name", "" + quest.getQuestName());
                 view.getContext().startActivity(intent);
             }
         });
