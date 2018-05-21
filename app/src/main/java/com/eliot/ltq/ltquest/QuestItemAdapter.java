@@ -1,6 +1,7 @@
 package com.eliot.ltq.ltquest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,14 +55,16 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
         final QuestStructure quest = questList.get(position);
         holder.name.setText(quest.getQuestName());
         holder.distance.setText((quest.getDistance())+" km");
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Log.d(" Clicked: ",quest.getQuestName());
+                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                intent.putExtra("Position", "" + position);
+                view.getContext().startActivity(intent);
             }
         });
     }
