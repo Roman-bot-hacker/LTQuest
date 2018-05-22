@@ -1,7 +1,10 @@
 package com.eliot.ltq.ltquest.authentication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -12,8 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,6 +50,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout facebookLayout;
     private LinearLayout googleLayout;
     private LinearLayout emailLayout;
+    private ImageView userSettings;
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
     private Toolbar toolbar;
@@ -71,9 +77,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         textViewLayout = (TextView) findViewById(R.id.logout);
         emailLayout = (LinearLayout) findViewById(R.id.liner_mail);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        userSettings = (ImageView) findViewById(R.id.user_settings);
         configureNavigationDrawer();
         configureToolbar();
         textViewLayout.setOnClickListener(this);
+        userSettings.setOnClickListener(this);
 
 
         if (authManager.isUserLoggedIn())
@@ -129,6 +137,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         Toast.makeText(ProfileActivity.this, "Cannot logout, something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
+            } break;
+            case R.id.user_settings: {
+                View editProfile = LayoutInflater.from(ProfileActivity.this).inflate(R.layout.edit_options, null);
+                AlertDialog.Builder userSettingsDialogBuilder = new AlertDialog.Builder(this);
+                userSettingsDialogBuilder
+                        .setView(editProfile)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setCancelable(false);
+                AlertDialog userSettingsDialog = userSettingsDialogBuilder.create();
+                userSettingsDialog.show();
+                userSettingsDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#907AEC"));
+                userSettingsDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#907AEC"));
             }
         }
     }
