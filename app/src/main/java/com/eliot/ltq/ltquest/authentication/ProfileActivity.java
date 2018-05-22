@@ -50,7 +50,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private Toolbar toolbar;
     private View editProfile;
     private ImageView userPhotoSetttings;
-    private TextView userNameSetttings;
+    private EditText userNameSetttings;
     private ImageView maleImageSetttings;
     private ImageView femaleImageSetttings;
     private LinearLayout maleLayoutSetttings;
@@ -279,27 +279,44 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         maleImageSetttings = editProfile.findViewById(R.id.on_male_click);
         femaleImageSetttings = editProfile.findViewById(R.id.on_female_click);
         if (currentUserInformation!=null){
-            if (currentUserInformation.getName()!=null) userNameSetttings.setText(currentUserInformation.getName());
-            if (currentUserInformation.getSex()!=null) {
-                switch (currentUserInformation.getSex()) {
-                    case MALE: {
-                        maleImageSetttings.setImageResource(R.drawable.yes);
-                        femaleImageSetttings.setImageResource(R.drawable.no);
-                        userSexInOptions = UserSex.MALE;
-                    } break;
-                    case FEMALE: {
-                        maleImageSetttings.setImageResource(R.drawable.no);
-                        femaleImageSetttings.setImageResource(R.drawable.yes);
-                        userSexInOptions = UserSex.FEMALE;
-                    } break;
-                    default: {
-                        maleImageSetttings.setImageResource(R.drawable.no);
-                        femaleImageSetttings.setImageResource(R.drawable.no);
-                    }
+            editOptionsFromContentInit();
+        }
+        else {
+            firebaseDataManager.getCurrentUserData(user.getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+                @Override
+                public void onSuccess(UserInformation userInformation) {
+                    editOptionsFromContentInit();
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
+    public void editOptionsFromContentInit(){
+        if (currentUserInformation.getName()!=null) userNameSetttings.setText(currentUserInformation.getName());
+        if (currentUserInformation.getSex()!=null) {
+            switch (currentUserInformation.getSex()) {
+                case MALE: {
+                    maleImageSetttings.setImageResource(R.drawable.yes);
+                    femaleImageSetttings.setImageResource(R.drawable.no);
+                    userSexInOptions = UserSex.MALE;
+                } break;
+                case FEMALE: {
+                    maleImageSetttings.setImageResource(R.drawable.no);
+                    femaleImageSetttings.setImageResource(R.drawable.yes);
+                    userSexInOptions = UserSex.FEMALE;
+                } break;
+                default: {
+                    maleImageSetttings.setImageResource(R.drawable.no);
+                    femaleImageSetttings.setImageResource(R.drawable.no);
                 }
             }
         }
-
     }
 
     public void editOptionsLisneter(){

@@ -38,10 +38,11 @@
             android:layout_marginLeft="25dp"
             android:src="@drawable/ava"/>
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/user_name_options"
+            android:inputType="textPersonName"
             android:layout_marginTop="21dp"
             android:layout_marginLeft="23dp"
             android:textSize="16sp"
