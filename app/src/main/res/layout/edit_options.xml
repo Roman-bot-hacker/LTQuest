@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/male_layout">
 
-            <ImageView
+            <android.widget.ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/on_male_click"
@@ -98,7 +98,7 @@
                android:layout_height="wrap_content"
                android:id="@+id/female_layout">
 
-           <ImageView
+           <android.widget.ImageView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="24dp"

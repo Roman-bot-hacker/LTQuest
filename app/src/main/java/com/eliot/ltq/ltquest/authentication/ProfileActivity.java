@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -47,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
     private Toolbar toolbar;
-
+    private View editProfile;
     private ImageView userPhotoSetttings;
     private TextView userNameSetttings;
     private ImageView maleImageSetttings;
@@ -145,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 });
             } break;
             case R.id.user_settings: {
-                View editProfile = LayoutInflater.from(ProfileActivity.this).inflate(R.layout.edit_options, null);
+                editProfile = LayoutInflater.from(ProfileActivity.this).inflate(R.layout.edit_options, null);
                 AlertDialog.Builder userSettingsDialogBuilder = new AlertDialog.Builder(this);
                 userSettingsDialogBuilder
                         .setView(editProfile)
@@ -269,16 +270,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void editOptionsObjectsInit(){
         userPhotoSetttings = findViewById(R.id.ava);
         userNameSetttings = findViewById(R.id.user_name_options);
-        maleImageSetttings = findViewById(R.id.on_male_click);
-        femaleImageSetttings = findViewById(R.id.on_female_click);
-        maleLayoutSetttings = findViewById(R.id.male_layout);
-        femaleLayoutSetttings = findViewById(R.id.female_layout);
         facebookLayoutSetttings = findViewById(R.id.facebook_options_layout);
         googleLayoutSetttings = findViewById(R.id.google_options_layout);
         mailLayoutSetttings = findViewById(R.id.mail_options_layout);
     }
 
     public void editOptionsLisneter(){
+        maleLayoutSetttings = editProfile.findViewById(R.id.male_layout);
+        femaleLayoutSetttings = editProfile.findViewById(R.id.female_layout);
+        maleImageSetttings = editProfile.findViewById(R.id.on_male_click);
+        femaleImageSetttings = editProfile.findViewById(R.id.on_female_click);
         maleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
