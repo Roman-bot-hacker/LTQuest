@@ -30,7 +30,7 @@ import com.google.firebase.database.DatabaseError;
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout drawerLayout;
     private FirebaseUser user;
-    private UserInformation userInformation = new UserInformation();
+    private UserInformation currentUserInformation = new UserInformation();
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
     private UserSex userSexInOptions = UserSex.CHOOSE_SEX;
@@ -84,10 +84,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         userSettings = (ImageView) findViewById(R.id.user_settings);
         configureNavigationDrawer();
         configureToolbar();
+        profileUpdate();
         textViewLayout.setOnClickListener(this);
         userSettings.setOnClickListener(this);
-        profileUpdate();
-        editOptionsObjectsInit();
 
     }
 
@@ -116,6 +115,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     if(!(userInformation.getEmail()==null)) {
                         textViewUserEmail.setText(userInformation.getEmail());
                     } else {emailLayout.setVisibility(View.GONE);}
+                    currentUserInformation = userInformation;
                 }
 
                 @Override
@@ -134,6 +134,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onSuccess() {
                         AuthActivity.setAuthType(AuthType.LOGIN);
+                        currentUserInformation = null;
                         finish();
                         startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
                     }
@@ -154,7 +155,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 editOptionsOnSaveClicked();
-                                profileUpdate();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -168,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 userSettingsDialog.show();
                 userSettingsDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#907AEC"));
                 userSettingsDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#907AEC"));
+                editOptionsObjectsInit();
                 editOptionsLisneter();
             }
         }
@@ -268,18 +269,40 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
     public void editOptionsObjectsInit(){
-        userPhotoSetttings = findViewById(R.id.ava);
-        userNameSetttings = findViewById(R.id.user_name_options);
-        facebookLayoutSetttings = findViewById(R.id.facebook_options_layout);
-        googleLayoutSetttings = findViewById(R.id.google_options_layout);
-        mailLayoutSetttings = findViewById(R.id.mail_options_layout);
-    }
-
-    public void editOptionsLisneter(){
+        userPhotoSetttings = editProfile.findViewById(R.id.ava);
+        userNameSetttings = editProfile.findViewById(R.id.user_name_options);
+        facebookLayoutSetttings = editProfile.findViewById(R.id.facebook_options_layout);
+        googleLayoutSetttings = editProfile.findViewById(R.id.google_options_layout);
+        mailLayoutSetttings = editProfile.findViewById(R.id.mail_options_layout);
         maleLayoutSetttings = editProfile.findViewById(R.id.male_layout);
         femaleLayoutSetttings = editProfile.findViewById(R.id.female_layout);
         maleImageSetttings = editProfile.findViewById(R.id.on_male_click);
         femaleImageSetttings = editProfile.findViewById(R.id.on_female_click);
+        if (currentUserInformation!=null){
+            if (currentUserInformation.getName()!=null) userNameSetttings.setText(currentUserInformation.getName());
+            if (currentUserInformation.getSex()!=null) {
+                switch (currentUserInformation.getSex()) {
+                    case MALE: {
+                        maleImageSetttings.setImageResource(R.drawable.yes);
+                        femaleImageSetttings.setImageResource(R.drawable.no);
+                        userSexInOptions = UserSex.MALE;
+                    } break;
+                    case FEMALE: {
+                        maleImageSetttings.setImageResource(R.drawable.no);
+                        femaleImageSetttings.setImageResource(R.drawable.yes);
+                        userSexInOptions = UserSex.FEMALE;
+                    } break;
+                    default: {
+                        maleImageSetttings.setImageResource(R.drawable.no);
+                        femaleImageSetttings.setImageResource(R.drawable.no);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void editOptionsLisneter(){
         maleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,19 +322,54 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    public void editOptionsOnSaveClicked(){
-        UserInformation userInformation = new UserInformation(userSexInOptions);
-        firebaseDataManager.writeCurrentUserData(user.getUid(), userInformation, new FirebaseDataManager.UserInformationWritingListener() {
-            @Override
-            public void onSuccess() {
-
+    public void editOptionsOnSaveClicked() {
+        if (currentUserInformation != null) {
+            if (!(userNameSetttings.getText().toString().equals(currentUserInformation.getName()))) {
+                currentUserInformation.setName(userNameSetttings.getText().toString());
             }
-
-            @Override
-            public void onError() {
-                Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+            if (!(userSexInOptions.equals(currentUserInformation.getSex()))) {
+                currentUserInformation.setSex(userSexInOptions);
             }
-        });
+            firebaseDataManager.writeCurrentUserData(user.getUid(),currentUserInformation, new FirebaseDataManager.UserInformationWritingListener() {
+                @Override
+                public void onSuccess() {
+                    profileUpdate();
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            firebaseDataManager.getCurrentUserData(user.getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+                @Override
+                public void onSuccess(UserInformation userInformation) {
+                    if (!(userNameSetttings.getText().toString().equals(userInformation.getName()))) {
+                        userInformation.setName(userNameSetttings.getText().toString());
+                    }
+                    if (!(userSexInOptions.equals(userInformation.getSex()))) {
+                        userInformation.setSex(userSexInOptions);
+                    }
+                    firebaseDataManager.writeCurrentUserData(user.getUid(), userInformation, new FirebaseDataManager.UserInformationWritingListener() {
+                        @Override
+                        public void onSuccess() {
+                            profileUpdate();
+                        }
+
+                        @Override
+                        public void onError() {
+                            Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     //--------------------------------------------------------------------
