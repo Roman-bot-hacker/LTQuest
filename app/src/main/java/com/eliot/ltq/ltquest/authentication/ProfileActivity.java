@@ -1,6 +1,5 @@
 package com.eliot.ltq.ltquest.authentication;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,15 +13,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.eliot.ltq.ltquest.Balance;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
@@ -32,14 +26,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 
-import org.w3c.dom.Text;
-
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout drawerLayout;
     private FirebaseUser user;
     private UserInformation userInformation = new UserInformation();
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
+    private UserSex userSexInOptions = UserSex.CHOOSE_SEX;
 
     private TextView textViewUserEmail;
     private TextView textViewName;
@@ -54,6 +47,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
     private Toolbar toolbar;
+
+    private ImageView userPhotoSetttings;
+    private TextView userNameSetttings;
+    private ImageView maleImageSetttings;
+    private ImageView femaleImageSetttings;
+    private LinearLayout maleLayoutSetttings;
+    private LinearLayout femaleLayoutSetttings;
+    private LinearLayout facebookLayoutSetttings;
+    private LinearLayout googleLayoutSetttings;
+    private LinearLayout mailLayoutSetttings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +85,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         configureToolbar();
         textViewLayout.setOnClickListener(this);
         userSettings.setOnClickListener(this);
+        profileUpdate();
+        editOptionsObjectsInit();
 
+    }
 
+    public void profileUpdate() {
         if (authManager.isUserLoggedIn())
             firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
                 @Override
@@ -116,7 +123,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
             });
-
     }
 
     @Override
@@ -146,7 +152,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                editOptionsOnSaveClicked();
+                                profileUpdate();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -160,6 +167,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 userSettingsDialog.show();
                 userSettingsDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#907AEC"));
                 userSettingsDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#907AEC"));
+                editOptionsLisneter();
             }
         }
     }
@@ -256,6 +264,56 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
+
+    //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
+    public void editOptionsObjectsInit(){
+        userPhotoSetttings = findViewById(R.id.ava);
+        userNameSetttings = findViewById(R.id.user_name_options);
+        maleImageSetttings = findViewById(R.id.on_male_click);
+        femaleImageSetttings = findViewById(R.id.on_female_click);
+        maleLayoutSetttings = findViewById(R.id.male_layout);
+        femaleLayoutSetttings = findViewById(R.id.female_layout);
+        facebookLayoutSetttings = findViewById(R.id.facebook_options_layout);
+        googleLayoutSetttings = findViewById(R.id.google_options_layout);
+        mailLayoutSetttings = findViewById(R.id.mail_options_layout);
+    }
+
+    public void editOptionsLisneter(){
+        maleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                maleImageSetttings.setImageResource(R.drawable.yes);
+                femaleImageSetttings.setImageResource(R.drawable.no);
+                userSexInOptions = UserSex.MALE;
+            }
+        });
+        femaleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                maleImageSetttings.setImageResource(R.drawable.no);
+                femaleImageSetttings.setImageResource(R.drawable.yes);
+                userSexInOptions = UserSex.FEMALE;
+            }
+        });
+
+    }
+
+    public void editOptionsOnSaveClicked(){
+        UserInformation userInformation = new UserInformation(userSexInOptions);
+        firebaseDataManager.writeCurrentUserData(user.getUid(), userInformation, new FirebaseDataManager.UserInformationWritingListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //--------------------------------------------------------------------
 
     @Override
     public void onBackPressed() {

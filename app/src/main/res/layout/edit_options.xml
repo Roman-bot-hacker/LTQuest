@@ -41,6 +41,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/user_name_options"
             android:layout_marginTop="21dp"
             android:layout_marginLeft="23dp"
             android:textSize="16sp"
@@ -64,48 +65,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="23dp"
-            android:layout_marginLeft="24dp"
-            android:src="@drawable/yes"/>
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/male_layout">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="11dp"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-medium"
-            android:textStyle="normal"
-            android:textColor="#747474"
-            android:lineSpacingExtra="10sp"
-            android:text="@string/sex"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/on_male_click"
+                    android:layout_marginTop="23dp"
+                    android:layout_marginLeft="24dp"
+                    android:src="@drawable/yes"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="27dp"
-            android:src="@drawable/no"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textMale"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginLeft="11dp"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="normal"
+                    android:textColor="#747474"
+                    android:lineSpacingExtra="10sp"
+                    android:text="@string/sex"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="11dp"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-medium"
-            android:textStyle="normal"
-            android:textColor="#747474"
-            android:lineSpacingExtra="10sp"
-            android:text="@string/sexf"/>
+        </LinearLayout>
+
+       <LinearLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/female_layout">
+
+           <ImageView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="24dp"
+                   android:layout_marginLeft="27dp"
+                   android:id="@+id/on_female_click"
+                   android:src="@drawable/no"/>
+
+           <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/textFemale"
+                   android:layout_marginTop="24dp"
+                   android:layout_marginLeft="11dp"
+                   android:textSize="16sp"
+                   android:fontFamily="sans-serif-medium"
+                   android:textStyle="normal"
+                   android:textColor="#747474"
+                   android:lineSpacingExtra="10sp"
+                   android:text="@string/sexf"/>
+
+       </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout3"
+        android:id="@+id/facebook_options_layout"
         android:layout_below="@+id/layout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -133,8 +152,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout4"
-        android:layout_below="@id/layout3"
+        android:id="@+id/google_options_layout"
+        android:layout_below="@id/facebook_options_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -159,8 +178,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout5"
-        android:layout_below="@id/layout4"
+        android:id="@+id/mail_options_layout"
+        android:layout_below="@id/google_options_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -186,7 +205,7 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_below="@id/layout5"
+        android:layout_below="@id/mail_options_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

@@ -37,6 +37,10 @@ public class UserInformation {
         this.sex = UserSex.CHOOSE_SEX;
     }
 
+    public UserInformation(UserSex userSex){
+        this.sex = userSex;
+    }
+
     public String getEmail(){ return email; }
 
     public String getName() {
