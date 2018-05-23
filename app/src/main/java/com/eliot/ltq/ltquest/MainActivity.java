@@ -13,7 +13,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -21,7 +23,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -46,13 +47,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -109,6 +104,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng dest;
     private Intent intent;
     private int counter;
+    private View bottomSheet;
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private TextView bottomSheetName;
+    private TextView bottomSheetInfo;
+    private Button bottomSheetSkipButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         screen2ButtonsOnClickListener();
         configureNavigationDrawer();
         configureToolbarForFirstScreen();
+        bottomSheetInit();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isNetworkProviderEnabled()) {
             askMyLocationPermissions();
@@ -323,6 +324,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onMarkerClick(Marker marker) {
                 markerTextView.setText("3");
                 marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+                bottomSheetName.setText("Other Point");
+                bottomSheetInfo.setText("Some other Info");
+                bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                });
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                    }
+                });
+
+                Handler handler =new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                },300);
+
                 return true;
 
             }
@@ -636,12 +666,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    public void bottomSheetInit(){
+        bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheetName = findViewById(R.id.bottom_sheet_name);
+        bottomSheetInfo = findViewById(id.bottom_sheet_info);
+        bottomSheetSkipButton = findViewById(id.bottom_sheet_skip);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setPeekHeight(384);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
         @Override
         protected void onActivityResult ( int requestCode, int resultCode, Intent data){
             if (requestCode == 1) {
                 if (resultCode == RESULT_OK) {
-                    screen1 = findViewById(id.screen1);
-                    screen2 = findViewById(id.screen2);
                     screen1.setVisibility(View.GONE);
                     screen2.setVisibility(View.VISIBLE);
                 }
