@@ -179,6 +179,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (intent.getStringExtra("quest_name")!= null) {
             switch (intent.getStringExtra("quest_name")){
                 case "justName":
+                    screen1.setVisibility(View.GONE);
+                    screen1.setVisibility(View.GONE);
+                    toolbar.setTitle("justName");
                     drawRoute();
                     break;
             }
