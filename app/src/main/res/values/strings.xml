@@ -26,8 +26,7 @@
     <string name="point">Point</string>
     <string name="dollar">Dollar</string>
     <string name="Current_balance">Current balance</string>
-    <string name="email">heyfromjonathan@gmail.com</string>
-    <string name="name_user">William Snoe</string>
+    <string name="no_internet">No Internet Connection</string>
 
     <string name="users_name">User Name</string>
     <string name="sex">Male</string>

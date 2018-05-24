@@ -1,6 +1,7 @@
 package com.eliot.ltq.ltquest;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -10,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -19,14 +22,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
@@ -41,15 +40,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
@@ -263,22 +255,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void screen1ButtonsOnClickListener() {
-        Button startNew = findViewById(id.start_new);
-        Button continueQuest = findViewById(id.continue_quest);
-        startNew.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.VISIBLE);
-                configureToolbarForSecondScreen();
-            }
-        });
-        continueQuest.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+            Button startNew = findViewById(id.start_new);
+            Button continueQuest = findViewById(id.continue_quest);
+            startNew.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(isNetworkAvailable()) {
+                        screen1.setVisibility(View.GONE);
+                        screen2.setVisibility(View.VISIBLE);
+                        configureToolbarForSecondScreen();
+                    } else {
+                        Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            continueQuest.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(isNetworkAvailable()){
+                        Toast.makeText(MainActivity.this, "This function is disable in this app version", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
     }
 
     public void setCategoriesText(){
@@ -301,24 +302,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void setToolbarUserInf(){
+    public void setNavbarUserInf(){
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
+                TextView navbarUserName = (TextView) findViewById(R.id.navbar_user_name);
+                navbarUserName.setText(userInformation.getName());
+                TextView navbarEmail = (TextView) findViewById(id.navbar_email);
                 if(!(userInformation.getGoogleEmail()==null)){
-                    toolbarEmail.setText(userInformation.getGoogleEmail());
+                    navbarEmail.setText(userInformation.getGoogleEmail());
                 }
                 else if(!(userInformation.getEmail()==null)){
-                    toolbarEmail.setText(userInformation.getEmail());
+                    navbarEmail.setText(userInformation.getEmail());
                 }
                 else if(!(userInformation.getFacebookLink()==null)){
-                    toolbarEmail.setText(userInformation.getFacebookLink());
+                    navbarEmail.setText(userInformation.getFacebookLink());
                 }
-                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
-                toolbarProfile.setOnClickListener(new View.OnClickListener() {
+                LinearLayout navbarProfile = (LinearLayout) findViewById(R.id.navbar_profile);
+                navbarProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(MainActivity.this, ProfileActivity.class));
@@ -382,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                setToolbarUserInf();
+                setNavbarUserInf();
             }
 
             @Override
@@ -447,6 +448,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

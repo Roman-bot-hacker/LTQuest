@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -246,9 +245,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
+                TextView toolbarUserName = (TextView) findViewById(R.id.navbar_user_name);
                 toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(R.id.toolbarEmail);
+                TextView toolbarEmail = (TextView) findViewById(R.id.navbar_email);
                 if(!(userInformation.getGoogleEmail()==null)){
                     toolbarEmail.setText(userInformation.getGoogleEmail());
                 }
