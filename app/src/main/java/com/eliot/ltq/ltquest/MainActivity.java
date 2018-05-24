@@ -39,11 +39,16 @@ import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.PolylineOptions;
 import com.androidmapsextensions.SupportMapFragment;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.FirebaseApp;
@@ -57,18 +62,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import static com.eliot.ltq.ltquest.R.drawable;
 import static com.eliot.ltq.ltquest.R.id;
 import static com.eliot.ltq.ltquest.R.layout;
 import static com.eliot.ltq.ltquest.R.raw;
-import static com.google.android.gms.maps.model.JointType.BEVEL;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, RoutingListener {
     private GoogleMap mMap;
     TextView numberOfPoint;
     private LocationManager locationManager;
@@ -176,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             e.getMessage();
         }
         intent = getIntent();
-        if (intent.getStringExtra("quest_name")!= null) {
-            switch (intent.getStringExtra("quest_name")){
+        if (intent.getStringExtra("quest_name") != null) {
+            switch (intent.getStringExtra("quest_name")) {
                 case "justName":
                     screen1.setVisibility(View.GONE);
                     screen1.setVisibility(View.GONE);
@@ -188,103 +188,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void drawRoute(){
+    private void drawRoute() {
         String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
         Gson gson = new Gson();
         data = gson.fromJson(myJsonPart1, contentType);
         createMarker(data);
+        polylinesList.clear();
 
-        Callback<DirectionResults> directionResults = new Callback<DirectionResults>() {
-            @Override
-            public void onResponse(Call<DirectionResults> call, Response<DirectionResults> response) {
-                DirectionResults res = response.body();
-                counter -= 1;
-                for (int i = 0; i < res.getRoutes().get(0).getLegs().size(); i++) {
-                    for (Steps step : res.getRoutes().get(0).getLegs().get(i).getSteps()) {
-                        DirectionsJSONParser.decodePoly(polylinesList, step.getPolyline().getPoints());
-                        Log.d("Polylines recieved", String.valueOf(polylinesList.size()));
-                    }
-                }
-                if (counter == 0) {
-                    createPolylines(polylinesList);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<DirectionResults> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-
-//        origin = new LatLng(data.get(0).getLat(), data.get(0).getLng());
-//        dest = new LatLng(data.get(7).getLat(), data.get(7).getLng());
-//        waypointslist = data.subList(0, 7);
-//        for (int i = 0; i < waypointslist.size(); i++) {
-//
-//            LatLng point = new LatLng(waypointslist.get(i).getLat(), waypointslist.get(i).getLng());
-//            if (i == waypointslist.size() - 1) {
-//                waypoints.append(point.latitude).append(",").append(point.longitude);
-//            } else {
-//                waypoints.append(point.latitude).append(",").append(point.longitude).append("|");
-//            }
-//        }
-//        App.getApi().getJson(
-//                origin.latitude + "," + origin.longitude,
-//                dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-//                "walking").enqueue(directionResults);
-
-        int i = 0;
         counter = data.size() / 7 + 1;
+        List<LatLng> latlngList;
         if (data.size() > 7) {
-
-            while (data.size() - i > 7) {
-
+            //Reworked While To For Loop to reduce boilerplate code
+            for (int i = 0; i < data.size() - 1; i += 7) {
                 origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-                dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
-                StringBuilder waypoints = new StringBuilder();
-                waypointslist = data.subList(i, i + 7);
-                createWaypointsString(waypointslist, waypoints);
-                App.getApi().getJson(
-                        origin.latitude + "," + origin.longitude,
-                        dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                        "walking").enqueue(directionResults);
-                i += 7;
+                if (i + 7 > data.size() - 1) {
+                    dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
+                    waypointslist = data.subList(i + 1, data.size() - 1);
+                } else {
+                    dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
+                    waypointslist = data.subList(i + 1, i + 7);
+                }
+
+                latlngList = getLatLngList(waypointslist);
+                latlngList.add(0, origin);
+                latlngList.add(dest);
+                //Added external library to load google direction API
+                Routing routing = new Routing.Builder()
+                        .travelMode(Routing.TravelMode.WALKING)
+                        .withListener(this)
+                        .waypoints(latlngList)
+                        .build();
+                routing.execute();
+
             }
-            origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-            dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-            StringBuilder waypoints = new StringBuilder();
-            waypointslist = data.subList(i, data.size() - 1);
-            createWaypointsString(waypointslist, waypoints);
-            App.getApi().getJson(
-                    origin.latitude + "," + origin.longitude,
-                    dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                    "walking").enqueue(directionResults);
+
 
         } else {
-            origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
+            origin = new LatLng(data.get(0).getLat(), data.get(0).getLng());
             dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-            StringBuilder waypoints = new StringBuilder();
-            waypointslist = data.subList(i, data.size() - 1);
-            createWaypointsString(waypointslist, waypoints);
-            App.getApi().getJson(
-                    origin.latitude + "," + origin.longitude,
-                    dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                    "walking").enqueue(directionResults);
+            waypointslist = data.subList(0, data.size() - 1);
+            latlngList = getLatLngList(waypointslist);
+            latlngList.add(0, origin);
+            latlngList.add(dest);
+            Routing routing = new Routing.Builder()
+                    .travelMode(Routing.TravelMode.WALKING)
+                    .withListener(this)
+                    .waypoints(latlngList)
+                    .build();
+            routing.execute();
         }
     }
 
-    private void createWaypointsString(List<InfoFromJson> pointsList, StringBuilder waypointsBuilder){
-        for (int j = 0; j < pointsList.size(); j++) {
-
-            LatLng point = new LatLng(pointsList.get(j).getLat(), pointsList.get(j).getLng());
-            if (j == pointsList.size() - 1) {
-                waypointsBuilder.append(point.latitude).append(",").append(point.longitude);
-            } else {
-                waypointsBuilder.append(point.latitude).append(",").append(point.longitude).append("|");
-            }
+    //Added conversion to LatLng List
+    //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
+    private List<LatLng> getLatLngList(List<InfoFromJson> list) {
+        List<LatLng> res = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            res.add(new LatLng(list.get(i).lat, list.get(i).lng));
         }
+        return res;
     }
 
     private String inputStreamToString(InputStream inputStream) {
@@ -309,14 +271,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         changeMarkerListener();
     }
 
+    //Reworked adding polyline to Map
     private void createPolylines(ArrayList<LatLng> list) {
-        for (int i = 0; i < list.size() - 1; i++) {
-            mMap.addPolyline(new PolylineOptions()
-                    .add(list.get(i), list.get(i + 1))
-                    .width(11)
-                    .jointType(BEVEL)
-                    .color(Color.rgb(145, 121, 241)));
-        }
+        mMap.addPolyline(new PolylineOptions()
+                .addAll(list).width(11)
+                .jointType(JointType.BEVEL)
+                .color(Color.rgb(145, 121, 241)));
+
     }
 
     public void changeMarkerListener() {
@@ -348,13 +309,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-                Handler handler =new Handler();
+                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
-                },300);
+                }, 300);
 
                 return true;
 
@@ -669,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    public void bottomSheetInit(){
+    public void bottomSheetInit() {
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetName = findViewById(R.id.bottom_sheet_name);
         bottomSheetInfo = findViewById(id.bottom_sheet_info);
@@ -680,19 +641,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-        @Override
-        protected void onActivityResult ( int requestCode, int resultCode, Intent data){
-            if (requestCode == 1) {
-                if (resultCode == RESULT_OK) {
-                    screen1.setVisibility(View.GONE);
-                    screen2.setVisibility(View.VISIBLE);
-                }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                screen1.setVisibility(View.GONE);
+                screen2.setVisibility(View.VISIBLE);
             }
         }
-        
+    }
+
 
     @Override
     public void onBackPressed() {
         // do nothing.
+    }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+        counter -= 1;
+        for (Route route :
+                arrayList) {
+            polylinesList.addAll(route.getPolyOptions().getPoints());
+        }
+        if(counter == 0){
+            createPolylines(polylinesList);
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
     }
 }
