@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
     private Toolbar toolbar;
+    private ActionBar actionbar;
     private ImageView myLocationButton;
     private View screen1;
     private View screen2;
@@ -126,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        actionbar = getSupportActionBar();
         screen1 = findViewById(id.screen1);
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
@@ -175,20 +179,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Resources.NotFoundException e) {
             e.getMessage();
         }
-        intent = getIntent();
-        if (intent.getStringExtra("quest_name") != null) {
-            switch (intent.getStringExtra("quest_name")) {
-                case "justName":
-                    screen1.setVisibility(View.GONE);
-                    screen1.setVisibility(View.GONE);
-                    toolbar.setTitle("justName");
-                    drawRoute();
-                    break;
-            }
-        }
     }
 
     private void drawRoute() {
+
+        firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
+            @Override
+            public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList) {
+                firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+                    @Override
+                    public void onSuccess(List<LocationStructure> locationStructureList) {
+                        //For Taras
+                        //TODO:Get LatLng from each location and add to LatLng List
+                    }
+
+                    @Override
+                    public void onError(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+
+            }
+        });
+
         String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
         Gson gson = new Gson();
         data = gson.fromJson(myJsonPart1, contentType);
@@ -594,18 +611,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void configureToolbarForFirstScreen() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Home page");
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionbar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void configureToolbarForSecondScreen() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Choose Category");
         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -643,10 +654,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle extras = data.getExtras();
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.VISIBLE);
+                if(extras != null) {
+                    if(extras.containsKey("button")) {
+                        if (data.getStringExtra("button").equals("back")) {
+                            screen1.setVisibility(View.GONE);
+                            screen2.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    if (extras.containsKey("quest_name")) {
+                        actionbar.setTitle("Quest");
+                        actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
+                        actionbar.setDisplayHomeAsUpEnabled(true);
+                        navigationView.setVisibility(View.GONE);
+                            switch (data.getStringExtra("quest_name")) {
+                                case "justName":
+                                    screen1.setVisibility(View.GONE);
+                                    screen2.setVisibility(View.GONE);
+                                    toolbar.setTitle("justName");
+                                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                                    drawRoute();
+                                    break;
+                        }
+                    }
+                }
             }
         }
     }

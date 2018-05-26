@@ -42,13 +42,13 @@ public class ActivityChooseLevel extends AppCompatActivity{
         setContentView(R.layout.activity_choose_level);
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.first_recycler_view);
-        questItemAdapter = new QuestItemAdapter(quests);
+        questItemAdapter = new QuestItemAdapter(this, quests);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(questItemAdapter);
         easyRecyclerView = findViewById(R.id.second_recycler_view);
-        easyQuestItemAdapter = new QuestItemAdapter(easyQuests);
+        easyQuestItemAdapter = new QuestItemAdapter(this, easyQuests);
         RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         easyRecyclerView.setLayoutManager(mLayoutManager1);
         easyRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -61,69 +61,71 @@ public class ActivityChooseLevel extends AppCompatActivity{
 
     private void prepareQuestData() {
         final String categoryToShow = getIntent().getStringExtra("Category");
-        manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
-            @Override
-            public void onSuccess(List<QuestStructure> questStructureList) {
-                questStructureList = sortQuestsForRecycler(questStructureList);
-                switch (categoryToShow) {
-                    case "0":
-                        List<QuestStructure> questsInCategory0 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 0));
-                        for (QuestStructure questStructure : questsInCategory0) {
-                            if (questStructure.getLevel() == 1) {
-                                quests.add(questStructure);
-                                questItemAdapter.notifyDataSetChanged();
-                            } else if (questStructure.getLevel() == 2) {
-                                easyQuests.add(questStructure);
-                                easyQuestItemAdapter.notifyDataSetChanged();
+        if(categoryToShow != null) {
+            manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
+                @Override
+                public void onSuccess(List<QuestStructure> questStructureList) {
+                    questStructureList = sortQuestsForRecycler(questStructureList);
+                    switch (categoryToShow) {
+                        case "0":
+                            List<QuestStructure> questsInCategory0 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 0));
+                            for (QuestStructure questStructure : questsInCategory0) {
+                                if (questStructure.getLevel() == 1) {
+                                    quests.add(questStructure);
+                                    questItemAdapter.notifyDataSetChanged();
+                                } else if (questStructure.getLevel() == 2) {
+                                    easyQuests.add(questStructure);
+                                    easyQuestItemAdapter.notifyDataSetChanged();
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case "1":
-                        List<QuestStructure> questsInCategory1 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 1));
-                        for (QuestStructure questStructure : questsInCategory1) {
-                            if (questStructure.getLevel() == 1) {
-                                quests.add(questStructure);
-                                questItemAdapter.notifyDataSetChanged();
-                            } else if (questStructure.getLevel() == 2) {
-                                easyQuests.add(questStructure);
-                                easyQuestItemAdapter.notifyDataSetChanged();
+                        case "1":
+                            List<QuestStructure> questsInCategory1 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 1));
+                            for (QuestStructure questStructure : questsInCategory1) {
+                                if (questStructure.getLevel() == 1) {
+                                    quests.add(questStructure);
+                                    questItemAdapter.notifyDataSetChanged();
+                                } else if (questStructure.getLevel() == 2) {
+                                    easyQuests.add(questStructure);
+                                    easyQuestItemAdapter.notifyDataSetChanged();
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case "2":
-                        List<QuestStructure> questsInCategory2 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 2));
-                        for (QuestStructure questStructure : questsInCategory2) {
-                            if (questStructure.getLevel() == 1) {
-                                quests.add(questStructure);
-                                questItemAdapter.notifyDataSetChanged();
-                            } else if (questStructure.getLevel() == 2) {
-                                easyQuests.add(questStructure);
-                                easyQuestItemAdapter.notifyDataSetChanged();
+                        case "2":
+                            List<QuestStructure> questsInCategory2 = new ArrayList<>(manager.findQuestsByCategory(questStructureList, 2));
+                            for (QuestStructure questStructure : questsInCategory2) {
+                                if (questStructure.getLevel() == 1) {
+                                    quests.add(questStructure);
+                                    questItemAdapter.notifyDataSetChanged();
+                                } else if (questStructure.getLevel() == 2) {
+                                    easyQuests.add(questStructure);
+                                    easyQuestItemAdapter.notifyDataSetChanged();
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case "all":
-                        for (QuestStructure questStructure : questStructureList) {
-                            if (questStructure.getLevel() == 1) {
-                                quests.add(questStructure);
-                                questItemAdapter.notifyDataSetChanged();
-                            } else if (questStructure.getLevel() == 2) {
-                                easyQuests.add(questStructure);
-                                easyQuestItemAdapter.notifyDataSetChanged();
+                        case "all":
+                            for (QuestStructure questStructure : questStructureList) {
+                                if (questStructure.getLevel() == 1) {
+                                    quests.add(questStructure);
+                                    questItemAdapter.notifyDataSetChanged();
+                                } else if (questStructure.getLevel() == 2) {
+                                    easyQuests.add(questStructure);
+                                    easyQuestItemAdapter.notifyDataSetChanged();
+                                }
                             }
-                        }
-                        break;
+                            break;
+                    }
                 }
-            }
 
-            @Override
-            public void onError(DatabaseError databaseError) {
-                Log.e("Error","Can not retrieve QuestStructure");
-            }
-        });
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Log.e("Error", "Can not retrieve QuestStructure");
+                }
+            });
+        }
     }
 
     private void startNewButton() {
@@ -163,7 +165,8 @@ public class ActivityChooseLevel extends AppCompatActivity{
         switch (itemId) {
             case android.R.id.home:
                 Intent intent = new Intent(ActivityChooseLevel.this, MainActivity.class);
-                setResult(RESULT_OK);
+                intent.putExtra("button","back");
+                setResult(RESULT_OK, intent);
                 finish();
                 return true;
         }
