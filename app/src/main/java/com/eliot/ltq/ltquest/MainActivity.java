@@ -118,9 +118,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
         setCategoriesText();
-        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
-        markerTextView = changedMarkerInflated.findViewById(id.number_text_view);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getExtendedMapAsync(this);
@@ -151,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
+        markerTextView = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
         markerInflated = inflater.inflate(R.layout.marker, null);
         numberOfPoint = (TextView) markerInflated.findViewById(R.id.number_text_view);
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -207,11 +206,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList) {
-        for (LocationStructure locationStructure : locationStructureList) {
-            LatLng point = new LatLng(locationStructure.getLat(), locationStructure.getLon());
-            data.add(point);
-        }
-        createMarker(data);
+        data = getLatLngList(locationStructureList);
+        createMarkers(locationStructureList);
         polylinesList.clear();
 
         counter = data.size() / 7 + 1;
@@ -257,12 +253,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Added conversion to LatLng List
     //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
-    private List<LatLng> getLatLngList(List<InfoFromJson> list) {
-        List<LatLng> res = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            res.add(new LatLng(list.get(i).lat, list.get(i).lng));
+    private ArrayList<LatLng> getLatLngList(List<LocationStructure> locationStructureList) {
+        ArrayList<LatLng> latlngList = new ArrayList<>();
+        for (LocationStructure locationStructure : locationStructureList) {
+            LatLng point = new LatLng(locationStructure.getLat(), locationStructure.getLon());
+            latlngList.add(point);
         }
-        return res;
+        return latlngList;
     }
 
     private String inputStreamToString(InputStream inputStream) {
@@ -275,14 +272,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void createMarker(ArrayList<LatLng> list) {
-        for (int i = 0; i < list.size(); i++) {
+    private void createMarkers(List<LocationStructure> locationStructureList) {
+        for (int i = 0; i < locationStructureList.size(); i++) {
             int j = i + 1;
             numberOfPoint.setText("" + j);
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(list.get(i).latitude, list.get(i).longitude))
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
+            locationStructureList.get(i).setLocationID(i + 1);
+            marker.setData(locationStructureList.get(i));
+            //           int number = locationStructure.getLocationID() + 1;
         }
         changeMarkerListener();
     }
@@ -302,13 +302,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-                markerTextView.setText("3");
+                LocationStructure locationStructure = marker.getData();
+                int number = locationStructure.getLocationID();
+                markerTextView.setText("" + number);
                 marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
                 mBottomSheetBehavior.setHideable(true);
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                bottomSheetName.setText("Other Point");
-                bottomSheetInfo.setText("Some other Info");
+                bottomSheetName.setText(locationStructure.getLocationName());
+                bottomSheetInfo.setText(locationStructure.getLocationDescription());
                 bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
