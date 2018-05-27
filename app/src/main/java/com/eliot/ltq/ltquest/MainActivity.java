@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
     private NavigationView navigationView;
-    private ArrayList<InfoFromJson> data = new ArrayList<>();
+    private ArrayList<LatLng> data = new ArrayList<>();
     private ArrayList<InfoFromJson> dataPart2 = new ArrayList<>();
     private static final Type contentType = new TypeToken<List<InfoFromJson>>() {
     }.getType();
@@ -189,13 +189,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
                     @Override
                     public void onSuccess(List<LocationStructure> locationStructureList) {
-                        //For Taras
-                        //TODO:Get LatLng from each location and add to LatLng List
+                        prepareDataAndDrawingRoute(locationStructureList);
                     }
 
                     @Override
                     public void onError(DatabaseError databaseError) {
-
+                        Log.e("FirebaseDataManager", "eeeedgfde");
                     }
                 });
             }
@@ -205,31 +204,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+    }
 
-        String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
-        Gson gson = new Gson();
-        data = gson.fromJson(myJsonPart1, contentType);
+    private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList) {
+        for (LocationStructure locationStructure : locationStructureList) {
+            LatLng point = new LatLng(locationStructure.getLat(), locationStructure.getLon());
+            data.add(point);
+        }
         createMarker(data);
         polylinesList.clear();
 
         counter = data.size() / 7 + 1;
         List<LatLng> latlngList;
         if (data.size() > 7) {
-            //Reworked While To For Loop to reduce boilerplate code
             for (int i = 0; i < data.size() - 1; i += 7) {
-                origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
+                origin = new LatLng(data.get(i).latitude, data.get(i).longitude);
                 if (i + 7 > data.size() - 1) {
-                    dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-                    waypointslist = data.subList(i + 1, data.size() - 1);
+                    dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
+                    latlngList = data.subList(i + 1, data.size() - 1);
                 } else {
-                    dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
-                    waypointslist = data.subList(i + 1, i + 7);
+                    dest = new LatLng(data.get(i + 7).latitude, data.get(i + 7).longitude);
+                    latlngList = data.subList(i + 1, i + 7);
                 }
 
-                latlngList = getLatLngList(waypointslist);
                 latlngList.add(0, origin);
                 latlngList.add(dest);
-                //Added external library to load google direction API
                 Routing routing = new Routing.Builder()
                         .travelMode(Routing.TravelMode.WALKING)
                         .withListener(this)
@@ -241,10 +240,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         } else {
-            origin = new LatLng(data.get(0).getLat(), data.get(0).getLng());
-            dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-            waypointslist = data.subList(0, data.size() - 1);
-            latlngList = getLatLngList(waypointslist);
+            origin = new LatLng(data.get(0).latitude, data.get(0).longitude);
+            dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
+            latlngList = data.subList(0, data.size() - 1);
             latlngList.add(0, origin);
             latlngList.add(dest);
             Routing routing = new Routing.Builder()
@@ -255,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             routing.execute();
         }
     }
+
 
     //Added conversion to LatLng List
     //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
@@ -276,12 +275,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void createMarker(ArrayList<InfoFromJson> list) {
+    private void createMarker(ArrayList<LatLng> list) {
         for (int i = 0; i < list.size(); i++) {
             int j = i + 1;
             numberOfPoint.setText("" + j);
             mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(list.get(i).getLat(), list.get(i).getLng()))
+                    .position(new LatLng(list.get(i).latitude, list.get(i).longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
         }
@@ -657,8 +656,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Bundle extras = data.getExtras();
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                if(extras != null) {
-                    if(extras.containsKey("button")) {
+                if (extras != null) {
+                    if (extras.containsKey("button")) {
                         if (data.getStringExtra("button").equals("back")) {
                             screen1.setVisibility(View.GONE);
                             screen2.setVisibility(View.VISIBLE);
@@ -669,14 +668,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
                         actionbar.setDisplayHomeAsUpEnabled(true);
                         navigationView.setVisibility(View.GONE);
-                            switch (data.getStringExtra("quest_name")) {
-                                case "justName":
-                                    screen1.setVisibility(View.GONE);
-                                    screen2.setVisibility(View.GONE);
-                                    toolbar.setTitle("justName");
-                                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                                    drawRoute();
-                                    break;
+                        switch (data.getStringExtra("quest_name")) {
+                            case "justName":
+                                screen1.setVisibility(View.GONE);
+                                screen2.setVisibility(View.GONE);
+                                toolbar.setTitle("justName");
+                                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                                drawRoute();
+                                break;
                         }
                     }
                 }
@@ -708,7 +707,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 arrayList) {
             polylinesList.addAll(route.getPolyOptions().getPoints());
         }
-        if(counter == 0){
+        if (counter == 0) {
             createPolylines(polylinesList);
         }
     }

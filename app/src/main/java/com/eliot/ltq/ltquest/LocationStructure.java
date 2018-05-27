@@ -2,8 +2,8 @@ package com.eliot.ltq.ltquest;
 
 public class LocationStructure {
     private boolean isSecret;
-    private long lat;
-    private long lon;
+    private double lat;
+    private double lon;
     private String locationDescription;
     private Integer locationID;
     private String locationName;
@@ -16,19 +16,19 @@ public class LocationStructure {
         isSecret = secret;
     }
 
-    public long getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(long lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public long getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(long lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 

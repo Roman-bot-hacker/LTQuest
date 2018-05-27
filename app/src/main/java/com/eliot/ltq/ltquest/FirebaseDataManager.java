@@ -93,7 +93,7 @@ public class FirebaseDataManager {
         });
     }
 
-    public void questRetrieverByName(String questName, DataRetrieverListenerForSingleQuestStructure listener){
+    public void questRetrieverByName(String questName, final DataRetrieverListenerForSingleQuestStructure listener){
         firebaseDatabase.getReference("quest").child(questName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -142,7 +142,7 @@ public class FirebaseDataManager {
         return foundQuests;
     }
 
-    public void locationsListRetriever(List<Integer> locationsIdList, final DataRetrieveListenerForLocationsStructure listener){
+    public void locationsListRetriever(final List<Integer> locationsIdList, final DataRetrieveListenerForLocationsStructure listener){
         firebaseDatabase.getReference("locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
