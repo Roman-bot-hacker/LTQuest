@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView bottomSheetName;
     private TextView bottomSheetInfo;
     private Button bottomSheetSkipButton;
+    private boolean isQuestOn;
+    private int currentQuestCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
             @Override
             public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList) {
+                currentQuestCategory = questStructure.getParentCategoryID();
                 firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
                     @Override
                     public void onSuccess(List<LocationStructure> locationStructureList) {
@@ -631,10 +634,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case android.R.id.home:
                 if (screen1.getVisibility() == View.VISIBLE) {
                     drawerLayout.openDrawer(GravityCompat.START);
-                } else if (screen2.getVisibility() == View.VISIBLE) {
+                }
+                if (screen2.getVisibility() == View.VISIBLE) {
                     screen2.setVisibility(View.GONE);
                     screen1.setVisibility(View.VISIBLE);
                     configureToolbarForFirstScreen();
+                }
+                if(isQuestOn){
+                    isQuestOn = false;
+                    Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                    intent.putExtra("Category", "" + currentQuestCategory);
+                    startActivityForResult(intent, 1);
                 }
                 return true;
         }
@@ -670,14 +680,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
                         actionbar.setDisplayHomeAsUpEnabled(true);
                         navigationView.setVisibility(View.GONE);
-                        switch (data.getStringExtra("quest_name")) {
-                            case "justName":
-                                screen1.setVisibility(View.GONE);
-                                screen2.setVisibility(View.GONE);
-                                toolbar.setTitle("justName");
-                                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                                drawRoute();
-                                break;
+                            switch (data.getStringExtra("quest_name")) {
+                                case "justName":
+                                    screen1.setVisibility(View.GONE);
+                                    screen2.setVisibility(View.GONE);
+                                    toolbar.setTitle("justName");
+                                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                                    drawRoute();
+                                    isQuestOn = true;
+                                    break;
                         }
                     }
                 }
