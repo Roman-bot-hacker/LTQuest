@@ -159,19 +159,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            myLocationButton = (ImageView) findViewById(id.myLocationButton);
-            myLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
-                }
-            });
-            mPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .flat(false)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
-                    .anchor(0.5f, 1f)
-                    .position(currentLatLng)
-                    .draggable(false));
+            enableMyLocationButton();
+            addMyPositionMarker();
         }
 
         try {
@@ -180,6 +169,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Resources.NotFoundException e) {
             e.getMessage();
         }
+    }
+
+    public void enableMyLocationButton(){
+        myLocationButton = (ImageView) findViewById(id.myLocationButton);
+        myLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
+            }
+        });
+    }
+
+    public void addMyPositionMarker(){
+        mPositionMarker = mMap.addMarker(new MarkerOptions()
+                .flat(false)
+                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
+                .anchor(0.5f, 1f)
+                .position(currentLatLng)
+                .draggable(false));
     }
 
     private void drawRoute() {
@@ -673,6 +681,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (data.getStringExtra("button").equals("back")) {
                             screen1.setVisibility(View.GONE);
                             screen2.setVisibility(View.VISIBLE);
+                            mMap.clear();
+                            mMap.setMyLocationEnabled(true);
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            addMyPositionMarker();
+                            enableMyLocationButton();
                         }
                     }
                     if (extras.containsKey("quest_name")) {
