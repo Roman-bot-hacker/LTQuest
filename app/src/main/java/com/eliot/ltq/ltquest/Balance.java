@@ -23,6 +23,7 @@ import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by Administrator on 3/21/2018.
@@ -42,6 +43,7 @@ public class Balance extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.balance);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         editDollars = findViewById(R.id.edit_dollars);
         exchangedPoints = findViewById(R.id.points_exchange);

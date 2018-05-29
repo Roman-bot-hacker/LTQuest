@@ -1,5 +1,7 @@
 package com.eliot.ltq.ltquest;
 
+import android.media.Image;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -7,16 +9,16 @@ import com.eliot.ltq.ltquest.authentication.AuthActivity;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class FirebaseDataManager {
@@ -49,6 +51,11 @@ public class FirebaseDataManager {
     public interface UserInformationWritingListener{
         void onSuccess();
         void onError();
+    }
+
+    public interface QuestPhotosResult {
+        void onSuccess(List<String> list);
+        void onError(String excepMassage);
     }
 
     public void categoriesNamesListRetriever(final DataRetrieveListenerForQuestCategory listener){
@@ -198,5 +205,22 @@ public class FirebaseDataManager {
 
     public void writeUserPoints(String uId, final int points){
         firebaseDatabase.getReference().child("userData").child(uId).child("points").setValue(points);
+    }
+
+    public void getQuestPhotos(String questName, final QuestPhotosResult listener){
+        firebaseDatabase.getReference().child("photos").child(questName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<String> pathList = new LinkedList<>();
+                GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                pathList = dataSnapshot.getValue(t);
+                listener.onSuccess(pathList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listener.onError(databaseError.getMessage());
+            }
+        });
     }
 }

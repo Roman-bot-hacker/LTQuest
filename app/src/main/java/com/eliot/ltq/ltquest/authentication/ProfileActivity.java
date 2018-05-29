@@ -25,6 +25,7 @@ import com.eliot.ltq.ltquest.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout drawerLayout;
@@ -62,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.users_profile);
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         FirebaseApp.initializeApp(this);
         firebaseDataManager = new FirebaseDataManager();
         authManager = new FirebaseAuthManager();

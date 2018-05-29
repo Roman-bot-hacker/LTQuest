@@ -11,9 +11,12 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +24,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -41,7 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
-
+import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
@@ -67,11 +72,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
     private NavigationView navigationView;
+    private RecyclerView photoResyclerView;
+    private RecyclerView.Adapter photoAdapter;
+    private RecyclerView.LayoutManager photoLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         firebaseAuthManager = new FirebaseAuthManager();
         setContentView(layout.activity_main);
         setCategoriesText();
@@ -96,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             checkMyCoarseLocationUpdates();
         }
         else return;
+        photoScrollViewInit();
     }
 
     @Override
@@ -436,6 +446,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         return true;
     }
+
+    //Photo Scroll View ---------------------------------------------------------
+
+    public void photoScrollViewInit(){
+        photoResyclerView = findViewById(id.photos_resycler_view);
+        photoResyclerView.setHasFixedSize(true);
+        photoResyclerView.setVisibility(View.VISIBLE);
+        photoLayoutManager = new LinearLayoutManager(this);
+        photoResyclerView.setLayoutManager(photoLayoutManager);
+        firebaseDataManager.getQuestPhotos("quest1", new FirebaseDataManager.QuestPhotosResult() {
+            @Override
+            public void onSuccess(List<String> pathList) {
+                photoAdapter = new PhotosAdapter(MainActivity.this, pathList);
+                photoResyclerView.setAdapter(photoAdapter);
+            }
+
+            @Override
+            public void onError(String excepMassage) {
+                Log.e("PhotoScrollView", excepMassage);
+            }
+        });
+    }
+
+    //-----------------------------------------------------------------------------
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

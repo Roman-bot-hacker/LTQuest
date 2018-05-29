@@ -42,6 +42,8 @@
                 android:src="@drawable/my_location_button" />
         </LinearLayout>
 
+        <include layout="@layout/photos_scrooll_view"/>
+
         <include layout="@layout/first_screen"/>
 
         <include layout="@layout/second_screen"/>
