@@ -26,9 +26,31 @@
             android:layout_height="match_parent"
             tools:context="com.example.android.ltq.MainActivity" />
 
+        <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/photo_scroll_view"
+                android:scrollbars="none"
+                xmlns:android="http://schemas.android.com/apk/res/android">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.RecyclerView
+                        android:id="@+id/photos_resycler_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/photo_scroll_view"
             android:layout_alignRight="@id/map"
             android:layout_marginRight="15dp"
             android:layout_marginTop="20dp">
@@ -41,8 +63,6 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/my_location_button" />
         </LinearLayout>
-
-        <include layout="@layout/photos_scrooll_view"/>
 
         <include layout="@layout/first_screen"/>
 

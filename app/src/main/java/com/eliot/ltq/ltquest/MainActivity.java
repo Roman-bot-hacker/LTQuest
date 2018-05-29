@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerView photoResyclerView;
     private RecyclerView.Adapter photoAdapter;
     private RecyclerView.LayoutManager photoLayoutManager;
+    private HorizontalScrollView photoScrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -450,10 +451,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Photo Scroll View ---------------------------------------------------------
 
     public void photoScrollViewInit(){
+        photoScrollView = findViewById(id.photo_scroll_view);
+        photoScrollView.isSmoothScrollingEnabled();
         photoResyclerView = findViewById(id.photos_resycler_view);
         photoResyclerView.setHasFixedSize(true);
         photoResyclerView.setVisibility(View.VISIBLE);
-        photoLayoutManager = new LinearLayoutManager(this);
+        photoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         photoResyclerView.setLayoutManager(photoLayoutManager);
         firebaseDataManager.getQuestPhotos("quest1", new FirebaseDataManager.QuestPhotosResult() {
             @Override

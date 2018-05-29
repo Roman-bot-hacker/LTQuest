@@ -41,7 +41,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         storageManager.setImageIntoImageView(activityContext, pathList.get(position), holder.photoView);
-        ImageView imageView = holder.photoView;
+        holder.photoView.setAdjustViewBounds(true);
     }
 
     @Override
