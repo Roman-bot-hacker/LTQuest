@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
     private Toolbar toolbar;
-    private ImageView myLocationButton;
+    private View myLocationButton;
     private View screen1;
     private View screen2;
     private DrawerLayout drawerLayout;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            myLocationButton = (ImageView) findViewById(id.myLocationButton);
+            myLocationButton = (View) findViewById(id.myLocationButton);
             myLocationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0,
-                    0, new LocationListener() {
+                    1, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
                             if (location == null)
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void checkMyCoarseLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     if (location == null)
