@@ -53,6 +53,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         firebaseAuthManager = new FirebaseAuthManager();
+        keepDataSynced();
         setContentView(layout.activity_main);
         setCategoriesText();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -742,4 +745,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onRoutingCancelled() {
 
     }
+
+    private void keepDataSynced(){
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("categories");
+        DatabaseReference userDataRef = FirebaseDatabase.getInstance().getReference("userData").child(firebaseAuthManager.getCurrentUser().getUid());
+        categoriesRef.keepSynced(true);
+        userDataRef.keepSynced(true);
+    }
+
 }
