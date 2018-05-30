@@ -48,15 +48,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseAuthManager authManager;
     private Toolbar toolbar;
     private View editProfile;
-    private ImageView userPhotoSetttings;
     private EditText userNameSetttings;
-    private ImageView maleImageSetttings;
-    private ImageView femaleImageSetttings;
-    private LinearLayout maleLayoutSetttings;
-    private LinearLayout femaleLayoutSetttings;
-    private LinearLayout facebookLayoutSetttings;
-    private LinearLayout googleLayoutSetttings;
-    private LinearLayout mailLayoutSetttings;
+    private RadioGroup sexRadioButton;
+    private View facebookLink;
+    private View googleLink;
+    private View mailLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,15 +264,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
     public void editOptionsObjectsInit(){
-        userPhotoSetttings = editProfile.findViewById(R.id.ava);
-        userNameSetttings = editProfile.findViewById(R.id.user_name_options);
-        facebookLayoutSetttings = editProfile.findViewById(R.id.facebook_options_layout);
-        googleLayoutSetttings = editProfile.findViewById(R.id.google_options_layout);
-        mailLayoutSetttings = editProfile.findViewById(R.id.mail_options_layout);
-        maleLayoutSetttings = editProfile.findViewById(R.id.male_layout);
-        femaleLayoutSetttings = editProfile.findViewById(R.id.female_layout);
-        maleImageSetttings = editProfile.findViewById(R.id.on_male_click);
-        femaleImageSetttings = editProfile.findViewById(R.id.on_female_click);
+        userNameSetttings = editProfile.findViewById(R.id.settings_name);
+        facebookLink = editProfile.findViewById(R.id.facebook);
+        googleLink = editProfile.findViewById(R.id.email_google);
+        mailLink = editProfile.findViewById(R.id.email_mail);
+        sexRadioButton = editProfile.findViewById(R.id.sex_radio_group);
         if (currentUserInformation!=null){
             editOptionsFromContentInit();
         }
@@ -301,42 +293,36 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (currentUserInformation.getSex()!=null) {
             switch (currentUserInformation.getSex()) {
                 case MALE: {
-                    maleImageSetttings.setImageResource(R.drawable.yes);
-                    femaleImageSetttings.setImageResource(R.drawable.no);
+                    sexRadioButton.check(R.id.male);
                     userSexInOptions = UserSex.MALE;
                 } break;
                 case FEMALE: {
-                    maleImageSetttings.setImageResource(R.drawable.no);
-                    femaleImageSetttings.setImageResource(R.drawable.yes);
+                    sexRadioButton.check(R.id.female);
                     userSexInOptions = UserSex.FEMALE;
                 } break;
                 default: {
-                    maleImageSetttings.setImageResource(R.drawable.no);
-                    femaleImageSetttings.setImageResource(R.drawable.no);
+                    userSexInOptions = UserSex.CHOOSE_SEX;
                 }
             }
         }
     }
 
-    public void editOptionsLisneter(){
-        maleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
+    public void editOptionsLisneter() {
+        sexRadioButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                maleImageSetttings.setImageResource(R.drawable.yes);
-                femaleImageSetttings.setImageResource(R.drawable.no);
-                userSexInOptions = UserSex.MALE;
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.male: {userSexInOptions = UserSex.MALE;}
+                        break;
+                    case R.id.female: {userSexInOptions = UserSex.FEMALE;}
+                        break;
+                    default: {userSexInOptions = UserSex.CHOOSE_SEX;}
+                }
             }
         });
-        femaleLayoutSetttings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                maleImageSetttings.setImageResource(R.drawable.no);
-                femaleImageSetttings.setImageResource(R.drawable.yes);
-                userSexInOptions = UserSex.FEMALE;
-            }
-        });
-
     }
+
+
 
     public void editOptionsOnSaveClicked() {
         if (currentUserInformation != null) {

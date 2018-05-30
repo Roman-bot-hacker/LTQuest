@@ -9,6 +9,7 @@
         android:id="@+id/quest_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:elevation="@dimen/shadow_elevation"
         android:src="@drawable/lviv1"/>
     <TextView
         android:id="@+id/quest_name"

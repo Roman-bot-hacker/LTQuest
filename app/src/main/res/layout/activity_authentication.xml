@@ -94,6 +94,7 @@
         android:layout_marginEnd="@dimen/margin_top_for_button"
         android:layout_marginTop="@dimen/top_of_login"
         android:text="@string/login"
+        android:elevation="@dimen/shadow_elevation"
         android:textColor="#FF907AEC"
         tools:text="Log In"
         android:layout_centerHorizontal="true"/>

@@ -20,10 +20,11 @@
         android:textStyle="normal" />
 
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="21dp"
+        android:id="@+id/settings_name"
         android:drawablePadding="23dp"
         android:drawableStart="@drawable/ava"
         android:fontFamily="sans-serif"
@@ -33,17 +34,12 @@
         android:textSize="18sp"
         android:textStyle="normal" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="6dp"
-        android:background="@color/lightdrayline"
-        />
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:id="@+id/sex_radio_group"
         android:checkedButton="@id/male"
         android:orientation="horizontal">
         <RadioButton
@@ -63,9 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
+            android:id="@+id/female"
             android:lineSpacingExtra="10sp"
-
-
             android:paddingStart="10dp"
             android:button="@drawable/radio_button_selector"
             android:text="@string/sexf"
@@ -80,7 +75,7 @@
         android:layout_height="wrap_content"
         android:drawablePadding="26dp"
         android:layout_marginTop="34dp"
-        android:drawableStart="@drawable/facebook_logo"
+        android:drawableStart="@drawable/facebook_logo_profile"
         android:fontFamily="sans-serif"
         android:lineSpacingExtra="8sp"
         android:text="@string/email_facebook"
@@ -101,7 +96,7 @@
         android:drawablePadding="16dp"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical"
-        android:drawableStart="@drawable/google_logo"
+        android:drawableStart="@drawable/google_logo_profile"
         android:fontFamily="sans-serif"
         android:lineSpacingExtra="8sp"
         android:text="@string/email_google"
@@ -177,10 +172,5 @@
         android:layout_marginTop="6dp"
         android:background="@color/lightdrayline"
         />
-
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>
