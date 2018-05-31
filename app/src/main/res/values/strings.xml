@@ -51,7 +51,7 @@
     <string name="login">Login</string>
     <string name="dont_have_acc">Don\'t have an account? SIGN UP</string>
     <string name="already_have_an_acc">Already have an account? LOG IN</string>
-    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign in with</string>
+    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign up with</string>
     <string name="have_an_account_login">Already have an account? Login here!</string>
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>

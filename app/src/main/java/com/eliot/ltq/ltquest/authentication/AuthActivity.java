@@ -244,7 +244,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.authButtonGoogle: {
-                singInWithGoogle();
+                if(!isNetworkAvailable()) {
+                    Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+                }
+                else {singInWithGoogle();}
                 break;
             }
             case R.id.authButtonFacebook: {

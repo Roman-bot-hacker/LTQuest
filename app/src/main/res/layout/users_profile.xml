@@ -67,28 +67,21 @@
 
 
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_margin="10dp"
-        android:layout_below="@+id/sex"
-        app:cardElevation="8dp"
-        android:padding="6dp">
-
-
         <LinearLayout
-            android:id="@+id/relativeLayout"
+            android:id="@+id/links_layout_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/colorText"
+            android:elevation="@dimen/shadow_elevation"
+            android:layout_below="@+id/sex">
 
 
             <LinearLayout
                 android:id="@+id/liner_facebook"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="1dp">
 
                 <ImageView
                     android:id="@+id/facebok_logo"
@@ -97,7 +90,7 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="26dp"
                     android:layout_marginTop="21dp"
-                    android:src="@drawable/facebook_logo" />
+                    android:src="@drawable/facebook_logo_profile" />
 
 
                 <RelativeLayout
@@ -145,15 +138,16 @@
                 android:id="@+id/liner_google"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="1dp"
                 android:layout_below="@+id/liner_facebook">
 
                 <ImageView
                     android:id="@+id/google_logo"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
-                    android:layout_marginRight="19dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="17dp"
                     android:src="@drawable/google_logo_profile" />
 
                 <RelativeLayout
@@ -200,6 +194,7 @@
                 android:id="@+id/liner_mail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="1dp"
                 android:layout_below="@+id/liner_google">
 
                 <ImageView
@@ -208,7 +203,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="26dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="20dp"
                     android:src="@drawable/mail" />
 
                 <RelativeLayout
@@ -251,7 +246,6 @@
             </LinearLayout>
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
 
     <TextView
         android:layout_width="wrap_content"
@@ -260,7 +254,7 @@
         android:text="@string/log_out"
         android:textSize="24sp"
         android:textColor="@color/colorBottomSheet"
-        android:layout_below="@+id/card_view"
+        android:layout_below="@+id/links_layout_profile"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_centerHorizontal="true"/>
 

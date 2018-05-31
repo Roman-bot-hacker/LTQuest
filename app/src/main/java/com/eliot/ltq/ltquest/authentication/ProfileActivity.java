@@ -50,9 +50,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private View editProfile;
     private EditText userNameSetttings;
     private RadioGroup sexRadioButton;
-    private View facebookLink;
-    private View googleLink;
-    private View mailLink;
+    private TextView facebookLink;
+    private TextView googleLink;
+    private TextView mailLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -265,9 +265,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
     public void editOptionsObjectsInit(){
         userNameSetttings = editProfile.findViewById(R.id.settings_name);
-        facebookLink = editProfile.findViewById(R.id.facebook);
-        googleLink = editProfile.findViewById(R.id.email_google);
-        mailLink = editProfile.findViewById(R.id.email_mail);
+        facebookLink = (TextView) editProfile.findViewById(R.id.facebook);
+        googleLink = (TextView) editProfile.findViewById(R.id.email_google);
+        mailLink = (TextView) editProfile.findViewById(R.id.email_mail);
         sexRadioButton = editProfile.findViewById(R.id.sex_radio_group);
         if (currentUserInformation!=null){
             editOptionsFromContentInit();
@@ -304,6 +304,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     userSexInOptions = UserSex.CHOOSE_SEX;
                 }
             }
+        }
+        if(currentUserInformation.getFacebookLink()!=null){
+            facebookLink.setText(currentUserInformation.getFacebookLink());
+        }
+        if(currentUserInformation.getGoogleEmail()!=null){
+            googleLink.setText(currentUserInformation.getGoogleEmail());
+        }
+        if(currentUserInformation.getEmail()!=null){
+            mailLink.setText(currentUserInformation.getEmail());
         }
     }
 

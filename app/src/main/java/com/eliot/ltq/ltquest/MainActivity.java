@@ -30,10 +30,7 @@ import android.widget.*;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -127,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         catch (Resources.NotFoundException e) {
             e.getMessage();
         }
+        mMap.setBuildingsEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     private LatLng getMyLocation(Location location) {
