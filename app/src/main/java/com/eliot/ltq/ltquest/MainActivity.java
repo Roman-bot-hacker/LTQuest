@@ -238,18 +238,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id==R.id.nav_home){
-
-        }
-
-        if (id== R.id.nav_balance){
-            startActivity(new Intent(MainActivity.this, Balance.class));
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        switch (item.getItemId()) {
+            case R.id.nav_home: {
+                drawer.closeDrawer(GravityCompat.START);
+            } break;
+
+            case R.id.nav_balance: {
+                startActivity(new Intent(MainActivity.this, Balance.class));
+                drawer.closeDrawer(GravityCompat.START);
+            } break;
+
+            case R.id.nav_high_score: {
+                Toast.makeText(this, "Sorry, high score is disabled in this application version", Toast.LENGTH_SHORT).show();
+            } break;
+        }
         return true;
     }
 

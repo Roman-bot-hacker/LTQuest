@@ -14,10 +14,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
@@ -103,18 +100,22 @@ public class Balance extends AppCompatActivity {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(Balance.this, MainActivity.class));
-                }
-
-                if (id == R.id.nav_balance) {
-
-                }
-
+                // Handle navigation view item clicks here.
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
+                switch (item.getItemId()) {
+                    case R.id.nav_home: {
+                        startActivity(new Intent(Balance.this, MainActivity.class));
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
+
+                    case R.id.nav_balance: {
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
+
+                    case R.id.nav_high_score: {
+                        Toast.makeText(Balance.this, "Sorry, high score is disabled in this application version", Toast.LENGTH_SHORT).show();
+                    } break;
+                }
                 return true;
             }
         });

@@ -70,7 +70,7 @@
     </RadioGroup>
 
     <TextView
-        android:id="@+id/facebook"
+        android:id="@+id/facebook_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="26dp"
@@ -93,6 +93,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/google_edit"
         android:drawablePadding="16dp"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical"
@@ -113,6 +114,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/mail_edit"
         android:drawablePadding="26dp"
         android:layout_marginTop="20dp"
         android:drawableStart="@drawable/mail"

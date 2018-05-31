@@ -208,17 +208,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
+                // Handle navigation view item clicks here.
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                switch (item.getItemId()) {
+                    case R.id.nav_home: {
+                        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
 
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                    case R.id.nav_balance: {
+                        startActivity(new Intent(ProfileActivity.this, Balance.class));
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
+
+                    case R.id.nav_high_score: {
+                        Toast.makeText(ProfileActivity.this, "Sorry, high score is disabled in this application version", Toast.LENGTH_SHORT).show();
+                    } break;
                 }
-
-                if (id == R.id.nav_balance) {
-                    startActivity(new Intent(ProfileActivity.this, Balance.class));
-                }
-
-                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
@@ -265,9 +271,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
     public void editOptionsObjectsInit(){
         userNameSetttings = editProfile.findViewById(R.id.settings_name);
-        facebookLink = (TextView) editProfile.findViewById(R.id.facebook);
-        googleLink = (TextView) editProfile.findViewById(R.id.email_google);
-        mailLink = (TextView) editProfile.findViewById(R.id.email_mail);
+        facebookLink = (TextView) editProfile.findViewById(R.id.facebook_edit);
+        googleLink = (TextView) editProfile.findViewById(R.id.google_edit);
+        mailLink = (TextView) editProfile.findViewById(R.id.mail_edit);
         sexRadioButton = editProfile.findViewById(R.id.sex_radio_group);
         if (currentUserInformation!=null){
             editOptionsFromContentInit();
