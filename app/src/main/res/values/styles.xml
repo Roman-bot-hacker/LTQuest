@@ -35,6 +35,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
     <style name="Text_categoty">
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:textColor">@color/colorText</item>
@@ -43,7 +44,7 @@
     </style>
 
     <style name="ToolBarTheme" parent="AppTheme">
-        <item name="android:textColorPrimary">@color/colorText </item>
+        <item name="android:textColorPrimary">@null</item>
     </style>
 
 </resources>

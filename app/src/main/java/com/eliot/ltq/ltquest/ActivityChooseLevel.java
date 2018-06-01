@@ -3,9 +3,6 @@ package com.eliot.ltq.ltquest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.firebase.database.DatabaseError;
 
@@ -149,7 +145,7 @@ public class ActivityChooseLevel extends AppCompatActivity{
 
     private void configureToolbar() {
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorText));
         ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Choose level");
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);

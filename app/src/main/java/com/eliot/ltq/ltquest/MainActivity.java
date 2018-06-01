@@ -186,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     break;
             }
         }
+        mMap.setBuildingsEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     private void drawRoute(){
@@ -325,39 +327,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-                markerTextView.setText("3");
-                marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                if(marker!=mPositionMarker) {
+                    markerTextView.setText("3");
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                    mBottomSheetBehavior.setHideable(true);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                bottomSheetName.setText("Other Point");
-                bottomSheetInfo.setText("Some other Info");
-                bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                    }
-                });
-
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    bottomSheetName.setText("Other Point");
+                    bottomSheetInfo.setText("Some other Info");
+                    bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        }
+                    });
 
 
-                    }
-                });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                Handler handler =new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                },300);
+
+                        }
+                    });
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+                    }, 300);
+
+                    return true;
+                }
 
                 return true;
-
             }
         });
     }
@@ -634,7 +639,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void configureToolbarForFirstScreen() {
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorText));
         ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Home page");
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -643,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void configureToolbarForSecondScreen() {
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorText));
         ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Choose Category");
         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
