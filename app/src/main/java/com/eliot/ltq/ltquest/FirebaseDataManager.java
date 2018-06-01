@@ -36,6 +36,11 @@ public class FirebaseDataManager {
         void onError(DatabaseError databaseError);
     }
 
+    public interface DataRetrieverListenerForSingleQuestStructure{
+        void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList);
+        void onError(DatabaseError databaseError);
+    }
+
     public interface DataRetrieveListenerForLocationsStructure{
         void onSuccess(List<LocationStructure> locationStructureList);
         void onError(DatabaseError databaseError);
@@ -88,6 +93,27 @@ public class FirebaseDataManager {
         });
     }
 
+    public void questRetrieverByName(String questName, final DataRetrieverListenerForSingleQuestStructure listener){
+        firebaseDatabase.getReference("quest").child(questName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                QuestStructure questStructure;
+                List<Integer> locationsIdList = new ArrayList<>();
+                questStructure = dataSnapshot.getValue(QuestStructure.class);
+                for (DataSnapshot dataSnapshot1:
+                     dataSnapshot.child("locations").getChildren()) {
+                    locationsIdList.add(dataSnapshot1.getValue(Integer.class));
+                }
+                listener.onSuccess(questStructure, locationsIdList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listener.onError(databaseError);
+            }
+        });
+    }
+
     public List<QuestStructure> findQuestsByLevel(List<QuestStructure> fullList, int level){
         List<QuestStructure> foundQuests = new ArrayList<>();
         for (QuestStructure questStructure:
@@ -96,7 +122,7 @@ public class FirebaseDataManager {
                 foundQuests.add(questStructure);
             }
             else {
-                Log.d(" Unfited Quest:", questStructure.getQuestName());
+                Log.d(" Unfitted Quest:", questStructure.getQuestName());
             }
         }
         return foundQuests;
@@ -110,20 +136,25 @@ public class FirebaseDataManager {
                 foundQuests.add(questStructure);
             }
             else {
-                Log.d(" Unfited Quest:", questStructure.getQuestName());
+                Log.d(" Unfitted Quest:", questStructure.getQuestName());
             }
         }
         return foundQuests;
     }
 
-    public void locationsListRetriever(final DataRetrieveListenerForLocationsStructure listener){
+    public void locationsListRetriever(final List<Integer> locationsIdList, final DataRetrieveListenerForLocationsStructure listener){
         firebaseDatabase.getReference("locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<LocationStructure> locationsList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot1:
                      dataSnapshot.getChildren()) {
-                    locationsList.add(dataSnapshot1.getValue(LocationStructure.class));
+                    for (Integer i:
+                            locationsIdList){
+                        if(dataSnapshot1.getValue(LocationStructure.class).getLocationID().equals(i)){
+                            locationsList.add(dataSnapshot1.getValue(LocationStructure.class));
+                        }
+                    }
                 }
                 listener.onSuccess(locationsList);
             }
@@ -135,8 +166,14 @@ public class FirebaseDataManager {
         });
     }
 
-    public void findLocationsById(){
-    }
+//    public LocationStructure findLocationById(int id, List<LocationStructure> locationStructureList){
+//        for (LocationStructure locationStructure:
+//             locationStructureList) {
+//            if(locationStructure.getId() == id){
+//                return locationStructure;
+//            }
+//        }
+//    }
 
     public void writeCurrentUserData(String uId, final UserInformation userInformation, final UserInformationWritingListener listener){
             firebaseDatabase.getReference().child("userData").child(uId).setValue(userInformation);

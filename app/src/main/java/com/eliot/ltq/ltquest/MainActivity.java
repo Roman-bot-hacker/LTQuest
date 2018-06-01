@@ -39,15 +39,22 @@ import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.PolylineOptions;
 import com.androidmapsextensions.SupportMapFragment;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -57,18 +64,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import static com.eliot.ltq.ltquest.R.drawable;
 import static com.eliot.ltq.ltquest.R.id;
 import static com.eliot.ltq.ltquest.R.layout;
 import static com.eliot.ltq.ltquest.R.raw;
-import static com.google.android.gms.maps.model.JointType.BEVEL;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, RoutingListener {
     private GoogleMap mMap;
     TextView numberOfPoint;
     private LocationManager locationManager;
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
     private Toolbar toolbar;
+    private ActionBar actionbar;
     private ImageView myLocationButton;
     private View screen1;
     private View screen2;
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
     private NavigationView navigationView;
-    private ArrayList<InfoFromJson> data = new ArrayList<>();
+    private ArrayList<LatLng> data = new ArrayList<>();
     private ArrayList<InfoFromJson> dataPart2 = new ArrayList<>();
     private static final Type contentType = new TypeToken<List<InfoFromJson>>() {
     }.getType();
@@ -109,23 +112,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView bottomSheetName;
     private TextView bottomSheetInfo;
     private Button bottomSheetSkipButton;
+    private boolean isQuestOn;
+    private int currentQuestCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         firebaseAuthManager = new FirebaseAuthManager();
+        keepDataSynced();
         setContentView(layout.activity_main);
         setCategoriesText();
-        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
-        markerTextView = changedMarkerInflated.findViewById(id.number_text_view);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(id.map);
         mapFragment.getExtendedMapAsync(this);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        actionbar = getSupportActionBar();
         screen1 = findViewById(id.screen1);
         screen2 = findViewById(id.screen2);
         screen1.setVisibility(View.VISIBLE);
@@ -147,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
+        markerTextView = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
         markerInflated = inflater.inflate(R.layout.marker, null);
         numberOfPoint = (TextView) markerInflated.findViewById(R.id.number_text_view);
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -154,19 +162,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            myLocationButton = (ImageView) findViewById(id.myLocationButton);
-            myLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
-                }
-            });
-            mPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .flat(false)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
-                    .anchor(0.5f, 1f)
-                    .position(currentLatLng)
-                    .draggable(false));
+            enableMyLocationButton();
+            addMyPositionMarker();
         }
 
         try {
@@ -175,118 +172,108 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Resources.NotFoundException e) {
             e.getMessage();
         }
-        intent = getIntent();
-        if (intent.getStringExtra("quest_name")!= null) {
-            switch (intent.getStringExtra("quest_name")){
-                case "justName":
-                    screen1.setVisibility(View.GONE);
-                    screen1.setVisibility(View.GONE);
-                    toolbar.setTitle("justName");
-                    drawRoute();
-                    break;
-            }
-        }
-        mMap.setBuildingsEnabled(false);
-        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
-    private void drawRoute(){
-        String myJsonPart1 = inputStreamToString(this.getResources().openRawResource(raw.quest_part1));
-        Gson gson = new Gson();
-        data = gson.fromJson(myJsonPart1, contentType);
-        createMarker(data);
-
-        Callback<DirectionResults> directionResults = new Callback<DirectionResults>() {
+    public void enableMyLocationButton(){
+        myLocationButton = (ImageView) findViewById(id.myLocationButton);
+        myLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<DirectionResults> call, Response<DirectionResults> response) {
-                DirectionResults res = response.body();
-                counter -= 1;
-                for (int i = 0; i < res.getRoutes().get(0).getLegs().size(); i++) {
-                    for (Steps step : res.getRoutes().get(0).getLegs().get(i).getSteps()) {
-                        DirectionsJSONParser.decodePoly(polylinesList, step.getPolyline().getPoints());
-                        Log.d("Polylines recieved", String.valueOf(polylinesList.size()));
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
+            }
+        });
+    }
+
+    public void addMyPositionMarker(){
+        mPositionMarker = mMap.addMarker(new MarkerOptions()
+                .flat(false)
+                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
+                .anchor(0.5f, 1f)
+                .position(currentLatLng)
+                .draggable(false));
+    }
+
+    private void drawRoute() {
+
+        firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
+            @Override
+            public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList) {
+                currentQuestCategory = questStructure.getParentCategoryID();
+                firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+                    @Override
+                    public void onSuccess(List<LocationStructure> locationStructureList) {
+                        prepareDataAndDrawingRoute(locationStructureList);
                     }
-                }
-                if (counter == 0) {
-                    createPolylines(polylinesList);
-                }
 
+                    @Override
+                    public void onError(DatabaseError databaseError) {
+                        Log.e("FirebaseDataManager", "eeeedgfde");
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<DirectionResults> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+            public void onError(DatabaseError databaseError) {
+
             }
-        };
+        });
+    }
 
+    private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList) {
+        data = getLatLngList(locationStructureList);
+        createMarkers(locationStructureList);
+        polylinesList.clear();
 
-//        origin = new LatLng(data.get(0).getLat(), data.get(0).getLng());
-//        dest = new LatLng(data.get(7).getLat(), data.get(7).getLng());
-//        waypointslist = data.subList(0, 7);
-//        for (int i = 0; i < waypointslist.size(); i++) {
-//
-//            LatLng point = new LatLng(waypointslist.get(i).getLat(), waypointslist.get(i).getLng());
-//            if (i == waypointslist.size() - 1) {
-//                waypoints.append(point.latitude).append(",").append(point.longitude);
-//            } else {
-//                waypoints.append(point.latitude).append(",").append(point.longitude).append("|");
-//            }
-//        }
-//        App.getApi().getJson(
-//                origin.latitude + "," + origin.longitude,
-//                dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-//                "walking").enqueue(directionResults);
-
-        int i = 0;
         counter = data.size() / 7 + 1;
+        List<LatLng> latlngList;
         if (data.size() > 7) {
+            for (int i = 0; i < data.size() - 1; i += 7) {
+                origin = new LatLng(data.get(i).latitude, data.get(i).longitude);
+                if (i + 7 > data.size() - 1) {
+                    dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
+                    latlngList = data.subList(i + 1, data.size() - 1);
+                } else {
+                    dest = new LatLng(data.get(i + 7).latitude, data.get(i + 7).longitude);
+                    latlngList = data.subList(i + 1, i + 7);
+                }
 
-            while (data.size() - i > 7) {
+                latlngList.add(0, origin);
+                latlngList.add(dest);
+                Routing routing = new Routing.Builder()
+                        .travelMode(Routing.TravelMode.WALKING)
+                        .withListener(this)
+                        .waypoints(latlngList)
+                        .build();
+                routing.execute();
 
-                origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-                dest = new LatLng(data.get(i + 7).getLat(), data.get(i + 7).getLng());
-                StringBuilder waypoints = new StringBuilder();
-                waypointslist = data.subList(i, i + 7);
-                createWaypointsString(waypointslist, waypoints);
-                App.getApi().getJson(
-                        origin.latitude + "," + origin.longitude,
-                        dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                        "walking").enqueue(directionResults);
-                i += 7;
             }
-            origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-            dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-            StringBuilder waypoints = new StringBuilder();
-            waypointslist = data.subList(i, data.size() - 1);
-            createWaypointsString(waypointslist, waypoints);
-            App.getApi().getJson(
-                    origin.latitude + "," + origin.longitude,
-                    dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                    "walking").enqueue(directionResults);
+
 
         } else {
-            origin = new LatLng(data.get(i).getLat(), data.get(i).getLng());
-            dest = new LatLng(data.get(data.size() - 1).getLat(), data.get(data.size() - 1).getLng());
-            StringBuilder waypoints = new StringBuilder();
-            waypointslist = data.subList(i, data.size() - 1);
-            createWaypointsString(waypointslist, waypoints);
-            App.getApi().getJson(
-                    origin.latitude + "," + origin.longitude,
-                    dest.latitude + "," + dest.longitude, waypoints.toString(), "false",
-                    "walking").enqueue(directionResults);
+            origin = new LatLng(data.get(0).latitude, data.get(0).longitude);
+            dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
+            latlngList = data.subList(0, data.size() - 1);
+            latlngList.add(0, origin);
+            latlngList.add(dest);
+            Routing routing = new Routing.Builder()
+                    .travelMode(Routing.TravelMode.WALKING)
+                    .withListener(this)
+                    .waypoints(latlngList)
+                    .build();
+            routing.execute();
         }
     }
 
-    private void createWaypointsString(List<InfoFromJson> pointsList, StringBuilder waypointsBuilder){
-        for (int j = 0; j < pointsList.size(); j++) {
 
-            LatLng point = new LatLng(pointsList.get(j).getLat(), pointsList.get(j).getLng());
-            if (j == pointsList.size() - 1) {
-                waypointsBuilder.append(point.latitude).append(",").append(point.longitude);
-            } else {
-                waypointsBuilder.append(point.latitude).append(",").append(point.longitude).append("|");
-            }
+    //Added conversion to LatLng List
+    //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
+    private ArrayList<LatLng> getLatLngList(List<LocationStructure> locationStructureList) {
+        ArrayList<LatLng> latlngList = new ArrayList<>();
+        for (LocationStructure locationStructure : locationStructureList) {
+            LatLng point = new LatLng(locationStructure.getLat(), locationStructure.getLon());
+            latlngList.add(point);
         }
+        return latlngList;
     }
 
     private String inputStreamToString(InputStream inputStream) {
@@ -299,26 +286,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void createMarker(ArrayList<InfoFromJson> list) {
-        for (int i = 0; i < list.size(); i++) {
+    private void createMarkers(List<LocationStructure> locationStructureList) {
+        for (int i = 0; i < locationStructureList.size(); i++) {
             int j = i + 1;
             numberOfPoint.setText("" + j);
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(list.get(i).getLat(), list.get(i).getLng()))
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
+            locationStructureList.get(i).setLocationID(i + 1);
+            marker.setData(locationStructureList.get(i));
+            //           int number = locationStructure.getLocationID() + 1;
         }
         changeMarkerListener();
     }
 
+    //Reworked adding polyline to Map
     private void createPolylines(ArrayList<LatLng> list) {
-        for (int i = 0; i < list.size() - 1; i++) {
-            mMap.addPolyline(new PolylineOptions()
-                    .add(list.get(i), list.get(i + 1))
-                    .width(11)
-                    .jointType(BEVEL)
-                    .color(Color.rgb(145, 121, 241)));
-        }
+        mMap.addPolyline(new PolylineOptions()
+                .addAll(list).width(11)
+                .jointType(JointType.BEVEL)
+                .color(Color.rgb(145, 121, 241)));
+
     }
 
     public void changeMarkerListener() {
@@ -327,42 +316,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker!=mPositionMarker) {
-                    markerTextView.setText("3");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
-                    mBottomSheetBehavior.setHideable(true);
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                LocationStructure locationStructure = marker.getData();
+                int number = locationStructure.getLocationID();
+                markerTextView.setText("" + number);
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                    bottomSheetName.setText("Other Point");
-                    bottomSheetInfo.setText("Some other Info");
-                    bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                        }
-                    });
-
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                bottomSheetName.setText(locationStructure.getLocationName());
+                bottomSheetInfo.setText(locationStructure.getLocationDescription());
+                bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                });
 
 
-                        }
-                    });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        }
-                    }, 300);
 
-                    return true;
-                }
+                    }
+                });
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }, 300);
 
                 return true;
+
             }
         });
     }
@@ -638,18 +626,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void configureToolbarForFirstScreen() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorText));
-        ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Home page");
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionbar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void configureToolbarForSecondScreen() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorText));
-        ActionBar actionbar = getSupportActionBar();
         actionbar.setTitle("Choose Category");
         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -663,10 +645,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case android.R.id.home:
                 if (screen1.getVisibility() == View.VISIBLE) {
                     drawerLayout.openDrawer(GravityCompat.START);
-                } else if (screen2.getVisibility() == View.VISIBLE) {
+                }
+                if (screen2.getVisibility() == View.VISIBLE) {
                     screen2.setVisibility(View.GONE);
                     screen1.setVisibility(View.VISIBLE);
                     configureToolbarForFirstScreen();
+                }
+                if(isQuestOn){
+                    isQuestOn = false;
+                    Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                    intent.putExtra("Category", "" + currentQuestCategory);
+                    startActivityForResult(intent, 1);
                 }
                 return true;
         }
@@ -674,7 +663,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    public void bottomSheetInit(){
+    public void bottomSheetInit() {
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetName = findViewById(R.id.bottom_sheet_name);
         bottomSheetInfo = findViewById(id.bottom_sheet_info);
@@ -685,19 +674,83 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-        @Override
-        protected void onActivityResult ( int requestCode, int resultCode, Intent data){
-            if (requestCode == 1) {
-                if (resultCode == RESULT_OK) {
-                    screen1.setVisibility(View.GONE);
-                    screen2.setVisibility(View.VISIBLE);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle extras = data.getExtras();
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                if (extras != null) {
+                    if (extras.containsKey("button")) {
+                        if (data.getStringExtra("button").equals("back")) {
+                            screen1.setVisibility(View.GONE);
+                            screen2.setVisibility(View.VISIBLE);
+                            mMap.clear();
+                            mMap.setMyLocationEnabled(true);
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            addMyPositionMarker();
+                            enableMyLocationButton();
+                        }
+                    }
+                    if (extras.containsKey("quest_name")) {
+                        actionbar.setTitle("Quest");
+                        actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
+                        actionbar.setDisplayHomeAsUpEnabled(true);
+                        navigationView.setVisibility(View.GONE);
+                            switch (data.getStringExtra("quest_name")) {
+                                case "justName":
+                                    screen1.setVisibility(View.GONE);
+                                    screen2.setVisibility(View.GONE);
+                                    toolbar.setTitle("justName");
+                                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                                    drawRoute();
+                                    isQuestOn = true;
+                                    break;
+                        }
+                    }
                 }
             }
         }
-        
+    }
+
 
     @Override
     public void onBackPressed() {
         // do nothing.
     }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+        counter -= 1;
+        for (Route route :
+                arrayList) {
+            polylinesList.addAll(route.getPolyOptions().getPoints());
+        }
+        if (counter == 0) {
+            createPolylines(polylinesList);
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+    }
+
+    private void keepDataSynced(){
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("categories");
+        DatabaseReference userDataRef = FirebaseDatabase.getInstance().getReference("userData").child(firebaseAuthManager.getCurrentUser().getUid());
+        categoriesRef.keepSynced(true);
+        userDataRef.keepSynced(true);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.eliot.ltq.ltquest;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
 
     private List<QuestStructure> questList;
     private Context context;
+    private Activity activity;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView name,distance;
@@ -42,8 +44,9 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
     }
 
 
-    public QuestItemAdapter(List<QuestStructure> moviesList) {
+    public QuestItemAdapter(Context context, List<QuestStructure> moviesList) {
         this.questList = moviesList;
+        this.context = context;
     }
 
     @Override
@@ -62,9 +65,10 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                Intent intent = new Intent((Activity)context, MainActivity.class);
                 intent.putExtra("quest_name", "" + quest.getQuestName());
-                view.getContext().startActivity(intent);
+                ((Activity)context).setResult(Activity.RESULT_OK, intent);
+                ((Activity)context).finish();
             }
         });
     }
