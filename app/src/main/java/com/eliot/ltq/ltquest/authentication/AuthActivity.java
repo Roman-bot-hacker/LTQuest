@@ -125,8 +125,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public void loginButtonForFacebookInit() {
         loginButton = findViewById(R.id.fb_login_button);
-        loginButton.setReadPermissions(Arrays.asList(
-                "name", "gender", "id"));
+        //loginButton.setReadPermissions(Arrays.asList(
+        //"name", "gender"));
         loginButton.registerCallback(facebookManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -306,6 +306,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         gSingInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        facebookManager.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -393,14 +394,17 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("FacebookAccess", "signInWithCredential:success");
                             if (isNewUser) {
-                                GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject object, GraphResponse response) {
+                                        String id = null;
+                                        String name = null;
+                                        String gender;
+                                        UserSex userSex = UserSex.CHOOSE_SEX;
                                         try {
-                                            String id = object.getString("id");
-                                            String name = object.getString("name");
-                                            String gender = object.getString("gender");
-                                            UserSex userSex;
+                                            id = object.getString("id");
+                                            name = object.getString("name");
+                                            gender = object.getString("gender");
                                             if (gender.equals("male")) {
                                                 userSex = UserSex.MALE;
                                             } else if (gender.equals("female")) {
@@ -408,6 +412,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                             } else {
                                                 userSex = UserSex.CHOOSE_SEX;
                                             }
+                                        } catch (JSONException e) {
+                                            Log.e("Facebook auth: ", e.getMessage());
+                                        }
+                                        if (id == null || name == null) {
+                                            Toast.makeText(AuthActivity.this, "Auth with Facebook failed", Toast.LENGTH_SHORT).show();
+                                        } else {
                                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
                                                     new UserInformation(name, id, userSex), new FirebaseDataManager.UserInformationWritingListener() {
                                                         @Override
@@ -443,16 +453,18 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                             });
                                                         }
                                                     });
-                                        } catch (JSONException e) {
-                                            Log.w("FacebookAccess", e.getMessage());
-                                            Toast.makeText(AuthActivity.this, "Authentication failed.",
-                                                    Toast.LENGTH_SHORT).show();
                                         }
+
                                     }
                                 });
+                                Bundle bundle = new Bundle();
+                                bundle.putString("fields", "id,name,gender");
+                                request.setParameters(bundle);
+                                request.executeAsync();
 
                             } else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }
+                        else {Toast.makeText(AuthActivity.this, "Auth with Facebook failed", Toast.LENGTH_SHORT).show();}
                     }
                 });
     }
