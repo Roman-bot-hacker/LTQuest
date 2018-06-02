@@ -125,8 +125,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     public void loginButtonForFacebookInit() {
         loginButton = findViewById(R.id.fb_login_button);
-        //loginButton.setReadPermissions(Arrays.asList(
-        //"name", "gender"));
         loginButton.registerCallback(facebookManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -390,6 +388,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.getResult().getAdditionalUserInfo().isNewUser()){
+                            isNewUser=true;
+                        }
+                        else isNewUser=false;
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("FacebookAccess", "signInWithCredential:success");
