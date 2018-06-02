@@ -25,7 +25,7 @@ public class UserInformation {
         this.sex = UserSex.CHOOSE_SEX;
     }
 
-    //init for gmail or facebook sign up
+    //init for gmail sign up
     public UserInformation(AccountType accountType, String name, String account){
         this.name = name;
         this.points = 0;
@@ -38,6 +38,14 @@ public class UserInformation {
             }
         }
         this.sex = UserSex.CHOOSE_SEX;
+    }
+
+    public UserInformation(String name, String id, UserSex sex){
+        this.name = name;
+        this.points = 0;
+        facebookLink = id;
+        this.sex = sex;
+
     }
 
     public String getEmail(){ return email; }

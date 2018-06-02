@@ -58,6 +58,11 @@
     <string name="confirm_password">Confirm password</string>
     <string name="forgotpass">Forgot password?</string>
 
+    //Facebook Auth
+    <string name="facebook_app_id">197354150876389</string>
+    <string name="fb_login_protocol_scheme">fb197354150876389</string>
+
+
     //Profile Dialoge
     <string name="edit_options">Edit options</string>
     <string name="sexf">Female</string>

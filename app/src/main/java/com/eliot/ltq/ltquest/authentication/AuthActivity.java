@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,17 +20,26 @@ import android.widget.Toast;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
+import com.facebook.*;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.*;
 import com.google.firebase.database.DatabaseError;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,11 +59,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInOptions gSingInOptions;
     private GoogleSignInClient gSingInClient;
     private static boolean isNewUser = true;
+    private CallbackManager facebookManager;
+    private LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        facebookManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_authentication);
 
         manager = new FirebaseAuthManager();
@@ -68,6 +82,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         buttonGoogleSingIn = (ImageButton) findViewById(R.id.authButtonGoogle);
         buttonFacebookSignIn = (ImageButton) findViewById(R.id.authButtonFacebook);
 
+        loginButtonForFacebookInit();
+
         gSingInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("192781036687-ku6jlb4rn7v41h1libsovis77uu61jd3.apps.googleusercontent.com")
                 .requestEmail()
@@ -78,7 +94,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     public static void setAuthType(AuthType authType) {
         AuthActivity.authType = authType;
     }
-    public static void setIsNewUser(boolean isNewUser){
+
+    public static void setIsNewUser(boolean isNewUser) {
         AuthActivity.isNewUser = isNewUser;
     }
 
@@ -106,6 +123,27 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    public void loginButtonForFacebookInit() {
+        loginButton = findViewById(R.id.fb_login_button);
+        loginButton.setReadPermissions(Arrays.asList(
+                "name", "gender", "id"));
+        loginButton.registerCallback(facebookManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                handleFacebookAccessToken(loginResult.getAccessToken(), manager.getAuth(), loginResult);
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+            }
+        });
+    }
+
+
     public void setRegistrationVisibility() {
         forgotPass.setVisibility(View.GONE);
         editTextConfirmPassword.setVisibility(View.VISIBLE);
@@ -128,7 +166,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         return editTextPassword.getText().toString().trim();
     }
 
-    public String getConfirmPassword(){return editTextConfirmPassword.getText().toString().trim();}
+    public String getConfirmPassword() {
+        return editTextConfirmPassword.getText().toString().trim();
+    }
 
     public boolean isFieldEmpty(String field) {
         return (TextUtils.isEmpty(field));
@@ -145,8 +185,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.login: {
                 if (isFieldEmpty(getEmail()) || isFieldEmpty(getPassword())) {
                     Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
-                }
-                else if (!(isEmailValid((CharSequence) getEmail()))) {
+                } else if (!(isEmailValid((CharSequence) getEmail()))) {
                     Toast.makeText(this, "Please, enter a valid email", Toast.LENGTH_SHORT).show();
                 } else {
                     if (authType == AuthType.LOGIN) {
@@ -159,16 +198,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                             @Override
                             public void onError(String massage) {
-                                if(!isNetworkAvailable()) {
+                                if (!isNetworkAvailable()) {
                                     Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show();
                                 }
-                                else {Toast.makeText(AuthActivity.this, "Cannot login, some problems found", Toast.LENGTH_SHORT).show(); }
-                                Log.e("User Mail Login: ",massage);
+                                Log.e("User Mail Login: ", massage);
                             }
                         });
-                    }
-                    else if (authType == AuthType.REGISTRATION) {
-                        if(getPassword().equals(getConfirmPassword())) {
+                    } else if (authType == AuthType.REGISTRATION) {
+                        if (getPassword().equals(getConfirmPassword())) {
                             manager.registerUser(getEmail(), getPassword(), new FirebaseAuthManager.UserLoginListener() {
                                 @Override
                                 public void onSuccess() {
@@ -205,7 +244,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                                         @Override
                                                         public void onError(String massage) {
-                                                            Log.e("MailRegUsDelFail: ",massage);
+                                                            Log.e("MailRegUsDelFail: ", massage);
                                                         }
                                                     });
                                                 }
@@ -214,44 +253,46 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                 @Override
                                 public void onError(String massage) {
-                                    if(!isNetworkAvailable()) {
+                                    if (!isNetworkAvailable()) {
                                         Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
-                                    }
-                                    else if(getPassword().length()<6){
+                                    } else if (getPassword().length() < 6) {
                                         Toast.makeText(AuthActivity.this, "Password should be at least 6 characters", Toast.LENGTH_SHORT).show();
+                                    } else if (!isNewUser) {
+                                        Toast.makeText(AuthActivity.this, "User with this email is already exist", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();
                                     }
-                                    else if(!isNewUser){Toast.makeText(AuthActivity.this, "User with this email is already exist", Toast.LENGTH_SHORT).show();}
-                                    else { Toast.makeText(AuthActivity.this, "Cannot registrate, some problems found", Toast.LENGTH_SHORT).show();}
-                                    Log.e("User Mail Regist: ",massage);
+                                    Log.e("User Mail Regist: ", massage);
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             Toast.makeText(AuthActivity.this, "Please, confirm your password correctly", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
-            } break;
+            }
+            break;
             case R.id.changeTypeAuth: {
-                if(authType==AuthType.LOGIN) {
+                if (authType == AuthType.LOGIN) {
                     authType = AuthType.REGISTRATION;
                     chooseAuth();
-                }
-                else {
+                } else {
                     authType = AuthType.LOGIN;
                     chooseAuth();
                 }
                 break;
             }
             case R.id.authButtonGoogle: {
-                if(!isNetworkAvailable()) {
+                if (!isNetworkAvailable()) {
                     Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+                } else {
+                    singInWithGoogle();
                 }
-                else {singInWithGoogle();}
                 break;
             }
             case R.id.authButtonFacebook: {
-                Toast.makeText(this, "Sorry, sign in with Facebook is disable in this version", Toast.LENGTH_SHORT).show();
+                loginButton.performClick();
+                //Toast.makeText(this, "Sorry, sign in with Facebook is disable in this version", Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.forgotpass: {
@@ -274,7 +315,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 manager.firebaseAuthWithGoogle(credential, new FirebaseAuthManager.UserLoginListener() {
                     @Override
                     public void onSuccess() {
-                        if(isNewUser) {
+                        if (isNewUser) {
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
                                     new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(),
                                             gSingInAccount.getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
@@ -314,29 +355,106 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                             });
                                         }
                                     });
-                        }
-                        else startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                        } else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                     }
 
                     @Override
                     public void onError(String massage) {
-                        if(isNetworkAvailable()) {
+                        if (isNetworkAvailable()) {
                             Toast.makeText(AuthActivity.this, "Cannot sign in with google, some problems found", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
                         }
-                        else {Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show(); }
-                        Log.e("User Google sign: ",massage);
+                        Log.e("User Google sign: ", massage);
                     }
                 });
             } catch (ApiException e) {
-                Log.e("Error",e.getLocalizedMessage());
+                Log.e("Error", e.getLocalizedMessage());
             }
         } else {
-            if(!isNetworkAvailable()) {
+            if (!isNetworkAvailable()) {
                 Toast.makeText(AuthActivity.this, "Don't have Internet connection", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e("Error", "Cannot sing in with your Google account");
             }
-            else {Log.e("Error","Cannot sing in with your Google account");}
         }
 
+    }
+
+    private void handleFacebookAccessToken(AccessToken token, FirebaseAuth auth, final LoginResult loginResult) {
+        Log.d("FacebookAccess", "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("FacebookAccess", "signInWithCredential:success");
+                            if (isNewUser) {
+                                GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        try {
+                                            String id = object.getString("id");
+                                            String name = object.getString("name");
+                                            String gender = object.getString("gender");
+                                            UserSex userSex;
+                                            if (gender.equals("male")) {
+                                                userSex = UserSex.MALE;
+                                            } else if (gender.equals("female")) {
+                                                userSex = UserSex.FEMALE;
+                                            } else {
+                                                userSex = UserSex.CHOOSE_SEX;
+                                            }
+                                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                                    new UserInformation(name, id, userSex), new FirebaseDataManager.UserInformationWritingListener() {
+                                                        @Override
+                                                        public void onSuccess() {
+                                                            startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                                                        }
+
+                                                        @Override
+                                                        public void onError() {
+                                                            Toast.makeText(AuthActivity.this, "Something wrong with your sign in, please try again", Toast.LENGTH_SHORT).show();
+                                                            FirebaseUser user = manager.getCurrentUser();
+                                                            manager.logout(new FirebaseAuthManager.UserLoginListener() {
+                                                                @Override
+                                                                public void onSuccess() {
+
+                                                                }
+
+                                                                @Override
+                                                                public void onError(String massage) {
+
+                                                                }
+                                                            });
+                                                            manager.deleteUser(user, new FirebaseAuthManager.UserLoginListener() {
+                                                                @Override
+                                                                public void onSuccess() {
+
+                                                                }
+
+                                                                @Override
+                                                                public void onError(String massage) {
+                                                                    Log.e("GogRegUsDelFail:", massage);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                        } catch (JSONException e) {
+                                            Log.w("FacebookAccess", e.getMessage());
+                                            Toast.makeText(AuthActivity.this, "Authentication failed.",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                            } else startActivity(new Intent(AuthActivity.this, MainActivity.class));
+                        }
+                    }
+                });
     }
 
     private boolean isNetworkAvailable() {
