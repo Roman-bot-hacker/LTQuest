@@ -4,9 +4,11 @@ public class LocationStructure {
     private boolean isSecret;
     private double lat;
     private double lon;
+
     private String locationDescription;
     private Integer locationID;
     private String locationName;
+    private String distanceToPrevious = "start";
 
     public boolean isSecret() {
         return isSecret;
@@ -38,6 +40,14 @@ public class LocationStructure {
 
     public void setLocationDescription(String locationDescription) {
         this.locationDescription = locationDescription;
+    }
+
+    public String getDistanceToPrevious() {
+        return distanceToPrevious;
+    }
+
+    public void setDistanceToPrevious(String distanceToPrevious) {
+        this.distanceToPrevious = distanceToPrevious;
     }
 
     public Integer getLocationID() {

@@ -31,18 +31,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
 import com.androidmapsextensions.GoogleMap;
 import com.androidmapsextensions.Marker;
 import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.PolylineOptions;
 import com.androidmapsextensions.SupportMapFragment;
-import com.directions.route.Route;
-import com.directions.route.RouteException;
-import com.directions.route.Routing;
-import com.directions.route.RoutingListener;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
@@ -55,12 +55,9 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +67,7 @@ import static com.eliot.ltq.ltquest.R.layout;
 import static com.eliot.ltq.ltquest.R.raw;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, RoutingListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, DirectionCallback {
     private GoogleMap mMap;
     TextView numberOfPoint;
     private LocationManager locationManager;
@@ -90,19 +87,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseAuthManager firebaseAuthManager;
     private NavigationView navigationView;
     private ArrayList<LatLng> data = new ArrayList<>();
-    private ArrayList<InfoFromJson> dataPart2 = new ArrayList<>();
-    private static final Type contentType = new TypeToken<List<InfoFromJson>>() {
-    }.getType();
     private View changedMarkerInflated;
-    private TextView markerTextView;
+    private TextView changedMarkerNumber;
+    private TextView distanceBetweenPoint;
+    private TextView cMarkerdistanceBetweenPoint;
     private LayoutInflater inflater;
     private View markerInflated;
-    private LatLng origin2;
-    private LatLng dest2;
-    private String url2;
+    private View secretMarkerInflated;
     private static ArrayList<LatLng> polylinesList = new ArrayList<>();
-    private static ArrayList<LatLng> polylinesList1 = new ArrayList<>();
-    private List<InfoFromJson> waypointslist;
     private LatLng origin;
     private LatLng dest;
     private Intent intent;
@@ -114,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button bottomSheetSkipButton;
     private boolean isQuestOn;
     private int currentQuestCategory;
+    private List<String> distanceList = new ArrayList<>();
+    List<LocationStructure> locationListFromDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,10 +148,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
-        markerTextView = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
         markerInflated = inflater.inflate(R.layout.marker, null);
+        changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
+        secretMarkerInflated = inflater.inflate(R.layout.secret_marker, null);
+        changedMarkerNumber = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
         numberOfPoint = (TextView) markerInflated.findViewById(R.id.number_text_view);
+        distanceBetweenPoint = (TextView) markerInflated.findViewById(R.id.text_text_view);
+        cMarkerdistanceBetweenPoint = (TextView) changedMarkerInflated.findViewById(R.id.text_text_view);
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
@@ -174,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void enableMyLocationButton(){
+    public void enableMyLocationButton() {
         myLocationButton = (ImageView) findViewById(id.myLocationButton);
         myLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    public void addMyPositionMarker(){
+    public void addMyPositionMarker() {
         mPositionMarker = mMap.addMarker(new MarkerOptions()
                 .flat(false)
                 .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(drawable.current_position)))
@@ -202,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
                     @Override
                     public void onSuccess(List<LocationStructure> locationStructureList) {
+                        locationListFromDatabase = locationStructureList;
                         prepareDataAndDrawingRoute(locationStructureList);
                     }
 
@@ -221,10 +220,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList) {
         data = getLatLngList(locationStructureList);
-        createMarkers(locationStructureList);
         polylinesList.clear();
 
-        counter = data.size() / 7 + 1;
+        counter = data.size() / 8;
         List<LatLng> latlngList;
         if (data.size() > 7) {
             for (int i = 0; i < data.size() - 1; i += 7) {
@@ -237,14 +235,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     latlngList = data.subList(i + 1, i + 7);
                 }
 
-                latlngList.add(0, origin);
-                latlngList.add(dest);
-                Routing routing = new Routing.Builder()
-                        .travelMode(Routing.TravelMode.WALKING)
-                        .withListener(this)
-                        .waypoints(latlngList)
-                        .build();
-                routing.execute();
+                GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
+                        .from(origin)
+                        .and(latlngList)
+                        .to(dest)
+                        .transportMode(TransportMode.WALKING)
+                        .execute(this);
 
             }
 
@@ -252,21 +248,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             origin = new LatLng(data.get(0).latitude, data.get(0).longitude);
             dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
-            latlngList = data.subList(0, data.size() - 1);
-            latlngList.add(0, origin);
-            latlngList.add(dest);
-            Routing routing = new Routing.Builder()
-                    .travelMode(Routing.TravelMode.WALKING)
-                    .withListener(this)
-                    .waypoints(latlngList)
-                    .build();
-            routing.execute();
+            latlngList = data.subList(1, data.size() - 1);
+
+            GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
+                    .from(origin)
+                    .and(latlngList)
+                    .to(dest)
+                    .transportMode(TransportMode.WALKING)
+                    .execute(this);
         }
+        //       createMarkers(locationStructureList);
     }
 
-
-    //Added conversion to LatLng List
-    //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
     private ArrayList<LatLng> getLatLngList(List<LocationStructure> locationStructureList) {
         ArrayList<LatLng> latlngList = new ArrayList<>();
         for (LocationStructure locationStructure : locationStructureList) {
@@ -287,21 +280,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void createMarkers(List<LocationStructure> locationStructureList) {
+        for (int i = 0; i < locationStructureList.size() - 1; i++) {
+            locationStructureList.get(i + 1).setDistanceToPrevious(distanceList.get(i));
+        }
         for (int i = 0; i < locationStructureList.size(); i++) {
             int j = i + 1;
-            numberOfPoint.setText("" + j);
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
-                    .anchor(0.5f, 0.5f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
-            locationStructureList.get(i).setLocationID(i + 1);
-            marker.setData(locationStructureList.get(i));
-            //           int number = locationStructure.getLocationID() + 1;
+            if (locationStructureList.get(i).isSecret() == false) {
+                numberOfPoint.setText("" + j);
+                distanceBetweenPoint.setText(locationStructureList.get(i).getDistanceToPrevious());
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
+                        .anchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
+                locationStructureList.get(i).setLocationID(i + 1);
+                marker.setData(locationStructureList.get(i));
+            } else {
+                Marker secretMarker1 = mMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(secretMarkerInflated)))
+                        .anchor(0.5f, 0.5f)
+                        .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon())));
+                secretMarker1.setData(locationStructureList.get(i));
+            }
         }
         changeMarkerListener();
     }
 
-    //Reworked adding polyline to Map
     private void createPolylines(ArrayList<LatLng> list) {
         mMap.addPolyline(new PolylineOptions()
                 .addAll(list).width(11)
@@ -317,37 +320,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LocationStructure locationStructure = marker.getData();
-                int number = locationStructure.getLocationID();
-                markerTextView.setText("" + number);
-                marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                if (locationStructure.isSecret() == false) {
+                    int number = locationStructure.getLocationID();
+                    changedMarkerNumber.setText("" + number);
+                    cMarkerdistanceBetweenPoint.setText("done");
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                    mBottomSheetBehavior.setHideable(true);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                bottomSheetName.setText(locationStructure.getLocationName());
-                bottomSheetInfo.setText(locationStructure.getLocationDescription());
-                bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                    }
-                });
-
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    bottomSheetName.setText(locationStructure.getLocationName());
+                    bottomSheetInfo.setText(locationStructure.getLocationDescription());
+                    bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        }
+                    });
 
 
-                    }
-                });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }, 300);
+
+                        }
+                    });
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+                    }, 300);
+                } else {
+
+                }
 
                 return true;
 
@@ -651,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     screen1.setVisibility(View.VISIBLE);
                     configureToolbarForFirstScreen();
                 }
-                if(isQuestOn){
+                if (isQuestOn) {
                     isQuestOn = false;
                     Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
                     intent.putExtra("Category", "" + currentQuestCategory);
@@ -696,15 +704,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
                         actionbar.setDisplayHomeAsUpEnabled(true);
                         navigationView.setVisibility(View.GONE);
-                            switch (data.getStringExtra("quest_name")) {
-                                case "justName":
-                                    screen1.setVisibility(View.GONE);
-                                    screen2.setVisibility(View.GONE);
-                                    toolbar.setTitle("justName");
-                                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                                    drawRoute();
-                                    isQuestOn = true;
-                                    break;
+                        switch (data.getStringExtra("quest_name")) {
+                            case "justName":
+                                screen1.setVisibility(View.GONE);
+                                screen2.setVisibility(View.GONE);
+                                toolbar.setTitle("justName");
+                                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                                drawRoute();
+                                isQuestOn = true;
+                                break;
                         }
                     }
                 }
@@ -718,39 +726,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // do nothing.
     }
 
-    @Override
-    public void onRoutingFailure(RouteException e) {
-        Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onRoutingStart() {
-
-    }
-
-
-    @Override
-    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
-        counter -= 1;
-        for (Route route :
-                arrayList) {
-            polylinesList.addAll(route.getPolyOptions().getPoints());
-        }
-        if (counter == 0) {
-            createPolylines(polylinesList);
-        }
-    }
-
-    @Override
-    public void onRoutingCancelled() {
-
-    }
-
-    private void keepDataSynced(){
+    private void keepDataSynced() {
         DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("categories");
         DatabaseReference userDataRef = FirebaseDatabase.getInstance().getReference("userData").child(firebaseAuthManager.getCurrentUser().getUid());
         categoriesRef.keepSynced(true);
         userDataRef.keepSynced(true);
     }
 
+    @Override
+    public void onDirectionSuccess(Direction direction, String rawBody) {
+        if (direction.isOK()) {
+            counter -= 1;
+            for (int j = 0; j < direction.getRouteList().get(0).getLegList().size(); j++) {
+                Leg leg = direction.getRouteList().get(0).getLegList().get(j);
+                distanceList.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
+                for (int i = 0; i < leg.getStepList().size(); i++) {
+                    leg.getStepList().get(i).getPolyline().getPointList();
+                    polylinesList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
+                }
+
+                Log.d("Segment count", String.valueOf(leg.getStepList().size()));
+
+            }
+            if (counter == 0) {
+                createPolylines(polylinesList);
+            }
+            createMarkers(locationListFromDatabase);
+        }
+    }
+
+    @Override
+    public void onDirectionFailure(Throwable t) {
+        Log.e("Error", t.getLocalizedMessage());
+    }
 }
