@@ -22,6 +22,7 @@ import com.eliot.ltq.ltquest.MainActivity;
 import com.eliot.ltq.ltquest.R;
 import com.facebook.*;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -68,6 +69,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         FirebaseApp.initializeApp(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
         facebookManager = CallbackManager.Factory.create();
+        updateWithToken(AccessToken.getCurrentAccessToken());
         setContentView(R.layout.activity_authentication);
 
         manager = new FirebaseAuthManager();
@@ -139,6 +141,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             public void onError(FacebookException error) {
             }
         });
+    }
+
+    private void updateWithToken(AccessToken currentAccessToken) {
+
+        if (currentAccessToken != null) {
+            LoginManager.getInstance().logOut();
+        } else {
+        }
     }
 
 
