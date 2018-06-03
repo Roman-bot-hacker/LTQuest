@@ -1,5 +1,6 @@
 package com.eliot.ltq.ltquest.authentication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -25,6 +26,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -406,32 +409,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("FacebookAccess", "signInWithCredential:success");
                             if (isNewUser) {
-                                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                                    @Override
-                                    public void onCompleted(JSONObject object, GraphResponse response) {
-                                        String id = null;
-                                        String name = null;
-                                        String gender;
-                                        UserSex userSex = UserSex.CHOOSE_SEX;
-                                        try {
-                                            id = object.getString("id");
-                                            name = object.getString("name");
-                                            gender = object.getString("gender");
-                                            if (gender.equals("male")) {
-                                                userSex = UserSex.MALE;
-                                            } else if (gender.equals("female")) {
-                                                userSex = UserSex.FEMALE;
-                                            } else {
-                                                userSex = UserSex.CHOOSE_SEX;
-                                            }
-                                        } catch (JSONException e) {
-                                            Log.e("Facebook auth: ", e.getMessage());
-                                        }
-                                        if (id == null || name == null) {
-                                            Toast.makeText(AuthActivity.this, "Auth with Facebook failed", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
-                                                    new UserInformation(name, id, userSex), new FirebaseDataManager.UserInformationWritingListener() {
+                                String name = task.getResult().getUser().getDisplayName();
+                                String email = task.getResult().getUser().getEmail();
+                                String photoUrl = task.getResult().getUser().getPhotoUrl().toString();
+                                        dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
+                                                    new UserInformation(name, email, photoUrl), new FirebaseDataManager.UserInformationWritingListener() {
                                                         @Override
                                                         public void onSuccess() {
                                                             startActivity(new Intent(AuthActivity.this, MainActivity.class));
@@ -465,14 +447,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                             });
                                                         }
                                                     });
-                                        }
-
-                                    }
-                                });
-                                Bundle bundle = new Bundle();
-                                bundle.putString("fields", "id,name,gender");
-                                request.setParameters(bundle);
-                                request.executeAsync();
 
                             } else startActivity(new Intent(AuthActivity.this, MainActivity.class));
                         }

@@ -8,6 +8,7 @@ public class UserInformation {
     private String name;
     private String email;
     private UserSex sex;
+    private String photoUrl;
     private Integer points;
     private String googleEmail;
     private String facebookLink;
@@ -40,11 +41,12 @@ public class UserInformation {
         this.sex = UserSex.CHOOSE_SEX;
     }
 
-    public UserInformation(String name, String id, UserSex sex){
+    public UserInformation(String name, String mail, String photoUrl){
         this.name = name;
         this.points = 0;
-        facebookLink = id;
-        this.sex = sex;
+        facebookLink = mail;
+        this.photoUrl = photoUrl;
+        this.sex = UserSex.CHOOSE_SEX;
 
     }
 
@@ -92,5 +94,13 @@ public class UserInformation {
 
     public void setSex(UserSex sex) {
         this.sex = sex;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

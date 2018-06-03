@@ -3,7 +3,10 @@ package com.eliot.ltq.ltquest.authentication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,14 +20,17 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
-
-import com.eliot.ltq.ltquest.Balance;
-import com.eliot.ltq.ltquest.FirebaseDataManager;
-import com.eliot.ltq.ltquest.MainActivity;
-import com.eliot.ltq.ltquest.R;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.eliot.ltq.ltquest.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout drawerLayout;
@@ -99,6 +105,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         default: {textViewSex.setText("Choose sex"); }
                     };
                     textViewFacebookLink = (TextView) findViewById(R.id.email_facebok);
+                    if(!(userInformation.getPhotoUrl()==null)) {
+                        Glide.with(ProfileActivity.this)
+                                .load(userInformation.getPhotoUrl()+"?type=large")
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(imageViewUserPhoto);
+                    }
                     if(!(userInformation.getFacebookLink()==null)) {
                         textViewFacebookLink.setText(userInformation.getFacebookLink());
                     } else {facebookLayout.setVisibility(View.GONE);}

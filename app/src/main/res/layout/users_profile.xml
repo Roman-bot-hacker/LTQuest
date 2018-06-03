@@ -33,7 +33,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginTop="15dp"
         android:elevation="@dimen/shadow_elevation"
-        android:src="@drawable/ic_settings_black_24dp" />
+        android:src="@drawable/ic_settings_white_24dp" />
 
     <TextView
         android:id="@+id/name_user"
