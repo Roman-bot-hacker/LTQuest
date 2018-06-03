@@ -22,8 +22,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Map;
-
 public class MapsSupport extends AppCompatActivity {
 
     private GoogleMap mMap;
@@ -35,11 +33,11 @@ public class MapsSupport extends AppCompatActivity {
     private ImageView myLocationButton;
     private LatLng currentLatLng = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
 
-    public GoogleMap getmMap(){
+    public GoogleMap getmMap() {
         return mMap;
     }
 
-    public void setmMap(GoogleMap mMap){
+    public void setmMap(GoogleMap mMap) {
         this.mMap = mMap;
     }
 

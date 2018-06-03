@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class ActivityChooseLevel extends AppCompatActivity{
+public class ActivityChooseLevel extends AppCompatActivity {
     FirebaseDataManager manager = new FirebaseDataManager();
     private RecyclerView easyRecyclerView;
     private List<QuestStructure> easyQuests = new ArrayList<>();
@@ -57,7 +57,7 @@ public class ActivityChooseLevel extends AppCompatActivity{
 
     private void prepareQuestData() {
         final String categoryToShow = getIntent().getStringExtra("Category");
-        if(categoryToShow != null) {
+        if (categoryToShow != null) {
             manager.questsRetriever(new FirebaseDataManager.DataRetrieveListenerForQuestStructure() {
                 @Override
                 public void onSuccess(List<QuestStructure> questStructureList) {
@@ -161,7 +161,7 @@ public class ActivityChooseLevel extends AppCompatActivity{
         switch (itemId) {
             case android.R.id.home:
                 Intent intent = new Intent(ActivityChooseLevel.this, MainActivity.class);
-                intent.putExtra("button","back");
+                intent.putExtra("button", "back");
                 setResult(RESULT_OK, intent);
                 finish();
                 return true;
@@ -170,7 +170,7 @@ public class ActivityChooseLevel extends AppCompatActivity{
         return true;
     }
 
-    public List<QuestStructure> sortQuestsForRecycler(List<QuestStructure> quests){
+    public List<QuestStructure> sortQuestsForRecycler(List<QuestStructure> quests) {
         List<QuestStructure> sortedQuests = new ArrayList<>();
         Collections.sort(quests, new Comparator<QuestStructure>() {
             @Override
