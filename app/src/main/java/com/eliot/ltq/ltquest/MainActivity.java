@@ -59,7 +59,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng dest;
     private Intent intent;
     private int counter;
+    private int requestIndex = 0;
     private View bottomSheet;
     private BottomSheetBehavior mBottomSheetBehavior;
     private TextView bottomSheetName;
@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean isQuestOn;
     private int currentQuestCategory;
     private List<String> distanceList = new ArrayList<>();
-    List<LocationStructure> locationListFromDatabase;
+    private List<LocationStructure> locationListFromDatabase;
+    private List<RequestClass> requestList = new ArrayList<>();
 
 
     @Override
@@ -228,10 +229,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             counter = data.size() / 8 + 1;
         }
-        //       counter = data.size()/8 +1;
         List<LatLng> latlngList;
         if (data.size() > 7) {
             for (int i = 0; i < data.size() - 1; i += 7) {
+
                 origin = new LatLng(data.get(i).latitude, data.get(i).longitude);
                 if (i + 7 > data.size() - 1) {
                     dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
@@ -240,15 +241,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     dest = new LatLng(data.get(i + 7).latitude, data.get(i + 7).longitude);
                     latlngList = data.subList(i + 1, i + 7);
                 }
-
-                GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
-                        .from(origin)
-                        .and(latlngList)
-                        .to(dest)
-                        .transportMode(TransportMode.WALKING)
-                        .execute(this);
-
+                RequestClass request = new RequestClass(origin, dest, latlngList);
+                requestList.add(request);
             }
+
+            GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
+                    .from(requestList.get(0).getOrigin())
+                    .and(requestList.get(0).getWaypoints())
+                    .to(requestList.get(0).getDest())
+                    .transportMode(TransportMode.WALKING)
+                    .execute(this);
 
 
         } else {
@@ -288,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (int i = 0; i < locationStructureList.size() - 1; i++) {
             locationStructureList.get(i + 1).setDistanceToPrevious(distanceList.get(i));
         }
+        distanceList.clear();
         for (int i = 0; i < locationStructureList.size(); i++) {
             int j = i + 1;
             if (locationStructureList.get(i).isSecret() == false) {
@@ -742,25 +745,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onDirectionSuccess(Direction direction, String rawBody) {
         if (direction.isOK()) {
-            counter -= 1;
-            ArrayList<LatLng> reverseList = new ArrayList<>();
-            List<String> distanceListTorReverse = new ArrayList<>();
+            counter --;
+            requestIndex++;
             for (int j = 0; j < direction.getRouteList().get(0).getLegList().size(); j++) {
                 Leg leg = direction.getRouteList().get(0).getLegList().get(j);
-                distanceListTorReverse.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
+                distanceList.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
                 for (int i = 0; i < leg.getStepList().size(); i++) {
-                    leg.getStepList().get(i).getPolyline().getPointList();
-                    reverseList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
+                    polylinesList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
                 }
             }
-            Collections.reverse(distanceListTorReverse);
-            Collections.reverse(reverseList);
-            distanceList.addAll(distanceListTorReverse);
-            polylinesList.addAll(reverseList);
+
             if (counter == 0) {
+                requestIndex = 0;
                 createPolylines(polylinesList);
-                Collections.reverse(distanceList);
                 createMarkers(locationListFromDatabase);
+                polylinesList.clear();
+                distanceList.clear();
+            }else{
+                GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
+                        .from(requestList.get(requestIndex).getOrigin())
+                        .and(requestList.get(requestIndex).getWaypoints())
+                        .to(requestList.get(requestIndex).getDest())
+                        .transportMode(TransportMode.WALKING)
+                        .execute(this);
             }
         }
     }
