@@ -671,6 +671,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     isQuestOn = false;
                     Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
                     intent.putExtra("Category", "" + currentQuestCategory);
+                    mMap.clear();
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     startActivityForResult(intent, 1);
                 }
                 return true;
@@ -745,7 +747,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onDirectionSuccess(Direction direction, String rawBody) {
         if (direction.isOK()) {
-            counter --;
+            counter--;
             requestIndex++;
             for (int j = 0; j < direction.getRouteList().get(0).getLegList().size(); j++) {
                 Leg leg = direction.getRouteList().get(0).getLegList().get(j);
@@ -761,7 +763,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 createMarkers(locationListFromDatabase);
                 polylinesList.clear();
                 distanceList.clear();
-            }else{
+            } else {
                 GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
                         .from(requestList.get(requestIndex).getOrigin())
                         .and(requestList.get(requestIndex).getWaypoints())

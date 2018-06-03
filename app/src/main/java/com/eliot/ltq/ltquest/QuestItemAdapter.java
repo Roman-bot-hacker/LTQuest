@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -65,7 +63,7 @@ public class QuestItemAdapter extends RecyclerView.Adapter<QuestItemAdapter.MyVi
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Intent intent = new Intent((Activity)context, MainActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra("quest_name", "" + quest.getQuestName());
                 ((Activity)context).setResult(Activity.RESULT_OK, intent);
                 ((Activity)context).finish();
