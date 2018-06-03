@@ -9,6 +9,7 @@ import com.eliot.ltq.ltquest.authentication.UserInformation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.AuthResult;
@@ -54,6 +55,11 @@ public class FirebaseDataManager {
     public interface UserInformationWritingListener{
         void onSuccess();
         void onError();
+    }
+
+    public interface lastVisitedLocationInQuestRetriewer{
+        void onSuccess(Integer lastLocation, DatabaseReference databaseReference);
+        void onError(DatabaseError databaseError);
     }
 
     public void categoriesNamesListRetriever(final DataRetrieveListenerForQuestCategory listener){
@@ -233,7 +239,38 @@ public class FirebaseDataManager {
         });
     }
 
+    public void getLastVisitedLocationInQuest(String questName, String currentUserId, lastVisitedLocationInQuestRetriewer listener){
+        DatabaseReference databaseReference = firebaseDatabase.getReference().child("userData").child(currentUserId)
+                .child("questsData").child(questName).child("lastLocation");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Integer locationId;
+                Integer noLocation = -1;
+                if(dataSnapshot.getValue()!=null){
+                    locationId = dataSnapshot.getValue(Integer.class);
+                }
+                else {
+                    databaseReference.setValue(noLocation);
+                    locationId = noLocation;
+                }
+                listener.onSuccess(locationId, databaseReference);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listener.onError(databaseError);
+            }
+        });
+    }
+
     public void writeUserPoints(String uId, final int points){
         firebaseDatabase.getReference().child("userData").child(uId).child("points").setValue(points);
+    }
+
+    public void setLastVisitedLocationInQuest(String questName, String currentUserId, Integer locationIdToSet) {
+        DatabaseReference databaseReference = firebaseDatabase.getReference().child("userData").child(currentUserId)
+                .child("questsData").child(questName).child("lastLocation");
+        databaseReference.setValue(locationIdToSet);
     }
 }

@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<String> distanceList = new ArrayList<>();
     private List<LocationStructure> locationListFromDatabase;
     private List<RequestClass> requestList = new ArrayList<>();
+    private String currentQuestName;
+    private String currentUserId;
 
 
     @Override
@@ -777,5 +779,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onDirectionFailure(Throwable t) {
         Log.e("Error", t.getLocalizedMessage());
+    }
+
+    private void drawBlackAndVioletLines(){
+        firebaseDataManager.getLastVisitedLocationInQuest(currentQuestName, currentUserId, new FirebaseDataManager.lastVisitedLocationInQuestRetriewer() {
+            @Override
+            public void onSuccess(Integer lastLocation, DatabaseReference databaseReference) {
+                if(lastLocation != -1){
+                    List<Integer> locationList = new ArrayList<>();
+                }
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
