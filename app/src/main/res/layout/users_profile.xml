@@ -17,15 +17,15 @@
 
     <ImageView
         android:id="@+id/avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/toolbar"
         android:layout_marginTop="28dp"
         android:src="@drawable/avatar" />
 
     <ImageView
-        android:id="@+id/question"
+        android:id="@+id/user_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -153,7 +153,7 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="19dp"
                     android:layout_marginTop="24dp"
-                    android:src="@drawable/google_logo" />
+                    android:src="@drawable/google_logo_profile" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"

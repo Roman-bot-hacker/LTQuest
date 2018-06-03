@@ -274,7 +274,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         if(isNewUser) {
                             dataManager.writeCurrentUserData(manager.getCurrentUser().getUid(),
                                     new UserInformation(AccountType.GOOGLE, gSingInAccount.getDisplayName(),
-                                            gSingInAccount.getEmail()), new FirebaseDataManager.UserInformationWritingListener() {
+                                            gSingInAccount.getEmail(), gSingInAccount.getPhotoUrl().toString()), new FirebaseDataManager.UserInformationWritingListener() {
                                         @Override
                                         public void onSuccess() {
                                             startActivity(new Intent(AuthActivity.this, MainActivity.class));

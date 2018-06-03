@@ -1,5 +1,7 @@
 package com.eliot.ltq.ltquest;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class LocationStructure {
     private boolean isSecret;
     private double lat;
@@ -9,6 +11,13 @@ public class LocationStructure {
     private Integer locationID;
     private String locationName;
     private String distanceToPrevious = "start";
+
+    public LocationStructure(){}
+
+    public LocationStructure(LatLng latLng){
+        this.lat = latLng.latitude;
+        this.lon = latLng.longitude;
+    }
 
     public boolean isSecret() {
         return isSecret;
