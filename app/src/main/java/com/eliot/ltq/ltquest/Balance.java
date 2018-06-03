@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
@@ -34,11 +36,13 @@ public class Balance extends AppCompatActivity {
     private TextView exchangedPoints;
     private Button buyPointsButton;
     private TextView availblePoints;
+    private ImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.balance);
+        profileImage = findViewById(R.id.avatar_in_balance);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         editDollars = findViewById(R.id.edit_dollars);
         exchangedPoints = findViewById(R.id.points_exchange);
@@ -47,6 +51,7 @@ public class Balance extends AppCompatActivity {
         pointsExchange();
         buyPoints();
         updatePointsInformation();
+        Glide.with(this).load(firebaseAuthManager.getCurrentUser().getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(profileImage);
     }
 
     private void configureToolbar() {
