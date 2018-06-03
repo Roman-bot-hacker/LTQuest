@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -22,8 +24,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,18 +37,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.*;
 
-import com.akexorcist.googledirection.DirectionCallback;
-import com.akexorcist.googledirection.GoogleDirection;
-import com.akexorcist.googledirection.constant.TransportMode;
-import com.akexorcist.googledirection.model.Direction;
-import com.akexorcist.googledirection.model.Leg;
 import com.androidmapsextensions.GoogleMap;
 import com.androidmapsextensions.Marker;
 import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.PolylineOptions;
 import com.androidmapsextensions.SupportMapFragment;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
@@ -51,15 +58,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
@@ -68,7 +77,7 @@ import static com.eliot.ltq.ltquest.R.layout;
 import static com.eliot.ltq.ltquest.R.raw;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, DirectionCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, RoutingListener {
     private GoogleMap mMap;
     TextView numberOfPoint;
     private LocationManager locationManager;
@@ -87,15 +96,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager;
     private NavigationView navigationView;
+    private RecyclerView photoResyclerView;
+    private RecyclerView.Adapter photoAdapter;
+    private RecyclerView.LayoutManager photoLayoutManager;
+    private HorizontalScrollView photoScrollView;
     private ArrayList<LatLng> data = new ArrayList<>();
     private View changedMarkerInflated;
-    private TextView changedMarkerNumber;
-    private TextView distanceBetweenPoint;
-    private TextView cMarkerdistanceBetweenPoint;
+    private TextView markerTextView;
     private LayoutInflater inflater;
     private View markerInflated;
-    private View secretMarkerInflated;
+    private LatLng origin2;
+    private LatLng dest2;
+    private String url2;
     private static ArrayList<LatLng> polylinesList = new ArrayList<>();
+    private static ArrayList<LatLng> polylinesList1 = new ArrayList<>();
     private LatLng origin;
     private LatLng dest;
     private Intent intent;
@@ -107,9 +121,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button bottomSheetSkipButton;
     private boolean isQuestOn;
     private int currentQuestCategory;
-    private List<String> distanceList = new ArrayList<>();
-    List<LocationStructure> locationListFromDatabase;
-
+    private boolean isDrawingPolylinesInProgres;
+    private com.androidmapsextensions.Polyline blackLines;
+    private List<com.androidmapsextensions.Polyline> violetLines = new ArrayList<>();
+    private String currentQuestName;
+    private SparseIntArray currentLocationsOrderAndId;
+    private SparseArray<LocationStructure> currentLocationStructure = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,13 +166,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        markerInflated = inflater.inflate(R.layout.marker, null);
         changedMarkerInflated = inflater.inflate(layout.changed_marker, null);
-        secretMarkerInflated = inflater.inflate(R.layout.secret_marker, null);
-        changedMarkerNumber = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
+        markerTextView = (TextView) changedMarkerInflated.findViewById(id.number_text_view);
+        markerInflated = inflater.inflate(R.layout.marker, null);
         numberOfPoint = (TextView) markerInflated.findViewById(R.id.number_text_view);
-        distanceBetweenPoint = (TextView) markerInflated.findViewById(R.id.text_text_view);
-        cMarkerdistanceBetweenPoint = (TextView) changedMarkerInflated.findViewById(R.id.text_text_view);
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
@@ -192,24 +206,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .draggable(false));
     }
 
-    private void drawRoute() {
+    private void drawRoute(String questName) {
 
-        firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
+        firebaseDataManager.questRetrieverByName(questName, new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
             @Override
-            public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList) {
+            public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList, SparseIntArray locationsOrderAndId) {
                 currentQuestCategory = questStructure.getParentCategoryID();
-                firebaseDataManager.locationsListRetriever(locationsIdList, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
-                    @Override
-                    public void onSuccess(List<LocationStructure> locationStructureList) {
-                        locationListFromDatabase = locationStructureList;
-                        prepareDataAndDrawingRoute(locationStructureList);
-                    }
-
-                    @Override
-                    public void onError(DatabaseError databaseError) {
-                        Log.e("FirebaseDataManager", "eeeedgfde");
-                    }
-                });
+                prepareBlackAndVioletList(questName, locationsOrderAndId);
+                currentLocationsOrderAndId = locationsOrderAndId;
             }
 
             @Override
@@ -219,17 +223,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList) {
+    private void prepareDataAndDrawingRoute(List<LocationStructure> locationStructureList, boolean isMarkersBlack) {
         data = getLatLngList(locationStructureList);
+        if (isMarkersBlack) {
+            createMarkers(locationStructureList, true);
+        } else {
+            createMarkers(locationStructureList, false);
+        }
         polylinesList.clear();
 
-        if (data.size() == 8) {
-            counter = 1;
-        } else {
-            counter = data.size() / 8 + 1;
-        }
-        //       counter = data.size()/8 +1;
+        counter = data.size() / 7 + 1;
         List<LatLng> latlngList;
+        if(violetLines != null) {
+            for (com.androidmapsextensions.Polyline polyline:
+                 violetLines) {
+                polyline.remove();
+            }
+            violetLines.clear();
+        }
         if (data.size() > 7) {
             for (int i = 0; i < data.size() - 1; i += 7) {
                 origin = new LatLng(data.get(i).latitude, data.get(i).longitude);
@@ -241,12 +252,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     latlngList = data.subList(i + 1, i + 7);
                 }
 
-                GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
-                        .from(origin)
-                        .and(latlngList)
-                        .to(dest)
-                        .transportMode(TransportMode.WALKING)
-                        .execute(this);
+                latlngList.add(0, origin);
+                latlngList.add(dest);
+                Routing routing = new Routing.Builder()
+                        .travelMode(Routing.TravelMode.WALKING)
+                        .withListener(this)
+                        .waypoints(latlngList)
+                        .build();
+                routing.execute();
 
             }
 
@@ -254,17 +267,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             origin = new LatLng(data.get(0).latitude, data.get(0).longitude);
             dest = new LatLng(data.get(data.size() - 1).latitude, data.get(data.size() - 1).longitude);
-            latlngList = data.subList(1, data.size() - 1);
-
-            GoogleDirection.withServerKey("AIzaSyALGNj3GZI8DpCLzYeoqQz2Kr0HuqUdiGg")
-                    .from(origin)
-                    .and(latlngList)
-                    .to(dest)
-                    .transportMode(TransportMode.WALKING)
-                    .execute(this);
+            latlngList = data.subList(0, data.size() - 1);
+            latlngList.add(0, origin);
+            latlngList.add(dest);
+            Routing routing = new Routing.Builder()
+                    .travelMode(Routing.TravelMode.WALKING)
+                    .withListener(this)
+                    .waypoints(latlngList)
+                    .build();
+            routing.execute();
         }
     }
 
+    //Added conversion to LatLng List
+    //TODO: parse Into LatLng List by default remove redundant InfoFromJson class
     private ArrayList<LatLng> getLatLngList(List<LocationStructure> locationStructureList) {
         ArrayList<LatLng> latlngList = new ArrayList<>();
         for (LocationStructure locationStructure : locationStructureList) {
@@ -284,38 +300,50 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void createMarkers(List<LocationStructure> locationStructureList) {
-        for (int i = 0; i < locationStructureList.size() - 1; i++) {
-            locationStructureList.get(i + 1).setDistanceToPrevious(distanceList.get(i));
-        }
+    private void createMarkers(List<LocationStructure> locationStructureList, boolean isMarkerBlack) {
         for (int i = 0; i < locationStructureList.size(); i++) {
-            int j = i + 1;
-            if (locationStructureList.get(i).isSecret() == false) {
-                numberOfPoint.setText("" + j);
-                distanceBetweenPoint.setText(locationStructureList.get(i).getDistanceToPrevious());
-                Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
-                        .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
-                locationStructureList.get(i).setLocationID(i + 1);
+            if (locationStructureList.get(i).getLocationID() != -1) {
+                numberOfPoint.setText("" + (locationStructureList.get(i).getLocationID()));
+                Marker marker;
+                if (isMarkerBlack) {
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
+                            .anchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated))));
+                } else {
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon()))
+                            .anchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
+                }
+                locationStructureList.get(i).setLocationID(i+1);
                 marker.setData(locationStructureList.get(i));
-            } else {
-                Marker secretMarker1 = mMap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(secretMarkerInflated)))
-                        .anchor(0.5f, 0.5f)
-                        .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon())));
-                secretMarker1.setData(locationStructureList.get(i));
+                //           int number = locationStructure.getLocationID() + 1;
             }
         }
         changeMarkerListener();
     }
 
-    private void createPolylines(ArrayList<LatLng> list) {
-        mMap.addPolyline(new PolylineOptions()
-                .addAll(list).width(11)
-                .jointType(JointType.BEVEL)
-                .color(Color.rgb(145, 121, 241)));
+    //Reworked adding polyline to Map
+    private void createPolylines(ArrayList<LatLng> list, int color) {
+        if (color == Color.rgb(0, 0, 0)) {
+            if (blackLines != null) {
+                blackLines.remove();
+            }
+                blackLines = mMap.addPolyline(new PolylineOptions()
+                        .addAll(list).width(11)
+                        .jointType(JointType.BEVEL)
+                        .color(color));
 
+        }
+        if (color == Color.rgb(145, 121, 241)) {
+            com.androidmapsextensions.Polyline polyline;
+            polyline = mMap.addPolyline(new PolylineOptions()
+                    .addAll(list).width(11)
+                    .jointType(JointType.BEVEL)
+                    .color(color));
+            violetLines.add(polyline);
+        }
     }
 
     public void changeMarkerListener() {
@@ -325,42 +353,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LocationStructure locationStructure = marker.getData();
-                if (locationStructure.isSecret() == false) {
-                    int number = locationStructure.getLocationID();
-                    changedMarkerNumber.setText("" + number);
-                    cMarkerdistanceBetweenPoint.setText("done");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
-                    mBottomSheetBehavior.setHideable(true);
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                int number = locationStructure.getLocationID();
+                markerTextView.setText("" + number);
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                    bottomSheetName.setText(locationStructure.getLocationName());
-                    bottomSheetInfo.setText(locationStructure.getLocationDescription());
-                    bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                        }
-                    });
+                bottomSheetName.setText(locationStructure.getLocationName());
+                bottomSheetInfo.setText(locationStructure.getLocationDescription());
+                bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                });
 
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
 
-                        }
-                    });
+                    }
+                });
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        }
-                    }, 300);
-                } else {
-
-                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }, 300);
 
                 return true;
 
@@ -409,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0,
-                    0, new LocationListener() {
+                    1, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
                             if (location == null)
@@ -420,6 +443,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                             currentLatLng = getMyLocation(location);
                             mPositionMarker.setPosition(currentLatLng);
+                            if (isQuestOn) {
+                                prepareBlackAndVioletList(currentQuestName, currentLocationsOrderAndId);
+//                                firebaseDataManager.getLastVisitedLocationInQuest(currentQuestName, firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.lastVisitedLocationInQuestRetriewer() {
+//                                    @Override
+//                                    public void onSuccess(Integer lastLocation, DatabaseReference databaseReference) {
+//                                        if(lastLocation != -1) {
+//                                            firebaseDataManager.questRetrieverByName(currentQuestName, new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
+//                                                @Override
+//                                                public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList, SparseIntArray locationsOrderAndId) {
+//                                                    if (locationsOrderAndId.valueAt(lastLocation) != -1) {
+//                                                        Integer locationToCheck = locationsOrderAndId.valueAt(lastLocation);
+//                                                        List<Integer> listToCheck = new ArrayList<>();
+//                                                        listToCheck.add(locationToCheck);
+//                                                        firebaseDataManager.locationsListRetriever(listToCheck, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+//                                                            @Override
+//                                                            public void onSuccess(List<LocationStructure> locationStructureList) {
+//                                                                if (!locationStructureList.isEmpty()) {
+//                                                                    if (isUserNearLocation(currentLatLng, new LatLng(locationStructureList.get(0).getLat(), locationStructureList.get(0).getLon()))) {
+//                                                                        firebaseDataManager.setLastVisitedLocationInQuest(currentQuestName, firebaseAuthManager.getCurrentUser().getUid(), locationToCheck);
+//                                                                    }
+//                                                                }
+//                                                            }
+//
+//                                                            @Override
+//                                                            public void onError(DatabaseError databaseError) {
+//
+//                                                            }
+//                                                        });
+//                                                    }
+//                                                }
+//
+//                                                @Override
+//                                                public void onError(DatabaseError databaseError) {
+//
+//                                                }
+//                                            });
+//
+//                                        }
+//                                        else{}
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+                            }
                         }
 
                         @Override
@@ -443,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void checkMyCoarseLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     if (location == null)
@@ -510,15 +580,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startNew.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.VISIBLE);
-                configureToolbarForSecondScreen();
+                if (isNetworkAvailable()) {
+                    screen1.setVisibility(View.GONE);
+                    screen2.setVisibility(View.VISIBLE);
+                    configureToolbarForSecondScreen();
+                } else {
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         continueQuest.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (isNetworkAvailable()) {
+                    Toast.makeText(MainActivity.this, "This function is disable in this app version", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -543,22 +621,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void setToolbarUserInf() {
+    public void setNavbarUserInf() {
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
+                TextView navbarUserName = (TextView) findViewById(R.id.navbar_user_name);
+                navbarUserName.setText(userInformation.getName());
+                TextView navbarEmail = (TextView) findViewById(id.navbar_email);
                 if (!(userInformation.getGoogleEmail() == null)) {
-                    toolbarEmail.setText(userInformation.getGoogleEmail());
+                    navbarEmail.setText(userInformation.getGoogleEmail());
                 } else if (!(userInformation.getEmail() == null)) {
-                    toolbarEmail.setText(userInformation.getEmail());
+                    navbarEmail.setText(userInformation.getEmail());
                 } else if (!(userInformation.getFacebookLink() == null)) {
-                    toolbarEmail.setText(userInformation.getFacebookLink());
+                    navbarEmail.setText(userInformation.getFacebookLink());
                 }
-                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
-                toolbarProfile.setOnClickListener(new View.OnClickListener() {
+                LinearLayout navbarProfile = (LinearLayout) findViewById(R.id.navbar_profile);
+                navbarProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(MainActivity.this, ProfileActivity.class));
@@ -622,7 +700,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                setToolbarUserInf();
+                setNavbarUserInf();
             }
 
             @Override
@@ -666,6 +744,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 if (isQuestOn) {
                     isQuestOn = false;
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    photoResyclerView.setVisibility(View.GONE);
                     Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
                     intent.putExtra("Category", "" + currentQuestCategory);
                     startActivityForResult(intent, 1);
@@ -687,6 +767,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
+    //Photo Scroll View ---------------------------------------------------------
+
+    public void photoScrollViewInit() {
+        photoScrollView = findViewById(id.photo_scroll_view);
+        photoScrollView.isSmoothScrollingEnabled();
+        photoResyclerView = findViewById(id.photos_resycler_view);
+        photoResyclerView.setHasFixedSize(true);
+        photoResyclerView.setVisibility(View.VISIBLE);
+        photoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        photoResyclerView.setLayoutManager(photoLayoutManager);
+        firebaseDataManager.getQuestPhotos("quest1", new FirebaseDataManager.QuestPhotosResult() {
+            @Override
+            public void onSuccess(List<String> pathList) {
+                photoAdapter = new PhotosAdapter(MainActivity.this, pathList);
+                photoResyclerView.setAdapter(photoAdapter);
+            }
+
+            @Override
+            public void onError(String excepMassage) {
+                Log.e("PhotoScrollView", excepMassage);
+            }
+        });
+    }
+
+    //-----------------------------------------------------------------------------
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bundle extras = data.getExtras();
@@ -695,6 +801,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (extras != null) {
                     if (extras.containsKey("button")) {
                         if (data.getStringExtra("button").equals("back")) {
+                            configureToolbarForSecondScreen();
                             screen1.setVisibility(View.GONE);
                             screen2.setVisibility(View.VISIBLE);
                             mMap.clear();
@@ -702,23 +809,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                             addMyPositionMarker();
                             enableMyLocationButton();
+                            isQuestOn = false;
                         }
                     }
                     if (extras.containsKey("quest_name")) {
-                        actionbar.setTitle("Quest");
                         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
                         actionbar.setDisplayHomeAsUpEnabled(true);
                         navigationView.setVisibility(View.GONE);
-                        switch (data.getStringExtra("quest_name")) {
-                            case "justName":
-                                screen1.setVisibility(View.GONE);
-                                screen2.setVisibility(View.GONE);
-                                toolbar.setTitle("justName");
-                                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                                drawRoute();
-                                isQuestOn = true;
-                                break;
-                        }
+                        screen1.setVisibility(View.GONE);
+                        screen2.setVisibility(View.GONE);
+                        toolbar.setTitle(data.getStringExtra("quest_name"));
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        currentQuestName = data.getStringExtra("quest_name");
+                        drawRoute(currentQuestName);
+                        isQuestOn = true;
+                        photoScrollViewInit();
                     }
                 }
             }
@@ -726,11 +831,50 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     public void onBackPressed() {
         // do nothing.
     }
 
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        Log.e("RoutingFailure", e.getMessage());
+        Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+        counter -= 1;
+        polylinesList.clear();
+        for (Route route :
+                arrayList) {
+            polylinesList.addAll(route.getPolyOptions().getPoints());
+        }
+        //if (counter == 0) {
+            createPolylines(polylinesList, Color.rgb(145, 121, 241));
+        //}
+        //if (counter == -1) {
+        //    createPolylines(polylinesList, Color.rgb(0, 0, 0));
+        //}
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+    }
 
     private void keepDataSynced() {
         DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("categories");
@@ -739,34 +883,104 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         userDataRef.keepSynced(true);
     }
 
-    @Override
-    public void onDirectionSuccess(Direction direction, String rawBody) {
-        if (direction.isOK()) {
-            counter -= 1;
-            ArrayList<LatLng> reverseList = new ArrayList<>();
-            List<String> distanceListTorReverse = new ArrayList<>();
-            for (int j = 0; j < direction.getRouteList().get(0).getLegList().size(); j++) {
-                Leg leg = direction.getRouteList().get(0).getLegList().get(j);
-                distanceListTorReverse.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
-                for (int i = 0; i < leg.getStepList().size(); i++) {
-                    leg.getStepList().get(i).getPolyline().getPointList();
-                    reverseList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
+    private boolean isUserNearLocation(LatLng currentUserLatLng, LatLng latLngToCheck) {
+        float distance;
+        Location userLocation = new Location("user location");
+        Location locationToCheck = new Location("location to check");
+        userLocation.setLatitude(currentLatLng.latitude);
+        userLocation.setLongitude(currentLatLng.longitude);
+        locationToCheck.setLatitude(latLngToCheck.latitude);
+        locationToCheck.setLongitude(latLngToCheck.longitude);
+        distance = userLocation.distanceTo(locationToCheck);
+        return distance < 10.0;
+    }
+
+    public void prepareBlackAndVioletList(String questName, SparseIntArray allLocations) {
+        firebaseDataManager.getLastVisitedLocationInQuest(questName, firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.lastVisitedLocationInQuestRetriewer() {
+            @Override
+            public void onSuccess(Integer lastLocation, DatabaseReference databaseReference) {
+                if (lastLocation != -1) {
+                    List<Integer> blackList = new ArrayList<>();
+                    List<Integer> violetList = new ArrayList<>();
+                    for (int i = 1; i <= lastLocation; i++) {
+                        blackList.add(allLocations.get(i));
+                    }
+                    for (int i = (lastLocation); i <= allLocations.size(); i++) {
+                        violetList.add(allLocations.get(i));
+                    }
+                    if(currentLatLng != null) {
+
+                        drawViolet(violetList);
+                    }
+                    //drawBlack(blackList);
+                }
+                else{
+                    List<Integer> allLocationsId = new ArrayList<>();
+                    for (int i = lastLocation; i <= allLocations.size(); i++) {
+                        allLocationsId.add(allLocations.get(i));
+                    }
+                    drawViolet(allLocationsId);
                 }
             }
-            Collections.reverse(distanceListTorReverse);
-            Collections.reverse(reverseList);
-            distanceList.addAll(distanceListTorReverse);
-            polylinesList.addAll(reverseList);
-            if (counter == 0) {
-                createPolylines(polylinesList);
-                Collections.reverse(distanceList);
-                createMarkers(locationListFromDatabase);
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+
             }
+        });
+    }
+
+    private void drawBlack(List<Integer> black) {
+        if (currentLatLng == null) {
+            firebaseDataManager.locationsListRetriever(black, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+                @Override
+                public void onSuccess(List<LocationStructure> locationStructureList) {
+                    if (!locationStructureList.isEmpty()) {
+                        prepareDataAndDrawingRoute(locationStructureList, true);
+                    }
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+
+                }
+            });
+        } else if (currentLatLng != null) {
+            firebaseDataManager.locationsListRetriever(black, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+                @Override
+                public void onSuccess(List<LocationStructure> locationStructureList) {
+                    if (!locationStructureList.isEmpty()) {
+                        LocationStructure currentLocation = new LocationStructure(currentLatLng);
+                        currentLocation.setLocationID(-1);
+                        locationStructureList.add(currentLocation);
+                        prepareDataAndDrawingRoute(locationStructureList, true);
+                    }
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
-    @Override
-    public void onDirectionFailure(Throwable t) {
-        Log.e("Error", t.getLocalizedMessage());
+    private void drawViolet(List<Integer> violet) {
+        firebaseDataManager.locationsListRetriever(violet, new FirebaseDataManager.DataRetrieveListenerForLocationsStructure() {
+            @Override
+            public void onSuccess(List<LocationStructure> locationStructureList) {
+                if (currentLatLng != null) {
+                    LocationStructure locationStructure = new LocationStructure(currentLatLng);
+                    locationStructure.setLocationID(-1);
+                    locationStructureList.add(0, locationStructure);
+                    prepareDataAndDrawingRoute(locationStructureList, false);
+                }
+            }
+
+            @Override
+            public void onError(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
