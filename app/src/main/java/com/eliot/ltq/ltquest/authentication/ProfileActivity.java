@@ -1,7 +1,9 @@
 package com.eliot.ltq.ltquest.authentication;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,13 +13,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.eliot.ltq.ltquest.Balance;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
@@ -27,14 +26,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 
-import org.w3c.dom.Text;
-
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout drawerLayout;
     private FirebaseUser user;
-    private UserInformation userInformation = new UserInformation();
+    private UserInformation currentUserInformation = new UserInformation();
     private FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
     private FirebaseAuthManager firebaseAuthManager = new FirebaseAuthManager();
+    private UserSex userSexInOptions = UserSex.CHOOSE_SEX;
 
     private TextView textViewUserEmail;
     private TextView textViewName;
@@ -45,9 +43,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout facebookLayout;
     private LinearLayout googleLayout;
     private LinearLayout emailLayout;
+    private ImageView userSettings;
     private ImageView imageViewUserPhoto;
     private FirebaseAuthManager authManager;
     private Toolbar toolbar;
+    private View editProfile;
+    private EditText userNameSetttings;
+    private RadioGroup sexRadioButton;
+    private TextView facebookLink;
+    private TextView googleLink;
+    private TextView mailLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +76,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         textViewLayout = (TextView) findViewById(R.id.logout);
         emailLayout = (LinearLayout) findViewById(R.id.liner_mail);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        userSettings = (ImageView) findViewById(R.id.user_settings);
         configureNavigationDrawer();
         configureToolbar();
+        profileUpdate();
         textViewLayout.setOnClickListener(this);
+        userSettings.setOnClickListener(this);
 
+    }
 
+    public void profileUpdate() {
         if (authManager.isUserLoggedIn())
             firebaseDataManager.getCurrentUserData(authManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
                 @Override
@@ -100,6 +110,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     if(!(userInformation.getEmail()==null)) {
                         textViewUserEmail.setText(userInformation.getEmail());
                     } else {emailLayout.setVisibility(View.GONE);}
+                    currentUserInformation = userInformation;
                 }
 
                 @Override
@@ -108,7 +119,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
             });
-
     }
 
     @Override
@@ -119,6 +129,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onSuccess() {
                         AuthActivity.setAuthType(AuthType.LOGIN);
+                        currentUserInformation = null;
                         finish();
                         startActivity(new Intent(ProfileActivity.this, AuthActivity.class));
                     }
@@ -129,6 +140,31 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         Toast.makeText(ProfileActivity.this, "Cannot logout, something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
+            } break;
+            case R.id.user_settings: {
+                editProfile = LayoutInflater.from(ProfileActivity.this).inflate(R.layout.edit_options, null);
+                AlertDialog.Builder userSettingsDialogBuilder = new AlertDialog.Builder(this);
+                userSettingsDialogBuilder
+                        .setView(editProfile)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                editOptionsOnSaveClicked();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setCancelable(false);
+                AlertDialog userSettingsDialog = userSettingsDialogBuilder.create();
+                userSettingsDialog.show();
+                userSettingsDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#907AEC"));
+                userSettingsDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#907AEC"));
+                editOptionsObjectsInit();
+                editOptionsLisneter();
             }
         }
     }
@@ -172,17 +208,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
+                // Handle navigation view item clicks here.
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                switch (item.getItemId()) {
+                    case R.id.nav_home: {
+                        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
 
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                    case R.id.nav_balance: {
+                        startActivity(new Intent(ProfileActivity.this, Balance.class));
+                        drawer.closeDrawer(GravityCompat.START);
+                    } break;
+
+                    case R.id.nav_high_score: {
+                        Toast.makeText(ProfileActivity.this, "Sorry, high score is disabled in this application version", Toast.LENGTH_SHORT).show();
+                    } break;
                 }
-
-                if (id == R.id.nav_balance) {
-                    startActivity(new Intent(ProfileActivity.this, Balance.class));
-                }
-
-                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
@@ -205,9 +247,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
+                TextView toolbarUserName = (TextView) findViewById(R.id.navbar_user_name);
                 toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(R.id.toolbarEmail);
+                TextView toolbarEmail = (TextView) findViewById(R.id.navbar_email);
                 if(!(userInformation.getGoogleEmail()==null)){
                     toolbarEmail.setText(userInformation.getGoogleEmail());
                 }
@@ -225,6 +267,129 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
+
+    //HERE PART OF CODE FOR EDIT_OPTIONS DIALOG
+    public void editOptionsObjectsInit(){
+        userNameSetttings = editProfile.findViewById(R.id.settings_name);
+        facebookLink = (TextView) editProfile.findViewById(R.id.facebook_edit);
+        googleLink = (TextView) editProfile.findViewById(R.id.google_edit);
+        mailLink = (TextView) editProfile.findViewById(R.id.mail_edit);
+        sexRadioButton = editProfile.findViewById(R.id.sex_radio_group);
+        if (currentUserInformation!=null){
+            editOptionsFromContentInit();
+        }
+        else {
+            firebaseDataManager.getCurrentUserData(user.getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+                @Override
+                public void onSuccess(UserInformation userInformation) {
+                    editOptionsFromContentInit();
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
+    public void editOptionsFromContentInit(){
+        if (currentUserInformation.getName()!=null) userNameSetttings.setText(currentUserInformation.getName());
+        if (currentUserInformation.getSex()!=null) {
+            switch (currentUserInformation.getSex()) {
+                case MALE: {
+                    sexRadioButton.check(R.id.male);
+                    userSexInOptions = UserSex.MALE;
+                } break;
+                case FEMALE: {
+                    sexRadioButton.check(R.id.female);
+                    userSexInOptions = UserSex.FEMALE;
+                } break;
+                default: {
+                    userSexInOptions = UserSex.CHOOSE_SEX;
+                }
+            }
+        }
+        if(currentUserInformation.getFacebookLink()!=null){
+            facebookLink.setText(currentUserInformation.getFacebookLink());
+        }
+        if(currentUserInformation.getGoogleEmail()!=null){
+            googleLink.setText(currentUserInformation.getGoogleEmail());
+        }
+        if(currentUserInformation.getEmail()!=null){
+            mailLink.setText(currentUserInformation.getEmail());
+        }
+    }
+
+    public void editOptionsLisneter() {
+        sexRadioButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.male: {userSexInOptions = UserSex.MALE;}
+                        break;
+                    case R.id.female: {userSexInOptions = UserSex.FEMALE;}
+                        break;
+                    default: {userSexInOptions = UserSex.CHOOSE_SEX;}
+                }
+            }
+        });
+    }
+
+
+
+    public void editOptionsOnSaveClicked() {
+        if (currentUserInformation != null) {
+            if (!(userNameSetttings.getText().toString().equals(currentUserInformation.getName()))) {
+                currentUserInformation.setName(userNameSetttings.getText().toString());
+            }
+            if (!(userSexInOptions.equals(currentUserInformation.getSex()))) {
+                currentUserInformation.setSex(userSexInOptions);
+            }
+            firebaseDataManager.writeCurrentUserData(user.getUid(),currentUserInformation, new FirebaseDataManager.UserInformationWritingListener() {
+                @Override
+                public void onSuccess() {
+                    profileUpdate();
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            firebaseDataManager.getCurrentUserData(user.getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
+                @Override
+                public void onSuccess(UserInformation userInformation) {
+                    if (!(userNameSetttings.getText().toString().equals(userInformation.getName()))) {
+                        userInformation.setName(userNameSetttings.getText().toString());
+                    }
+                    if (!(userSexInOptions.equals(userInformation.getSex()))) {
+                        userInformation.setSex(userSexInOptions);
+                    }
+                    firebaseDataManager.writeCurrentUserData(user.getUid(), userInformation, new FirebaseDataManager.UserInformationWritingListener() {
+                        @Override
+                        public void onSuccess() {
+                            profileUpdate();
+                        }
+
+                        @Override
+                        public void onError() {
+                            Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(DatabaseError databaseError) {
+                    Toast.makeText(ProfileActivity.this, "Sorry, some problems found. Your settings were canceled", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    //--------------------------------------------------------------------
 
     @Override
     public void onBackPressed() {

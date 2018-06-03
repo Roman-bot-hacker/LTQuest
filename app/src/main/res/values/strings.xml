@@ -26,10 +26,9 @@
     <string name="point">Point</string>
     <string name="dollar">Dollar</string>
     <string name="Current_balance">Current balance</string>
-    <string name="email">heyfromjonathan@gmail.com</string>
-    <string name="name_user">William Snoe</string>
+    <string name="no_internet">No Internet Connection</string>
 
-    <string name="users_name">Gerald Morrison</string>
+    <string name="users_name">User Name</string>
     <string name="sex">Male</string>
     <string name="email_facebook">FBlink.com</string>
     <string name="facebook">Facebook"</string>
@@ -52,17 +51,23 @@
     <string name="login">Login</string>
     <string name="dont_have_acc">Don\'t have an account? SIGN UP</string>
     <string name="already_have_an_acc">Already have an account? LOG IN</string>
-    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign in with</string>
+    <string name="haven_t_got_an_account_sign_in_with">Haven\'t got an account? Sign up with</string>
     <string name="have_an_account_login">Already have an account? Login here!</string>
     <string name="google_sing_in_error">Cannot sing in with your Google account</string>
     <string name="google_default_client_id">192781036687-cfkm10ggma11alffiaeis83fn65uqbb5.apps.googleusercontent.com</string>
     <string name="confirm_password">Confirm password</string>
     <string name="forgotpass">Forgot password?</string>
 
+    //Facebook Auth
+    <string name="facebook_app_id">197354150876389</string>
+    <string name="fb_login_protocol_scheme">fb197354150876389</string>
+
+
     //Profile Dialoge
     <string name="edit_options">Edit options</string>
     <string name="sexf">Female</string>
     <string name="log_out">log out</string>
+    <string name="password">Password</string>
 
 
     //This strings resources are just a part of design and will delete in future
@@ -71,6 +76,7 @@
     <string name="title">Title</string>
     <string name="numbers">23463</string>
     <string name="italic_text"><i>Italic text</i></string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

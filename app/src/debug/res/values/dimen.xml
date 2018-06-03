@@ -23,6 +23,7 @@
     <dimen name="size_Level">20sp</dimen>
     <dimen name="size_name">16sp</dimen>
     <dimen name="size_km">13sp</dimen>
+    <dimen name="shadow_elevation">4dp</dimen>
 
     //dimens for registration
     <dimen name="orientation_logo">105dp</dimen>

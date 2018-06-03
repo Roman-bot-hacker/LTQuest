@@ -12,10 +12,12 @@ public class UserInformation {
     private String googleEmail;
     private String facebookLink;
 
+    //init by default
     public UserInformation(){
 
     }
 
+    //init for mail sign up
     public UserInformation(String account){
         this.email = account;
         this.name = "Your Name";
@@ -23,6 +25,7 @@ public class UserInformation {
         this.sex = UserSex.CHOOSE_SEX;
     }
 
+    //init for gmail sign up
     public UserInformation(AccountType accountType, String name, String account){
         this.name = name;
         this.points = 0;
@@ -35,6 +38,14 @@ public class UserInformation {
             }
         }
         this.sex = UserSex.CHOOSE_SEX;
+    }
+
+    public UserInformation(String name, String id, UserSex sex){
+        this.name = name;
+        this.points = 0;
+        facebookLink = id;
+        this.sex = sex;
+
     }
 
     public String getEmail(){ return email; }

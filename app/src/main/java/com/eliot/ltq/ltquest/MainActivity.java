@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -27,10 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -46,6 +45,7 @@ import com.androidmapsextensions.SupportMapFragment;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double DEFAULT_LONGITUDE = 24.031686;
     private Marker mPositionMarker;
     private Toolbar toolbar;
+    private View myLocationButton;
     private ActionBar actionbar;
-    private ImageView myLocationButton;
     private View screen1;
     private View screen2;
     private DrawerLayout drawerLayout;
@@ -174,6 +174,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Resources.NotFoundException e) {
             e.getMessage();
         }
+        mMap.setBuildingsEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     public void enableMyLocationButton() {
@@ -194,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .position(currentLatLng)
                 .draggable(false));
     }
-
     private void drawRoute() {
 
         firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
@@ -414,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0,
-                    0, new LocationListener() {
+                    1, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
                             if (location == null)
@@ -448,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void checkMyCoarseLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     if (location == null)
@@ -494,38 +495,50 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-
-        }
-
-        if (id == R.id.nav_balance) {
-            startActivity(new Intent(MainActivity.this, Balance.class));
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        switch (item.getItemId()) {
+            case R.id.nav_home: {
+                drawer.closeDrawer(GravityCompat.START);
+            } break;
+
+            case R.id.nav_balance: {
+                startActivity(new Intent(MainActivity.this, Balance.class));
+                drawer.closeDrawer(GravityCompat.START);
+            } break;
+
+            case R.id.nav_high_score: {
+                Toast.makeText(this, "Sorry, high score is disabled in this application version", Toast.LENGTH_SHORT).show();
+            } break;
+        }
         return true;
     }
 
     public void screen1ButtonsOnClickListener() {
-        Button startNew = findViewById(id.start_new);
-        Button continueQuest = findViewById(id.continue_quest);
-        startNew.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                screen1.setVisibility(View.GONE);
-                screen2.setVisibility(View.VISIBLE);
-                configureToolbarForSecondScreen();
-            }
-        });
-        continueQuest.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+            Button startNew = findViewById(id.start_new);
+            Button continueQuest = findViewById(id.continue_quest);
+            startNew.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(isNetworkAvailable()) {
+                        screen1.setVisibility(View.GONE);
+                        screen2.setVisibility(View.VISIBLE);
+                        configureToolbarForSecondScreen();
+                    } else {
+                        Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            continueQuest.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(isNetworkAvailable()){
+                        Toast.makeText(MainActivity.this, "This function is disable in this app version", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
     }
 
     public void setCategoriesText() {
@@ -552,18 +565,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         firebaseDataManager.getCurrentUserData(firebaseAuthManager.getCurrentUser().getUid(), new FirebaseDataManager.DataRetrieveListenerForUserInformation() {
             @Override
             public void onSuccess(UserInformation userInformation) {
-                TextView toolbarUserName = (TextView) findViewById(R.id.toolbar_user_name);
-                toolbarUserName.setText(userInformation.getName());
-                TextView toolbarEmail = (TextView) findViewById(id.toolbarEmail);
-                if (!(userInformation.getGoogleEmail() == null)) {
-                    toolbarEmail.setText(userInformation.getGoogleEmail());
-                } else if (!(userInformation.getEmail() == null)) {
-                    toolbarEmail.setText(userInformation.getEmail());
-                } else if (!(userInformation.getFacebookLink() == null)) {
-                    toolbarEmail.setText(userInformation.getFacebookLink());
+                TextView navbarUserName = (TextView) findViewById(R.id.navbar_user_name);
+                navbarUserName.setText(userInformation.getName());
+                TextView navbarEmail = (TextView) findViewById(id.navbar_email);
+                if(!(userInformation.getGoogleEmail()==null)){
+                    navbarEmail.setText(userInformation.getGoogleEmail());
                 }
-                LinearLayout toolbarProfile = (LinearLayout) findViewById(R.id.toolbarProfile);
-                toolbarProfile.setOnClickListener(new View.OnClickListener() {
+                else if(!(userInformation.getEmail()==null)){
+                    navbarEmail.setText(userInformation.getEmail());
+                }
+                else if(!(userInformation.getFacebookLink()==null)){
+                    navbarEmail.setText(userInformation.getFacebookLink());
+                }
+                LinearLayout navbarProfile = (LinearLayout) findViewById(R.id.navbar_profile);
+                navbarProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(MainActivity.this, ProfileActivity.class));
@@ -732,6 +747,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public void onBackPressed() {

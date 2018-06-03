@@ -18,6 +18,7 @@
             <Button
                 android:id="@+id/continue_quest"
                 style="@style/MainButton.background"
+                android:elevation="@dimen/shadow_elevation"
                 android:layout_width="@dimen/button_weight"
                 android:layout_height="@dimen/button_hight"
                 android:layout_marginBottom="20dp"
@@ -27,8 +28,10 @@
             <Button
                 android:id="@+id/start_new"
                 style="@style/MainButton.background"
+                android:elevation="@dimen/shadow_elevation"
                 android:layout_width="@dimen/button_weight"
                 android:layout_height="@dimen/button_hight"
+                android:layout_marginBottom="20dp"
                 android:text="@string/Start_new" />
         </LinearLayout>
 
