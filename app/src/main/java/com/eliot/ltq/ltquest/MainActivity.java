@@ -59,6 +59,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.eliot.ltq.ltquest.R.drawable;
@@ -222,7 +223,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         data = getLatLngList(locationStructureList);
         polylinesList.clear();
 
-        counter = data.size() / 8;
+        if (data.size() == 8) {
+            counter = 1;
+        } else {
+            counter = data.size() / 8 + 1;
+        }
+        //       counter = data.size()/8 +1;
         List<LatLng> latlngList;
         if (data.size() > 7) {
             for (int i = 0; i < data.size() - 1; i += 7) {
@@ -257,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .transportMode(TransportMode.WALKING)
                     .execute(this);
         }
-        //       createMarkers(locationStructureList);
     }
 
     private ArrayList<LatLng> getLatLngList(List<LocationStructure> locationStructureList) {
@@ -738,21 +743,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onDirectionSuccess(Direction direction, String rawBody) {
         if (direction.isOK()) {
             counter -= 1;
+            ArrayList<LatLng> reverseList = new ArrayList<>();
+            List<String> distanceListTorReverse = new ArrayList<>();
             for (int j = 0; j < direction.getRouteList().get(0).getLegList().size(); j++) {
                 Leg leg = direction.getRouteList().get(0).getLegList().get(j);
-                distanceList.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
+                distanceListTorReverse.add(direction.getRouteList().get(0).getLegList().get(j).getDistance().getText());
                 for (int i = 0; i < leg.getStepList().size(); i++) {
                     leg.getStepList().get(i).getPolyline().getPointList();
-                    polylinesList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
+                    reverseList.addAll(leg.getStepList().get(i).getPolyline().getPointList());
                 }
-
-                Log.d("Segment count", String.valueOf(leg.getStepList().size()));
-
             }
+            Collections.reverse(distanceListTorReverse);
+            Collections.reverse(reverseList);
+            distanceList.addAll(distanceListTorReverse);
+            polylinesList.addAll(reverseList);
             if (counter == 0) {
                 createPolylines(polylinesList);
+                Collections.reverse(distanceList);
+                createMarkers(locationListFromDatabase);
             }
-            createMarkers(locationListFromDatabase);
         }
     }
 
