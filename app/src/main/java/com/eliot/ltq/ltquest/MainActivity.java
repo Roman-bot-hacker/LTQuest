@@ -347,44 +347,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-                LocationStructure locationStructure = marker.getData();
-                if (locationStructure.isSecret() == false) {
-                    int number = locationStructure.getLocationID();
-                    changedMarkerNumber.setText("" + number);
-                    cMarkerdistanceBetweenPoint.setText("done");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
-                    mBottomSheetBehavior.setHideable(true);
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                if(marker!=mPositionMarker) {
+                    LocationStructure locationStructure = marker.getData();
+                    if (locationStructure.isSecret() == false) {
+                        int number = locationStructure.getLocationID();
+                        changedMarkerNumber.setText("" + number);
+                        cMarkerdistanceBetweenPoint.setText("done");
+                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+                        mBottomSheetBehavior.setHideable(true);
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                    bottomSheetName.setText(locationStructure.getLocationName());
-                    bottomSheetInfo.setText(locationStructure.getLocationDescription());
-                    bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                        }
-                    });
-
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        bottomSheetName.setText(locationStructure.getLocationName());
+                        bottomSheetInfo.setText(locationStructure.getLocationDescription());
+                        bottomSheetSkipButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                            }
+                        });
 
 
-                        }
-                    });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        }
-                    }, 300);
-                } else {
 
+                            }
+                        });
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            }
+                        }, 300);
+                    } else {
+
+                    }
+
+                    return true;
                 }
-
                 return true;
 
             }
