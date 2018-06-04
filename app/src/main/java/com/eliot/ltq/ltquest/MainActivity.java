@@ -634,9 +634,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         category2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
-                intent.putExtra("Category", "2");
-                startActivityForResult(intent, 1);
+                Toast.makeText(MainActivity.this, "This category is disabled for the time", Toast.LENGTH_SHORT).show();
+                /*Intent intent = new Intent(MainActivity.this, ActivityChooseLevel.class);
+                intent.putExtra("Category","2");
+                startActivityForResult(intent, 1);*/
             }
         });
         seeAll.setOnClickListener(new View.OnClickListener() {
