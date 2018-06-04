@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.eliot.ltq.ltquest.Balance;
 import com.eliot.ltq.ltquest.FirebaseDataManager;
 import com.eliot.ltq.ltquest.MainActivity;
@@ -82,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         profileUpdate();
         textViewLayout.setOnClickListener(this);
         userSettings.setOnClickListener(this);
-
+        Glide.with(this).load(firebaseAuthManager.getCurrentUser().getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(imageViewUserPhoto);
     }
 
     public void profileUpdate() {

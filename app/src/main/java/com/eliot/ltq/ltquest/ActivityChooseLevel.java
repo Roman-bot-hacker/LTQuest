@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.firebase.database.DatabaseError;
 
@@ -73,6 +74,7 @@ public class ActivityChooseLevel extends AppCompatActivity {
                                     easyQuests.add(questStructure);
                                     easyQuestItemAdapter.notifyDataSetChanged();
                                 }
+                                findViewById(R.id.Level1).setVisibility(View.GONE);
                             }
                             break;
 
@@ -86,6 +88,7 @@ public class ActivityChooseLevel extends AppCompatActivity {
                                     easyQuests.add(questStructure);
                                     easyQuestItemAdapter.notifyDataSetChanged();
                                 }
+                                findViewById(R.id.Level2).setVisibility(View.GONE);
                             }
                             break;
 

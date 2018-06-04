@@ -45,10 +45,12 @@ import com.androidmapsextensions.SupportMapFragment;
 import com.eliot.ltq.ltquest.authentication.FirebaseAuthManager;
 import com.eliot.ltq.ltquest.authentication.ProfileActivity;
 import com.eliot.ltq.ltquest.authentication.UserInformation;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<RequestClass> requestList = new ArrayList<>();
     private String currentQuestName;
     private String currentUserId;
+    private List<Marker> markersList = new ArrayList<>();
 
 
     @Override
@@ -194,10 +197,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .anchor(0.5f, 1f)
                 .position(currentLatLng)
                 .draggable(false));
+        markersList.add(mPositionMarker);
     }
-    private void drawRoute() {
+    private void drawRoute(String questName) {
 
-        firebaseDataManager.questRetrieverByName("justName", new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
+        firebaseDataManager.questRetrieverByName(questName, new FirebaseDataManager.DataRetrieverListenerForSingleQuestStructure() {
             @Override
             public void onSuccess(QuestStructure questStructure, List<Integer> locationsIdList) {
                 currentQuestCategory = questStructure.getParentCategoryID();
@@ -304,15 +308,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerInflated))));
                 locationStructureList.get(i).setLocationID(i + 1);
                 marker.setData(locationStructureList.get(i));
+                markersList.add(marker);
             } else {
                 Marker secretMarker1 = mMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(secretMarkerInflated)))
                         .anchor(0.5f, 0.5f)
                         .position(new LatLng(locationStructureList.get(i).getLat(), locationStructureList.get(i).getLon())));
                 secretMarker1.setData(locationStructureList.get(i));
+                markersList.add(secretMarker1);
             }
         }
         changeMarkerListener();
+        focusMapOnMarkers(markersList);
+    }
+
+    private void focusMapOnMarkers(List<Marker> markersList){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : markersList) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+        int padding = 65; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        mMap.animateCamera(cu);
     }
 
     private void createPolylines(ArrayList<LatLng> list) {
@@ -719,6 +737,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             screen1.setVisibility(View.GONE);
                             screen2.setVisibility(View.VISIBLE);
                             mMap.clear();
+                            configureToolbarForSecondScreen();
+                            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                             mMap.setMyLocationEnabled(true);
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                             addMyPositionMarker();
@@ -730,16 +750,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         actionbar.setHomeAsUpIndicator(drawable.ic_arrow_back_white_24dp);
                         actionbar.setDisplayHomeAsUpEnabled(true);
                         navigationView.setVisibility(View.GONE);
-                        switch (data.getStringExtra("quest_name")) {
-                            case "justName":
-                                screen1.setVisibility(View.GONE);
-                                screen2.setVisibility(View.GONE);
-                                toolbar.setTitle("justName");
-                                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                                drawRoute();
-                                isQuestOn = true;
-                                break;
-                        }
+                        currentQuestName = data.getStringExtra("quest_name");
+                        screen1.setVisibility(View.GONE);
+                        screen2.setVisibility(View.GONE);
+                        toolbar.setTitle(currentQuestName);
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        drawRoute(currentQuestName);
+                        isQuestOn = true;
                     }
                 }
             }
