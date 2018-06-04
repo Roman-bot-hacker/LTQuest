@@ -92,7 +92,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         profileUpdate();
         textViewLayout.setOnClickListener(this);
         userSettings.setOnClickListener(this);
-        Glide.with(this).load(firebaseAuthManager.getCurrentUser().getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(imageViewUserPhoto);
     }
 
     public void profileUpdate() {
@@ -114,6 +113,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                 .load(userInformation.getPhotoUrl()+"?type=large")
                                 .apply(RequestOptions.circleCropTransform())
                                 .into(imageViewUserPhoto);
+                    }
+                    else if(!(userInformation.getGoogleEmail()==null)) {
+                        Glide.with(ProfileActivity.this)
+                                .load(firebaseAuthManager.getCurrentUser()
+                                        .getPhotoUrl()).apply(RequestOptions
+                                .circleCropTransform()).into(imageViewUserPhoto);
                     }
                     if(!(userInformation.getFacebookLink()==null)) {
                         textViewFacebookLink.setText(userInformation.getFacebookLink());
