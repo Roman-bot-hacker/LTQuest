@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     int number = locationStructure.getLocationID();
                     changedMarkerNumber.setText("" + number);
                     cMarkerdistanceBetweenPoint.setText("done");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
+//                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(changedMarkerInflated)));
                     mBottomSheetBehavior.setHideable(true);
                     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
